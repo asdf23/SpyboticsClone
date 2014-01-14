@@ -8,7 +8,9 @@ I am looking for help and would appreicate donated time. Here are some things yo
 
 1. Take a look at the original game. Get a feeling for how it works and how you might improve on it. New characters, levels, changed game play. Lego took down the original however there is a working copy at  http://jayisgames.com/games/spybot-the-nightfall-incident/
 2. Install the FirefoxOS emulator. Although in theroy this should work in any browser it is targeted specifically for the Firefox OS. 
-3. Download the code and try it out on your own.
+3. Using Firebug and the Responsive Design View you can debug
+5. Most SVG icons and effects were made with Inkscape, there is a /Research directory that will not be included with this source code. Ask the developer for this Directory if you would like to add new icons or view the latest research in development.
+4. Download the code and try it out on your own.
 
 ##TODO
 Although I'll use the Issues list to track specific problems in general here are thing things that need to be done: 
