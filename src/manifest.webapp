@@ -1,0 +1,21 @@
+{ 
+	 "name": "Spybotics Clone"
+	,"description": "A clone of the spybotics game created and removed by Lego"
+	,"launch_path": "/index.svg"
+	,"orientation": "landscape"
+	,"developer": { 
+		 "name": "Andrew Mainland"
+		,"url": "http://xxxxxxxxxx" 
+	}
+	,"icons": { 
+		 "16":  "/images/icon16.png"
+		,"32":  "/images/icon32.png"
+		,"48":  "/images/icon48.png"
+		,"64":  "/images/icon64.png"
+		,"128": "/images/icon128.png" 
+	}
+	,"default_locale": "en" 
+	,"permissions": {
+	}
+	,"type": ""
+}

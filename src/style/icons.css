@@ -1,0 +1,87 @@
+#icon-hack .icon {
+	fill:#4444FF;
+}
+#icon-hack .color1 {
+	fill:#e1e1e1;
+	fill-opacity:1;
+	stroke:#000000;
+	stroke-width:1px;
+	stroke-opacity:1;
+}
+#icon-hack .color2 {
+	fill:#d70000;
+	stroke:#000000;
+	stroke-width:1;
+}
+#icon-hack .color3 {
+	fill:#ffffff;
+	stroke:#000000;
+	stroke-width: 0.5;
+}
+#icon-load .icon {
+	fill: transparent;
+}
+#icon-load .color1 {
+	fill: #ffffff;
+	fill-opacity: 90%;
+}
+#icon-sentinel .icon {
+	fill: #fc9800;
+}
+#icon-sentinel .color1 {
+	fill:#b8eaff;
+	stroke:#000000;
+	stroke-width:1px;
+}
+#icon-sentinel .color2 {
+	fill:#ff0000;
+	stroke:#000000;
+	stroke-width:0.4;
+}
+#icon-slingshot .icon {
+	fill: #00d9a5;
+}
+#icon-slingshot .color1 {
+	fill:none;
+	stroke:#ffde00;
+	stroke-width: 8;
+	stroke-linecap:round;
+	stroke-linejoin:miter;
+	stroke-miterlimit:4;
+	stroke-opacity:1;
+}
+#icon-slingshot .color2 {
+	fill:#dcd9d8;
+	stroke:#000000;
+	stroke-width:0.4;
+}
+#icon-slingshot .color3 {
+	fill:#b80000;
+	stroke:#000000;
+	stroke-width:0.4;
+}
+#icon-slingshot .color4 {
+	fill:#ce6d00;
+	stroke:#000000;
+	stroke-width:0.73px;
+}
+#icon-moved .color1 {
+	fill:#000000;
+}
+#icon-moved .color2 {
+	fill:#44EE00;
+	stroke: #000000;
+	stroke-width: 1px;
+}
+#icon-moved .color3 {
+	fill:#FF3939;
+	fill-opacity:1;
+	stroke:#000000;
+	stroke-width:1px;
+}
+#icon-attack-animation .color1 {
+	fill:#ff0c0c;
+	fill-opacity:1;
+	stroke:#b60000;
+	stroke-width:5;
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+		<title>SVG Foreign Object - Chapter 07</title>
+		<style>
+			h1, h2 { text-align: center; }
+			h1 { color: red; margin: 0; }
+			h2 { color: green; filter: url(#f1); }
+		</style>
+	</head>
+	<body>
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="40" width="100%">
+			<defs>
+				<filter id="f1">
+					<feGaussianBlur stdDeviation="3"/>
+				</filter>
+			</defs>
+			<foreignObject
+				 width="100%"
+				 height="40"
+				 requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+				 filter="url(#f1)" >
+				<h1
+					 xmlns="http://www.w3.org/1999/xhtml"
+					 id="foreign">
+					 SVG
+				</h1>
+			</foreignObject>
+		</svg>
+		<h2>Not SVG</h2>
+	</body>
+</html>

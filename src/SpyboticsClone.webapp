@@ -1,0 +1,11 @@
+{ 
+	 "name": "Spybotics Clone"
+	,"description": "A clone of the spybotics game created and removed by Lego"
+	,"type": ""
+	,"package_path" : "SpyboticsClone/SpyboticsClone.zip"
+	,"version": "1"
+	,"developer": { 
+		 "name": "Andrew Mainland"
+		,"url": "http://xxxxxxxx" 
+	}
+}

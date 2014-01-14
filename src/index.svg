@@ -1,0 +1,973 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/css" data-title="master" href="style/master.css" ?>
+<?xml-stylesheet type="text/css" data-title="icons" href="style/icons.css" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg
+	 xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg"
+	 xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	 xmlns:xlink="http://www.w3.org/1999/xlink"
+	 xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+	 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+	 width="100%"
+	 height="100%"
+	 id="svg2"
+	 version="1.1"
+	 inkscape:version="0.48.4 r9939"
+	 sodipodi:docname="index.svg"
+	 onload="init(this)">
+	<svg:script xlink:href="scripts/master.js" />
+	<svg:script xlink:href="scripts/levels.js" />
+	<svg:script xlink:href="scripts/icons.js" />
+	<defs>
+		<!-- 
+			  _____                    
+			 |_   _|                   
+			   | |  ___ ___  _ __  ___ 
+			   | | / __/ _ \| '_ \/ __|
+			  _| || (_| (_) | | | \__ \
+			 |_____\___\___/|_| |_|___/
+		-->
+		<g
+			 id="icon-hack" >
+			<rect
+				 class="icon"
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100" />
+			<path 
+				 d="M 46.021016,47.10936 85.051238,3.5146402 C 90.728628,13.84383 69.125092,43.51603 54.908633,54.68456 z"
+				 class="color1" />
+			<rect
+				 id="rect1"
+				 height="18.336977"
+				 width="71.77"
+				 rx="3.968"
+				 ry="5.965"
+				 x="-61.95"
+				 y="62.18"
+				 transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
+				 class="color2" />
+			<path
+				 d="m 25.837172,74.539022 -2.594245,-2.6091 2.609294,-2.594 2.594245,2.6091 2.609294,-2.594 2.594244,2.609 -2.609294,2.594 2.594245,2.6091 -2.609293,2.594 -2.594245,-2.609 -2.609294,2.594 -2.594245,-2.6091 z"
+				 class="color3" />
+		</g>
+		<g
+			 id="icon-load">
+			<rect 
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100"
+				 class="icon" />
+			<rect
+				 x="45"
+				 y="45"
+				 width="10"
+				 height="10"
+				 class="color1" />
+			<path 
+				 d="m 0,40 5,0 0,-35 90,0 0,90 -90,0 0,-35 -5,0 0,40 100,0 0,-100 -100,0 z"
+				 class="color1"/>
+			<path 
+				 d="m 15,40 5,0 0,-20 60,0 0,60 -60,0 0,-20 -5,0 0,25 70,0 0,-70 -70,0 z"
+				 class="color1" />
+			<path 
+				 d="m 30,40 5,0 0,-5 30,0 0,30 -30,0 0,-5 -5,0 0,10 40,0 0,-40 -40,0 z"
+				 class="color1" />
+		</g>
+		<g
+			 id="icon-selected" >
+			<rect
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100"
+				 style="fill:none; stroke-width:5; stroke: #FFFFFF;" >
+				<!-- 
+					Blinking effect with slow fade out and quick fade in
+				-->
+				<animate id="iconSelectedAnimation1"
+					 attributeName="stroke-opacity"
+					 from="0"
+					 to="1"
+					 dur="1s"
+					 begin="0s;iconSelectedAnimation2.end"
+					 keyTimes="0; 1"
+					 calcMode="spline"
+					 keySplines="0 1 1 1" />
+				<animate id="iconSelectedAnimation2"
+					 attributeName="opacity"
+					 from="1"
+					 to="0"
+					 dur="1s" 
+					 begin="iconSelectedAnimation1.end"
+					 keyTimes="0; 1"
+					 calcMode="spline"
+					 keySplines=".75 .25 1 1" />
+			</rect>
+		</g>
+		<g 
+			 id="icon-occupied" >
+			<rect
+				 x="0" 
+				 y="0" 
+				 width="100"
+				 height="100" />
+		</g>
+		<g 
+			 id="icon-moved" >
+			<circle
+				 cx="81"
+				 cy="33"
+				 r="20"
+				 style="filter:url(#filterShadowBlur)"
+				 class="color1" />
+			<circle
+				 cx="75"
+				 cy="27"
+				 r="20"
+				 class="color2" />
+			<path
+				 d="m 65,24 -4,10 13,12 26,-33 -14,-8 -13,29 z"
+				 class="color3"
+				 />
+		</g>
+		<g
+			 id="icon-sentinel" >
+			<rect 
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100"
+				 class="icon" />
+			<path
+				 d="m 9.7,14 c 0.3,2 -0.6,8 0.1,10 0.2,2 4.2,1 6.2,2 l 17,7 c 6,7 2,40 1,59 l -3,0 c -2,0 -8,-4 -4,6 l 12,0 0,-6 c 4,-14 0,-10 3,-22 2,20 6,2 5,23 -2,0 -1,-1 -4,-1 -5,-1 -2,4 -2,6 l 14,0 C 53,88 53,69 51,64 c 0,-11 0,-32 3,-33 2,0 -4,26 -2,30 3,1 5,3 8,2 C 62,52 61,38 61,26 60,19 53,19 47,21 47,17 49,11 48,7.3 45,3.8 41,4 36,6.8 34,8.3 36,14 38,18 c 2,2 0,2 0,7 L 14,19 c 2,-3 -2,-6 -4.3,-5 z"
+				 style=""
+				 class="color1" />
+			<rect
+				 width="9.1"
+				 height="4"
+				 rx="3.5"
+				 ry="0.94"
+				 x="36"
+				 y="10"
+				 style=""
+				 class="color2" />
+		</g>
+		<g
+			 id="icon-slingshot">
+			<rect
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100"
+				 class="icon" />
+			<path
+				 d="M 29,60 65,12"
+				 class="color1" />
+			<path
+				 sodipodi:type="arc"
+				 sodipodi:cx="61"
+				 sodipodi:cy="43"
+				 sodipodi:rx="5.9"
+				 sodipodi:ry="5.9"
+				 d="m 67,43 a 5.9,5.9 0 1 1 -12,0 5.9,5.9 0 1 1 12,0 z"
+				 transform="matrix(-0.55,-1.8,1.8,0.12,-20,170)"
+				 inkscape:transform-center-x="-1.5"
+				 inkscape:transform-center-y="11"
+				 class="color2" />
+			<path
+				 d="M 34,72 C 32,79 18,80 12,76 5.6,72 5.6,66 7.6,59 8.6,56 17,54 18,54 c -4,4 -7,11 0,15 7,5 11,6 16,3 z"
+				 inkscape:connector-curvature="0"
+				 sodipodi:nodetypes="cssczc"
+				 class="color3" />
+			<path
+				 d="M 14,67 34,23"
+				 inkscape:connector-curvature="0"
+				 sodipodi:nodetypes="cc"
+				 class="color1" />
+			<path
+				 style="fill:#ce6d00;fill-opacity:1;stroke:#000000;stroke-width:0.73px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+				 d="M 38,24 C 38,14 23,24 25,24 38,54 48,69 68,74 88,79 71,97 88,94 110,91 78,64 78,64 92,51 78,24 68,4.1 68,0.1 48,4.1 58,14 68,34 86,53 65,58 45,63 38,24 38,24 z"
+				 inkscape:connector-curvature="0"
+				 sodipodi:nodetypes="cczzccczc"
+				 class="color4" />
+		</g>
+		<g
+			 id="icon-attack-animation">
+				<rect
+					 width="20.377359"
+					 height="21.132076"
+					 x="12.45283"
+					 y="68.113205"
+					 class="color1" />
+				<rect
+					 width="20.377359"
+					 height="21.132076"
+					 x="43.396229"
+					 y="38.49057"
+					 class="color1" />
+				<rect
+					 width="20.377359"
+					 height="21.132076"
+					 x="15.094338"
+					 y="9.4339628"
+					 class="color1" />
+				<rect
+					 width="20.377359"
+					 height="21.132076"
+					 x="58.867924"
+					 y="68.490562"
+					 class="color1" />
+				<rect
+					 width="29.164621"
+					 height="30.244793"
+					 x="65.983727"
+					 y="6.0096807"
+					 class="color1" />
+				<animateMotion 
+					 path="M 0 0 L -500 -500" 
+					 begin="indefinite" 
+					 dur="2s" 
+					 fill="freeze" />
+				<animateTransform 
+					 attributeName="transform" 
+					 attributeType="XML"
+					 type="rotate" 
+					 from="0 0 0" 
+					 to="90 500 500"
+					 begin="indefinite" 
+					 dur="2s" 
+					 fill="freeze" />
+				<animateTransform 
+					 attributeName="transform" 
+					 attributeType="XML"
+					 type="scale" 
+					 from="0.44" 
+					 to="10" 
+					 additive="sum"
+					 begin="indefinite" 
+					 dur="2s" 
+					 fill="freeze"
+					 keySplines="1 0 0 0" />
+				<animate
+					 attributeName="opacity" 
+					 from="1" 
+					 to="0" 
+					 begin="indefinite" 
+					 dur="2s" 
+					 fill="freeze" />
+		</g>
+		<!-- 
+			      _______                    
+			     / /_   _|                   
+			    / /  | |  ___ ___  _ __  ___ 
+			   / /   | | / __/ _ \| '_ \/ __|
+			  / /   _| || (_| (_) | | | \__ \
+			 /_/   |_____\___\___/|_| |_|___/
+		-->
+		<filter 
+			 id="filterClouds"
+			 color-interpolation-filters="sRGB" >
+			<feTurbulence
+				 numOctaves="1"
+				 baseFrequency="0.006"
+				 type="fractalNoise" />
+			<feColorMatrix
+				 result="result0"
+				 values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 3 -1" />
+			<feFlood
+				 flood-color="#000000"
+				 flood-opacity="1"
+				 result="result1" />
+			<feBlend
+				 in="result1"
+				 in2="SourceGraphic"
+				 mode="normal"
+				 result="result2" />
+			<feComposite
+				 in2="result0"
+				 operator="out"
+				 result="result3" />
+			<feComposite
+				 in="SourceGraphic"
+				 operator="atop" />
+		</filter>
+		<filter
+			 id="filterShadowBlur"
+			 x="0%"
+			 y="0%"
+			 width="120%"
+			 height="120%"
+			 color-interpolation-filters="sRGB" >
+			<feGaussianBlur 
+				 stdDeviation="5" />
+		</filter>
+		<linearGradient
+			 id="linearGradientWindowTitleBar"
+			 x1="0"
+			 x2="0"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#FF0000" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#00FF00" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientWindowTextTitleBar"
+			 x1="0"
+			 x2="0"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#FF0000" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#00FF00" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientScrollable"
+			 x1="0"
+			 x2="0"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#FF0000" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#00FF00" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientAttack"
+			 x1="0"
+			 x2="1"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#00EEFF" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#000000" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientAlternate"
+			 x1="0"
+			 x2="1"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#FFFF00" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#000000" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientNOP"
+			 x1="0"
+			 x2="1"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#0000FF" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#000000" />
+		</linearGradient>
+		<linearGradient
+			 id="linearGradientControlButton"
+			 x1="0"
+			 x2="1"
+			 y1="0"
+			 y2="1" >
+			<stop 
+				 offset="0"
+				 style="stop-color:#FF0000" />
+			<stop 
+				 offset="1"
+				 style="stop-color:#000000" />
+		</linearGradient>
+	</defs>
+	<g
+		 id="layer_background" >
+		 <!--
+		  ____             _                                   _     
+		 |  _ \           | |                                 | |    
+		 | |_) | __ _  ___| | ____ _ _ __ ___  _   _ _ __   __| |___ 
+		 |  _ < / _` |/ __| |/ / _` | '__/ _ \| | | | '_ \ / _` / __|
+		 | |_) | (_| | (__|   < (_| | | | (_) | |_| | | | | (_| \__ \
+		 |____/ \__,_|\___|_|\_\__, |_|  \___/ \__,_|_| |_|\__,_|___/
+		                        __/ |                                
+		                       |___/                                 
+		 -->
+		<g id="ascii"
+			 display="none" >
+			<rect
+				 height="100%"
+				 width="100%"
+				 x="0%"
+				 y="0%"
+				 class="cloudBackground" />
+			<rect
+				 height="100%"
+				 width="100%"
+				 x="0%"
+				 y="0%"
+				 style="filter:url(#filterClouds);"
+				 class="cloudForeground" />
+			<foreignObject
+				 x="0%"
+				 y="0%"
+				 width="100%"
+				 height="100%"
+				 opacity="0.9" >
+				<xhtml:div
+					 style="font-size: 8px;"
+					 class="cloudText">
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<!--
+		      ______             _                                   _     
+		     / /  _ \           | |                                 | |    
+		    / /| |_) | __ _  ___| | ____ _ _ __ ___  _   _ _ __   __| |___ 
+		   / / |  _ < / _` |/ __| |/ / _` | '__/ _ \| | | | '_ \ / _` / __|
+		  / /  | |_) | (_| | (__|   < (_| | | | (_) | |_| | | | | (_| \__ \
+		 /_/   |____/ \__,_|\___|_|\_\__, |_|  \___/ \__,_|_| |_|\__,_|___/
+		                              __/ |                                
+		                             |___/                                 
+		-->
+	</g>
+	<!--
+		   _____                        ____                      _ 
+		  / ____|                      |  _ \                    | |
+		 | |  __  __ _ _ __ ___   ___  | |_) | ___   __ _ _ __ __| |
+		 | | |_ |/ _` | '_ ` _ \ / _ \ |  _ < / _ \ / _` | '__/ _` |
+		 | |__| | (_| | | | | | |  __/ | |_) | (_) | (_| | | | (_| |
+		  \_____|\__,_|_| |_| |_|\___| |____/ \___/ \__,_|_|  \__,_|
+		                                                            
+		                                                            
+	-->
+	<g
+		 id="gameBoard"
+		 transform="translate(0,0)">
+		<rect x="104" y="4" width="27" height="27" class="tileA" />
+		<rect x="135" y="4" width="27" height="27" class="tileA" />
+		<rect x="166" y="4" width="27" height="27" class="tileA" />
+		<rect x="197" y="4" width="27" height="27" class="tileA" />
+		<rect x="228" y="4" width="27" height="27" class="tileA" />
+		<rect x="259" y="4" width="27" height="27" class="tileA" />
+		<rect x="290" y="4" width="27" height="27" class="tileA" />
+		<rect x="321" y="4" width="27" height="27" class="tileA" />
+		<rect x="352" y="4" width="27" height="27" class="tileA" />
+		<rect x="383" y="4" width="27" height="27" class="tileA" />
+		<rect x="414" y="4" width="27" height="27" class="tileA" />
+		<rect x="445" y="4" width="27" height="27" class="tileA" />
+		<rect x="476" y="4" width="27" height="27" class="tileA" />
+		<rect x="507" y="4" width="27" height="27" class="tileA" />
+		<rect x="538" y="4" width="27" height="27" class="tileA" />
+		<rect x="569" y="4" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="35" width="27" height="27" class="tileA" />
+		<rect x="135" y="35" width="27" height="27" class="tileA" />
+		<rect x="166" y="35" width="27" height="27" class="tileA" />
+		<rect x="197" y="35" width="27" height="27" class="tileA" />
+		<rect x="228" y="35" width="27" height="27" class="tileA" />
+		<rect x="259" y="35" width="27" height="27" class="tileA" />
+		<rect x="290" y="35" width="27" height="27" class="tileA" />
+		<rect x="321" y="35" width="27" height="27" class="tileA" />
+		<rect x="352" y="35" width="27" height="27" class="tileA" />
+		<rect x="383" y="35" width="27" height="27" class="tileA" />
+		<rect x="414" y="35" width="27" height="27" class="tileA" />
+		<rect x="445" y="35" width="27" height="27" class="tileA" />
+		<rect x="476" y="35" width="27" height="27" class="tileA" />
+		<rect x="507" y="35" width="27" height="27" class="tileA" />
+		<rect x="538" y="35" width="27" height="27" class="tileA" />
+		<rect x="569" y="35" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="66" width="27" height="27" class="tileA" />
+		<rect x="135" y="66" width="27" height="27" class="tileA" />
+		<rect x="166" y="66" width="27" height="27" class="tileA" />
+		<rect x="197" y="66" width="27" height="27" class="tileA" />
+		<rect x="228" y="66" width="27" height="27" class="tileA" />
+		<rect x="259" y="66" width="27" height="27" class="tileA" />
+		<rect x="290" y="66" width="27" height="27" class="tileA" />
+		<rect x="321" y="66" width="27" height="27" class="tileA" />
+		<rect x="352" y="66" width="27" height="27" class="tileA" />
+		<rect x="383" y="66" width="27" height="27" class="tileA" />
+		<rect x="414" y="66" width="27" height="27" class="tileA" />
+		<rect x="445" y="66" width="27" height="27" class="tileA" />
+		<rect x="476" y="66" width="27" height="27" class="tileA" />
+		<rect x="507" y="66" width="27" height="27" class="tileA" />
+		<rect x="538" y="66" width="27" height="27" class="tileA" />
+		<rect x="569" y="66" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="97" width="27" height="27" class="tileA" />
+		<rect x="135" y="97" width="27" height="27" class="tileA" />
+		<rect x="166" y="97" width="27" height="27" class="tileA" />
+		<rect x="197" y="97" width="27" height="27" class="tileA" />
+		<rect x="228" y="97" width="27" height="27" class="tileA" />
+		<rect x="259" y="97" width="27" height="27" class="tileA" />
+		<rect x="290" y="97" width="27" height="27" class="tileA" />
+		<rect x="321" y="97" width="27" height="27" class="tileA" />
+		<rect x="352" y="97" width="27" height="27" class="tileA" />
+		<rect x="383" y="97" width="27" height="27" class="tileA" />
+		<rect x="414" y="97" width="27" height="27" class="tileA" />
+		<rect x="445" y="97" width="27" height="27" class="tileA" />
+		<rect x="476" y="97" width="27" height="27" class="tileA" />
+		<rect x="507" y="97" width="27" height="27" class="tileA" />
+		<rect x="538" y="97" width="27" height="27" class="tileA" />
+		<rect x="569" y="97" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="128" width="27" height="27" class="tileA" />
+		<rect x="135" y="128" width="27" height="27" class="tileA" />
+		<rect x="166" y="128" width="27" height="27" class="tileA" />
+		<rect x="197" y="128" width="27" height="27" class="tileA" />
+		<rect x="228" y="128" width="27" height="27" class="tileA" />
+		<rect x="259" y="128" width="27" height="27" class="tileA" />
+		<rect x="290" y="128" width="27" height="27" class="tileA" />
+		<rect x="321" y="128" width="27" height="27" class="tileA" />
+		<rect x="352" y="128" width="27" height="27" class="tileA" />
+		<rect x="383" y="128" width="27" height="27" class="tileA" />
+		<rect x="414" y="128" width="27" height="27" class="tileA" />
+		<rect x="445" y="128" width="27" height="27" class="tileA" />
+		<rect x="476" y="128" width="27" height="27" class="tileA" />
+		<rect x="507" y="128" width="27" height="27" class="tileA" />
+		<rect x="538" y="128" width="27" height="27" class="tileA" />
+		<rect x="569" y="128" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="159" width="27" height="27" class="tileA" />
+		<rect x="135" y="159" width="27" height="27" class="tileA" />
+		<rect x="166" y="159" width="27" height="27" class="tileA" />
+		<rect x="197" y="159" width="27" height="27" class="tileA" />
+		<rect x="228" y="159" width="27" height="27" class="tileA" />
+		<rect x="259" y="159" width="27" height="27" class="tileA" />
+		<rect x="290" y="159" width="27" height="27" class="tileA" />
+		<rect x="321" y="159" width="27" height="27" class="tileA" />
+		<rect x="352" y="159" width="27" height="27" class="tileA" />
+		<rect x="383" y="159" width="27" height="27" class="tileA" />
+		<rect x="414" y="159" width="27" height="27" class="tileA" />
+		<rect x="445" y="159" width="27" height="27" class="tileA" />
+		<rect x="476" y="159" width="27" height="27" class="tileA" />
+		<rect x="507" y="159" width="27" height="27" class="tileA" />
+		<rect x="538" y="159" width="27" height="27" class="tileA" />
+		<rect x="569" y="159" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="190" width="27" height="27" class="tileA" />
+		<rect x="135" y="190" width="27" height="27" class="tileA" />
+		<rect x="166" y="190" width="27" height="27" class="tileA" />
+		<rect x="197" y="190" width="27" height="27" class="tileA" />
+		<rect x="228" y="190" width="27" height="27" class="tileA" />
+		<rect x="259" y="190" width="27" height="27" class="tileA" />
+		<rect x="290" y="190" width="27" height="27" class="tileA" />
+		<rect x="321" y="190" width="27" height="27" class="tileA" />
+		<rect x="352" y="190" width="27" height="27" class="tileA" />
+		<rect x="383" y="190" width="27" height="27" class="tileA" />
+		<rect x="414" y="190" width="27" height="27" class="tileA" />
+		<rect x="445" y="190" width="27" height="27" class="tileA" />
+		<rect x="476" y="190" width="27" height="27" class="tileA" />
+		<rect x="507" y="190" width="27" height="27" class="tileA" />
+		<rect x="538" y="190" width="27" height="27" class="tileA" />
+		<rect x="569" y="190" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="221" width="27" height="27" class="tileA" />
+		<rect x="135" y="221" width="27" height="27" class="tileA" />
+		<rect x="166" y="221" width="27" height="27" class="tileA" />
+		<rect x="197" y="221" width="27" height="27" class="tileA" />
+		<rect x="228" y="221" width="27" height="27" class="tileA" />
+		<rect x="259" y="221" width="27" height="27" class="tileA" />
+		<rect x="290" y="221" width="27" height="27" class="tileA" />
+		<rect x="321" y="221" width="27" height="27" class="tileA" />
+		<rect x="352" y="221" width="27" height="27" class="tileA" />
+		<rect x="383" y="221" width="27" height="27" class="tileA" />
+		<rect x="414" y="221" width="27" height="27" class="tileA" />
+		<rect x="445" y="221" width="27" height="27" class="tileA" />
+		<rect x="476" y="221" width="27" height="27" class="tileA" />
+		<rect x="507" y="221" width="27" height="27" class="tileA" />
+		<rect x="538" y="221" width="27" height="27" class="tileA" />
+		<rect x="569" y="221" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="252" width="27" height="27" class="tileA" />
+		<rect x="135" y="252" width="27" height="27" class="tileA" />
+		<rect x="166" y="252" width="27" height="27" class="tileA" />
+		<rect x="197" y="252" width="27" height="27" class="tileA" />
+		<rect x="228" y="252" width="27" height="27" class="tileA" />
+		<rect x="259" y="252" width="27" height="27" class="tileA" />
+		<rect x="290" y="252" width="27" height="27" class="tileA" />
+		<rect x="321" y="252" width="27" height="27" class="tileA" />
+		<rect x="352" y="252" width="27" height="27" class="tileA" />
+		<rect x="383" y="252" width="27" height="27" class="tileA" />
+		<rect x="414" y="252" width="27" height="27" class="tileA" />
+		<rect x="445" y="252" width="27" height="27" class="tileA" />
+		<rect x="476" y="252" width="27" height="27" class="tileA" />
+		<rect x="507" y="252" width="27" height="27" class="tileA" />
+		<rect x="538" y="252" width="27" height="27" class="tileA" />
+		<rect x="569" y="252" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="283" width="27" height="27" class="tileA" />
+		<rect x="135" y="283" width="27" height="27" class="tileA" />
+		<rect x="166" y="283" width="27" height="27" class="tileA" />
+		<rect x="197" y="283" width="27" height="27" class="tileA" />
+		<rect x="228" y="283" width="27" height="27" class="tileA" />
+		<rect x="259" y="283" width="27" height="27" class="tileA" />
+		<rect x="290" y="283" width="27" height="27" class="tileA" />
+		<rect x="321" y="283" width="27" height="27" class="tileA" />
+		<rect x="352" y="283" width="27" height="27" class="tileA" />
+		<rect x="383" y="283" width="27" height="27" class="tileA" />
+		<rect x="414" y="283" width="27" height="27" class="tileA" />
+		<rect x="445" y="283" width="27" height="27" class="tileA" />
+		<rect x="476" y="283" width="27" height="27" class="tileA" />
+		<rect x="507" y="283" width="27" height="27" class="tileA" />
+		<rect x="538" y="283" width="27" height="27" class="tileA" />
+		<rect x="569" y="283" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="314" width="27" height="27" class="tileA" />
+		<rect x="135" y="314" width="27" height="27" class="tileA" />
+		<rect x="166" y="314" width="27" height="27" class="tileA" />
+		<rect x="197" y="314" width="27" height="27" class="tileA" />
+		<rect x="228" y="314" width="27" height="27" class="tileA" />
+		<rect x="259" y="314" width="27" height="27" class="tileA" />
+		<rect x="290" y="314" width="27" height="27" class="tileA" />
+		<rect x="321" y="314" width="27" height="27" class="tileA" />
+		<rect x="352" y="314" width="27" height="27" class="tileA" />
+		<rect x="383" y="314" width="27" height="27" class="tileA" />
+		<rect x="414" y="314" width="27" height="27" class="tileA" />
+		<rect x="445" y="314" width="27" height="27" class="tileA" />
+		<rect x="476" y="314" width="27" height="27" class="tileA" />
+		<rect x="507" y="314" width="27" height="27" class="tileA" />
+		<rect x="538" y="314" width="27" height="27" class="tileA" />
+		<rect x="569" y="314" width="27" height="27" class="tileA" />
+
+		<rect x="104" y="345" width="27" height="27" class="tileA" />
+		<rect x="135" y="345" width="27" height="27" class="tileA" />
+		<rect x="166" y="345" width="27" height="27" class="tileA" />
+		<rect x="197" y="345" width="27" height="27" class="tileA" />
+		<rect x="228" y="345" width="27" height="27" class="tileA" />
+		<rect x="259" y="345" width="27" height="27" class="tileA" />
+		<rect x="290" y="345" width="27" height="27" class="tileA" />
+		<rect x="321" y="345" width="27" height="27" class="tileA" />
+		<rect x="352" y="345" width="27" height="27" class="tileA" />
+		<rect x="383" y="345" width="27" height="27" class="tileA" />
+		<rect x="414" y="345" width="27" height="27" class="tileA" />
+		<rect x="445" y="345" width="27" height="27" class="tileA" />
+		<rect x="476" y="345" width="27" height="27" class="tileA" />
+		<rect x="507" y="345" width="27" height="27" class="tileA" />
+		<rect x="538" y="345" width="27" height="27" class="tileA" />
+		<rect x="569" y="345" width="27" height="27" class="tileA" />
+	</g>
+	<!--
+		      _______                        ____                      _ 
+		     / / ____|                      |  _ \                    | |
+		    / / |  __  __ _ _ __ ___   ___  | |_) | ___   __ _ _ __ __| |
+		   / /| | |_ |/ _` | '_ ` _ \ / _ \ |  _ < / _ \ / _` | '__/ _` |
+		  / / | |__| | (_| | | | | | |  __/ | |_) | (_) | (_| | | | (_| |
+		 /_/   \_____|\__,_|_| |_| |_|\___| |____/ \___/ \__,_|_|  \__,_|
+		                                                                 
+		                                                                 
+	-->
+	<g id="layer_gamePieces" />
+	<g
+		 id="layer_foreground" >
+		<!--
+		 __      ___         _               
+		 \ \    / (_)_ _  __| |_____ __ _____
+		  \ \/\/ /| | ' \/ _` / _ \ V  V (_-<
+		   \_/\_/ |_|_||_\__,_\___/\_/\_//__/
+		                                     
+		-->
+		<g
+			 id="ls_window" >
+			<rect
+				 id="ls_window_title"
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="15"
+				 style="fill:url(#linearGradientWindowTitleBar);"
+				 class="titleBar" />
+			<rect
+				 x="4"
+				 y="0"
+				 width="80"
+				 height="12"
+				 style="fill:url(#linearGradientWindowTextTitleBar);"
+				 class="titleBarTextBackground" />
+			<foreignObject
+				 x="6"
+				 y="0"
+				 width="80"
+				 height="12">
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="titleText">
+					ls /bin
+				</xhtml:div>
+			</foreignObject>
+			<rect
+				 id="ls_window_content_background"
+				 x="0"
+				 y="16"
+				 width="100"
+				 height="100"
+				 style="fill:url(#linearGradientScrollable);"
+				 class="windowScrollable" />
+			<foreignObject
+				 id="ls_window_content"
+				 x="4"
+				 y="18"
+				 width="94"
+				 height="96">
+				<xhtml:div
+					 style="font-size: 12px; height: 96px;"
+					 class="scrollableWindow">
+					<xhtml:div class="scrollableWindowContent">Hack x1</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x2</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x3</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x4</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x5</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x6</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x7</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x8</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x9</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x10</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Hack x11</xhtml:div>
+					<xhtml:div class="scrollableWindowContent">Mandel Bug x12</xhtml:div>
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<g
+			 id="man_window">
+			<rect
+				 id="man_window_titlebar"
+				 x="0"
+				 y="122"
+				 width="100"
+				 height="15"
+				 style="fill:url(#linearGradientWindowTitleBar);"
+				 class="titleBar" />
+			<rect
+				 id="man_window_title_background"
+				 x="4"
+				 y="122"
+				 width="80"
+				 height="12"
+				 style="fill:url(#linearGradientWindowTextTitleBar);"
+				 class="titleBarTextBackground" />
+			<foreignObject
+				 id="man_window_title"
+				 x="6"
+				 y="122"
+				 width="100"
+				 height="218">
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="titleText">
+					man Hack
+				</xhtml:div>
+			</foreignObject>
+			<rect
+				 id="man_window_content_background"
+				 x="0"
+				 y="138"
+				 width="100"
+				 height="100"
+				 style="fill:url(#linearGradientScrollable);"
+				 class="windowScrollable" />
+			<use
+				 id="man_current_icon"
+				 x="16"
+				 y="530"
+				 transform="scale(0.27, 0.27)"
+				 xlink:href="#icon-hack" />
+			<foreignObject
+				 id="man_general_info"
+				 x="36"
+				 y="142"
+				 width="100"
+				 height="26">
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="titleText">
+					<xhtml:div>Move: 2</xhtml:div>
+					<xhtml:div>Max Size: 4</xhtml:div>
+				</xhtml:div>
+			</foreignObject>
+			<foreignObject
+				 id="man_header"
+				 x="4"
+				 y="170"
+				 width="100"
+				 height="40">
+				<xhtml:div
+					 style="font-size: 16px;"
+					 class="commandText">
+					<xhtml:div>Hack</xhtml:div>
+					<xhtml:div>Arguments</xhtml:div>
+				</xhtml:div>
+			</foreignObject>
+			<g
+				 id="button1">
+				<rect
+					 x="0"
+					 y="210"
+					 width="100"
+					 height="16"
+					 style="fill:url(#linearGradientAttack)"
+					 class="button" />
+				<foreignObject
+					 x="0"
+					 y="212"
+					 width="100"
+					 height="16" >
+					<xhtml:div
+						 style="font-size: 12px;"
+						 class="buttonText">
+						SLICE
+					</xhtml:div>
+				</foreignObject>
+			</g>
+			<g
+				 id="button2">
+				<rect
+					 x="0"
+					 y="226"
+					 width="100"
+					 height="16"
+					 style="fill:url(#linearGradientAlternate)"
+					 class="button" />
+				<foreignObject
+					 x="0"
+					 y="228"
+					 width="100"
+					 height="16" >
+					<xhtml:div
+						 style="font-size: 12px;"
+						 class="buttonText">
+						Alternet
+					</xhtml:div>
+				</foreignObject>
+			</g>
+			<g
+				 id="button3">
+				<rect
+					 x="0"
+					 y="242"
+					 width="100"
+					 height="16"
+					 style="fill:url(#linearGradientNOP)"
+					 class="button" />
+				<foreignObject
+					 x="0"
+					 y="244"
+					 width="100"
+					 height="16" >
+					<xhtml:div
+						 style="font-size: 12px;"
+						 class="buttonText">
+						NOP;
+					</xhtml:div>
+				</foreignObject>
+			</g>
+			<foreignObject
+				 id="man_help_command"
+				 x="0"
+				 y="258"
+				 width="100"
+				 height="100" >
+				<xhtml:div
+					 style="font-size: 12px; height: 100px;"
+					 class="commandDescription">
+					<xhtml:div>SLICE</xhtml:div>
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<g
+			 id="buttonUndo">
+			<rect
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16"
+				 style="fill:url(#linearGradientControlButton)"
+				 class="button" />
+			<foreignObject
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16" >
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="buttonText">
+					UNDO
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<g
+			 id="buttonExecute"
+			 display="none">
+			<rect
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16"
+				 style="fill:url(#linearGradientControlButton)"
+				 class="button" />
+			<foreignObject
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16" >
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="buttonText">
+					./battle.sh
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<g
+			 id="buttonCancel"
+			 display="none">
+			<rect
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16"
+				 style="fill:url(#linearGradientControlButton)"
+				 class="button" />
+			<foreignObject
+				 x="0"
+				 y="358"
+				 width="100"
+				 height="16" >
+				<xhtml:div
+					 style="font-size: 12px;"
+					 class="buttonText">
+					Ctrl + C
+				</xhtml:div>
+			</foreignObject>
+		</g>
+		<!--
+		    ____      ___         _               
+		   / /\ \    / (_)_ _  __| |_____ __ _____
+		  / /  \ \/\/ /| | ' \/ _` / _ \ V  V (_-<
+		 /_/    \_/\_/ |_|_||_\__,_\___/\_/\_//__/
+		                                          
+		-->
+	</g>
+	<g
+		 id="layer_modalWindow">
+		<!-- use id="use1" x="0" y="0" transform="scale(0.5,0.5)" xlink:href="#icon-hack"/ -->
+	</g>
+</svg>
