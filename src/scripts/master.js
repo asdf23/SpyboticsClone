@@ -130,6 +130,7 @@ function executeButtonClick() {
 	//for each enemy that has not moved
 	//see what Ai is, implement AI:
 	var spaces = new Array();
+	var toRemove = new Array();
 	var uses = $elem("layer_gamePieces").getElementsByTagName("use");
 	for(var i=0; i<uses.length; i++) {
 		var p = $attrib(uses[i], "data-icon");
@@ -140,7 +141,12 @@ function executeButtonClick() {
 				,Position: [pos]
 				,UseElement: uses[i]
 			});
+		} else if( Icons[p].isUtility && p == icon_moved ) {
+			toRemove.push(uses[i]);
 		}
+	}
+	for(var i=0;i<toRemove.length; i++) {
+		toRemove[i].parentNode.removeChild(toRemove[i]);
 	}
 	var rects = $elem("gameBoard").getElementsByTagName("rect");
 	for(var i=0; i<rects.length; i++) {
@@ -249,6 +255,16 @@ function executeButtonClick() {
 								,UpdateParameters: null
 							});
 						}
+						delayedAnimations.push({
+							 "Type": "CompleteMove"
+							,Delay: 400
+							,Parameters: [icon_moved, {
+								 x: $attrib(rects[ enemies[i].Position[0] ], "x")
+								,y: $attrib(rects[ enemies[i].Position[0] ], "y")
+								,position: enemies[i].Position[0]
+							}, false]
+							,UpdateParameters: null
+						});
 					}
 					break;
 			}
@@ -288,6 +304,12 @@ function executeButtonClick() {
 						updateIcon(a,b,c);
 					}, totalDelay + delayedAnimations[i].Delay
 					,delayedAnimations[i].UpdateParameters[0], delayedAnimations[i].UpdateParameters[1], delayedAnimations[i].UpdateParameters[2] );
+					break;
+				case "CompleteMove":
+					setTimeout(function(a,b,c) {
+						createIcon(a,b,c);
+					}, totalDelay + delayedAnimations[i].Delay
+					, delayedAnimations[i].Parameters[0], delayedAnimations[i].Parameters[1], delayedAnimations[i].Parameters[2]);
 					break;
 			}
 			totalDelay += delayedAnimations[i].Delay;
