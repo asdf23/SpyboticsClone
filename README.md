@@ -42,4 +42,5 @@ My goal is to make this game available to the FirefoxOS communtity. I will keep 
 * the pieces have different characteristics
 * for the most part there are multiple AI's that the player is working against not a single "mind"
 * there are rewards and punishment over the course of the story line that could extend to the next level.
+
 There are many similar games in existance to this, most notably tower defense games. These games have many of the same characterists such as: accumulated pieces, the goal of defeating all enemies, a story line, etc.. The theme of hacking is also common among many games perhaps Tron being the most well known, 
