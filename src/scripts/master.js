@@ -131,6 +131,7 @@ function executeButtonClick() {
 	//see what Ai is, implement AI:
 	var spaces = new Array();
 	var toRemove = new Array();
+	window.players = new Array();
 	var uses = $elem("layer_gamePieces").getElementsByTagName("use");
 	for(var i=0; i<uses.length; i++) {
 		var p = $attrib(uses[i], "data-icon");
@@ -178,6 +179,19 @@ function executeButtonClick() {
 							,Parameters: [enemySight.RangedTargets[0].Position]
 							,UpdateParameters: null
 						});
+						for(var p=0; p<window.players.length; p++) {
+							if(window.players[p].Position.indexOf(enemySight.RangedTargets[0].Position) >= 0) {
+								//window.players[p] is the attacked player
+								var attackedSpaces = window.players[p].Position.acceptAttack( enemySight.RangedTargets[0].AttackStrength );
+								delayedAnimations.push({
+									 "Type": "Attacked"
+									,Delay: 100
+									,Parameters: attackedSpaces
+									,UpdateParameters: null
+								});
+								//TODO player may needed to be removed
+							}
+						}
 					} else {
 						var target = window.players[0];
 						var targetCoordinates = PositionToCoordinate(target.Position[0]);
@@ -254,10 +268,23 @@ function executeButtonClick() {
 								,Parameters: [enemySight.RangedTargets[0].Position]
 								,UpdateParameters: null
 							});
+							for(var p=0; p<window.players.length; p++) {
+								if(window.players[p].Position.indexOf(enemySight.RangedTargets[0].Position) >= 0) {
+									//window.players[p] is the attacked player
+									var attackedSpaces = window.players[p].Position.acceptAttack( enemySight.RangedTargets[0].AttackStrength );
+									delayedAnimations.push({
+										 "Type": "Attacked"
+										,Delay: 100
+										,Parameters: attackedSpaces
+										,UpdateParameters: null
+									});
+									//TODO player may needed to be removed
+								}
+							}
 						}
 						delayedAnimations.push({
 							 "Type": "CompleteMove"
-							,Delay: 400
+							,Delay: 100
 							,Parameters: [icon_moved, {
 								 x: $attrib(rects[ enemies[i].Position[0] ], "x")
 								,y: $attrib(rects[ enemies[i].Position[0] ], "y")
@@ -294,6 +321,23 @@ function executeButtonClick() {
 						showAttackAnimation(a);
 					}, totalDelay + delayedAnimations[i].Delay
 					, delayedAnimations[i].Parameters[0]);
+					break;
+				case "Attacked":
+					for(var j=0; j<delayedAnimations[i].Parameters.length; j++) {
+						setTimeout(function(a) {
+							console.log(".attacked");
+							var gamePieces = $elem("layer_gamePieces").getElementsByTagName("use");
+							for(var k=0; k<gamePieces.length; k++) {
+								if($attrib(gamePieces[k],"data-position") == a) {
+									if( $attrib(gamePieces[k], "data-icon") != icon_attack_animation ) {
+										gamePieces[k].parentNode.removeChild(gamePieces[k]);
+									}
+								}
+							}
+						}, totalDelay + delayedAnimations[i].Delay
+						, delayedAnimations[i].Parameters[j]);
+						totalDelay += delayedAnimations[i].Delay;
+					}
 					break;
 			}
 			switch(delayedAnimations[i].Type) {
@@ -1462,6 +1506,13 @@ Array.prototype.playerMove = function(NewPosition, MaxLength) {
 	}
 	return this;
 };
+Array.prototype.acceptAttack = function(AttackStrength) {
+	var attackedPositions = new Array();
+	for(var i=0; i<AttackStrength; i++) {
+		attackedPositions.push( this.pop() );
+	}
+	return attackedPositions;
+}
 /*
 	/Prototype Enhancements
 */
