@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 	this.Icons = ({
 		 100: {
@@ -901,4 +900,3 @@ console.log("Rects:");
 console.log(u1.Rects);
 u1.MoveRight();
 */
->>>>>>> 3a2c7a93a0ddd224d9963232212850f2da16948e
