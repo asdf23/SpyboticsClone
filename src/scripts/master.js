@@ -1508,6 +1508,14 @@ Array.prototype.playerMove = function(NewPosition, MaxLength) {
 	}
 	return this;
 };
+Array.prototype.playerMove2 = function(NewPosition, MaxLength) {
+	this.unshift(NewPosition);
+	if( this.length > MaxLength ) {
+		return this.pop();
+	} else {
+		return null;
+	}
+};
 Array.prototype.acceptAttack = function(AttackStrength) {
 	var attackedPositions = new Array();
 	for(var i=0; i<AttackStrength; i++) {
