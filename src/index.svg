@@ -22,6 +22,8 @@
 	<svg:script xlink:href="scripts/master.js" />
 	<svg:script xlink:href="scripts/levels.js" />
 	<svg:script xlink:href="scripts/icons.js" />
+	<svg:script xlink:href="scripts/IconFactory.js" />
+	<svg:script xlink:href="scripts/GameBoardExtension.js" />
 	<defs>
 		<!-- 
 			  _____                    

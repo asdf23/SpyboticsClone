@@ -134,6 +134,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		,DelayAttack: 400
 		,DelayMove: 200
 		//Static(ish) Methods
+//Delete me
 		,PointState: function(Point) {
 			var rect = gameBoardLayer.getElementsByTagName("rect")[Point];
 			var foundOccupant = false;
@@ -155,6 +156,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				,occupiedBy: occupant
 			});
 		}
+//Delete me
 		,PointIsValid: function(Point) {
 			if(Point != null) {
 				return ((Point >=0) && (Point < (gameBoardSpacesHigh * gameBoardSpacesWide )));
