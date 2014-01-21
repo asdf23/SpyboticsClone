@@ -19,6 +19,8 @@ var padding = 4;
 var squareSize = null;
 var gameBoardSpacesHigh = 12;
 var gameBoardSpacesWide = 16;
+window.gameBoardSpacesHigh = 12;
+window.gameBoardSpacesWide = 16;
 var deviceIsTouchEnabled = false;
 
 //Font sizes
