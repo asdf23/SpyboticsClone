@@ -133,163 +133,11 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		//Static(ish) Properties
 		,DelayAttack: 400
 		,DelayMove: 200
-		//Static(ish) Methods
-//Delete me
-		,PointState: function(Point) {
-			var rect = gameBoardLayer.getElementsByTagName("rect")[Point];
-			var foundOccupant = false;
-			var occupant = null;
-			for(var i=0; (i<window.enemies.length) && (!foundOccupant); i++) {
-				foundOccupant = (window.enemies[i].Position.indexOf(Point) >= 0);
-				if(foundOccupant) {
-					occupant = window.enemies[i];
-				}
-			}
-			for(var i=0; (i<window.players.length) && (!foundOccupant); i++) {
-				foundOccupant = (window.players[i].Position.indexOf(Point) >= 0);
-				if(foundOccupant) {
-					occupant = window.players[i];
-				}
-			}
-			return ({
-				 isVisible: !rect.hasAttribute("display")
-				,occupiedBy: occupant
-			});
-		}
-//Delete me
-		,PointIsValid: function(Point) {
-			if(Point != null) {
-				return ((Point >=0) && (Point < (gameBoardSpacesHigh * gameBoardSpacesWide )));
-			} else {
-				return false;
-			}
-		}
-		,PointAbovePoint: function(Point) {
-			if(Point == null) {
-				return null;
-			} else {
-				Point -= gameBoardSpacesWide;
-				if(this.PointIsValid(Point)) {
-					return Point;
-				} else {
-					return null;
-				}
-			}
-		}
-		,PointBelowPoint: function(Point) {
-			if(Point == null) {
-				return null;
-			} else {
-				Point += gameBoardSpacesWide;
-				if(this.PointIsValid(Point)) {
-					return Point;
-				} else {
-					return null;
-				}
-			}
-		}
-		,RowOfPoint: function(Point) {
-			return parseInt((Point / gameBoardSpacesWide), 10);
-		}
-		,ColumnOfPoint: function(Point) {
-			return Point % gameBoardSpacesWide;
-		}
-		,PointLeftToPoint: function(Point) {
-			if(Point == null) {
-				return null;
-			} else {
-				var originalRow = this.RowOfPoint(Point);
-				Point -= 1;
-				var newRow = this.RowOfPoint(Point);
-				if(originalRow == newRow) {
-					return Point;
-				} else {
-					return null;
-				}
-			}
-		}
-		,PointRightToPoint: function(Point) {
-			if(Point == null) {
-				return null;
-			} else {
-				var originalRow = this.RowOfPoint(Point);
-				Point += 1;
-				var newRow = this.RowOfPoint(Point);
-				if(originalRow == newRow) {
-					return Point;
-				} else {
-					return null;
-				}
-			}
-		}
-		,PointUpLeftToPoint: function(Point) {
-			Point = this.PointAbovePoint(Point);
-			if(Point != null) {
-				return this.PointLeftToPoint(Point);
-			} else {
-				return null;
-			}
-		}
-		,PointDownLeftToPoint: function(Point) {
-			Point = this.PointBelowPoint(Point);
-			if(Point != null) {
-				return this.PointLeftToPoint(Point);
-			} else {
-				return null;
-			}
-		}
-		,PointUpRightToPoint: function(Point) {
-			Point = this.PointAbovePoint(Point);
-			if(Point != null) {
-				return this.PointRightToPoint(Point);
-			} else {
-				return null;
-			}
-		}
-		,PointDownRightToPoint: function(Point) {
-			Point = this.PointBelowPoint(Point);
-			if(Point != null) {
-				return this.PointRightToPoint(Point);
-			} else {
-				return null;
-			}
-		}
-		,GetPositionData: function(Point) {
-			var rect = gameBoardLayer.getElementsByTagName("rect")[Point];
-			var boxes = rect.getClientRects();
-			var box = null;
-			if(boxes.length) {
-				box = ({
-					 x: boxes[0].left
-					,y: boxes[0].top
-					,actualX: boxes[0].left
-					,actualY: boxes[0].top
-					,width: boxes[0].width
-					,height: boxes[0].height
-					,transform: null
-				});
-			} else {
-				//more expensive
-				box = ({
-					 x: parseFloat(rect.getAttribute("x"))
-					,y: parseFloat(rect.getAttribute("y"))
-					,actualX: parseFloat(rect.getAttribute("x"))
-					,actualY: parseFloat(rect.getAttribute("y"))
-					,width: parseFloat(rect.getAttribute("width"))
-					,height: parseFloat(rect.getAttribute("height"))
-					,transform: null
-				});
-			}
-			var scale = squareSize / 100;
-			box.x = ((document.defaultView.innerWidth*(1/scale)) / (document.defaultView.innerWidth / box.x));
-			box.y = ((document.defaultView.innerHeight*(1/scale)) / (document.defaultView.innerHeight / box.y));
-			box.transform = "scale(" + scale.toString() + "," + scale.toString() + ")";
-			return box;
-		}
 	});
 	this.createIcon = function(IconIndex, InitalizePositions, RegisterIcon) {
 		var superClass = this.Icons;
-		var rectPosition = this.Icons.GetPositionData(InitalizePositions[0]);
+		//var rectPosition = this.Icons.GetPositionData(InitalizePositions[0]);
+		var rectPosition = gameBoardLayer.RectData[InitalizePositions[0]];
 		var icon = document.createElementNS(svgNS, "use");
 		icon.setAttributeNS(xlinkNS, "href", "#" + this.Icons[IconIndex].SVGName );
 		icon.setAttribute("x", rectPosition.x);
@@ -304,7 +152,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.Selected = null;
 		icon.CompletedMove = null;
 		for(var i=1; i<InitalizePositions.length; i++) {
-			var rectPosition = GetPositionData(InitalizePositions[i]);
+			//var rectPosition = GetPositionData(InitalizePositions[i]);
+			var rectPosition = gameBoardLayer.RectData[InitalizePositions[i]];
 			var rect = document.createElementNS(svgNS, "use");
 			rect.setAttributeNS(xlinkNS, "href", "#" + this.Icons[icon_occupied].SVGName);
 			rect.setAttribute("x", rectPosition.x);
@@ -334,22 +183,22 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				var newPoint = null;
 				switch(direction) {
 					case "Up":
-						newPoint = superClass.PointAbovePoint(this.Position[0]);
+						newPoint = gameBoardLayer.PointAbovePoint(this.Position[0], 1);
 						break;
 					case "Down":
-						newPoint = superClass.PointBelowPoint(this.Position[0]);
+						newPoint = gameBoardLayer.PointBelowPoint(this.Position[0], 1);
 						break;
 					case "Left":
-						newPoint = superClass.PointLeftToPoint(this.Position[0]);
+						newPoint = gameBoardLayer.PointLeftToPoint(this.Position[0], 1);
 						break;
 					case "Right":
-						newPoint = superClass.PointRightToPoint(this.Position[0]);
+						newPoint = gameBoardLayer.PointRightToPoint(this.Position[0], 1);
 						break;
 					default:
 						console.log("invalid direction: " + direction.toString());
 				}
 				if(newPoint != null) {
-					var pointState = superClass.PointState(newPoint);
+					var pointState = gameBoardLayer.PointState(newPoint);
 					if( pointState.isVisible && (pointState.occupiedBy == null) ) {
 						return true;
 					} else {
@@ -380,27 +229,29 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var newPoint;
 			switch(direction) {
 				case "Up":
-					newPoint = superClass.PointAbovePoint(this.Position[0]);
+					newPoint = gameBoardLayer.PointAbovePoint(this.Position[0], 1);
 					break;
 				case "Down":
-					newPoint = superClass.PointBelowPoint(this.Position[0]);
+					newPoint = gameBoardLayer.PointBelowPoint(this.Position[0], 1);
 					break;
 				case "Left":
-					newPoint = superClass.PointLeftToPoint(this.Position[0]);
+					newPoint = gameBoardLayer.PointLeftToPoint(this.Position[0], 1);
 					break;
 				case "Right":
-					newPoint = superClass.PointRightToPoint(this.Position[0]);
+					newPoint = gameBoardLayer.PointRightToPoint(this.Position[0], 1);
 					break;
 				default:
 					console.log("invalid direction: " + direction.toString());
 			}
-			if( superClass.PointIsValid(newPoint) ) { //prevent off board moves but not overlapping enemies
-				var newPositionData = superClass.GetPositionData(newPoint);
+			if( gameBoardLayer.PointIsValid(newPoint) ) { //prevent off board moves but not overlapping enemies
+				//var newPositionData = superClass.GetPositionData(newPoint);
+				var newPositionData = gameBoardLayer.RectData[newPoint];
 				var removeRectPosition = this.Position.playerMove2(newPoint, this.IconData.MaxSize);
 				icon.setAttribute("x", newPositionData.x);
 				icon.setAttribute("y", newPositionData.y);
 				for(var i=1; i<this.Position.length; i++) {
-					var positionData = superClass.GetPositionData(this.Position[i])
+					//var positionData = superClass.GetPositionData(this.Position[i]);
+					var positionData = gameBoardLayer.RectData[this.Position[i]];
 					if( this.Rects.length >= i ) {
 						if(this.Rects[i-1].Position != this.Position[i]) {
 							this.Rects[i-1].Position = this.Position[i];
@@ -433,7 +284,10 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.MakeMoves = function(moveList) {
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
+console.log("waiting for");
+console.log(superClass.DelayMove + timingDelay);
 				setTimeout(function(a, b) {
+console.log("executing"); //IS THIS SLOW??
 					a.MoveOne(b);
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
@@ -472,7 +326,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var timingDelay = 0;
 			for(var i=0; ((i<AttackStrength) && (this.Position.length > 0) && (!iconIsErased)); i++) {
 				var attackPoint = this.Position.pop();
-				var attackPositionData = superClass.GetPositionData(attackPoint);
+				//var attackPositionData = superClass.GetPositionData(attackPoint);
+				var attackPositionData = gameBoardLayer.RectData[attackPoint];
 				var nodeToDestroy = null;
 				if(this.Rects.length > 0) {
 					nodeToDestroy = this.Rects.pop();

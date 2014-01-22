@@ -161,6 +161,27 @@ function GameBoardExtension(gameBoardLayer) {
 		}
 		return results;
 	};
+	gameBoardLayer.PointState = function(Point) {
+		var rect = gameBoardLayer.getElementsByTagName("rect")[Point];
+		var foundOccupant = false;
+		var occupant = null;
+		for(var i=0; (i<window.enemies.length) && (!foundOccupant); i++) {
+			foundOccupant = (window.enemies[i].Position.indexOf(Point) >= 0);
+			if(foundOccupant) {
+				occupant = window.enemies[i];
+			}
+		}
+		for(var i=0; (i<window.players.length) && (!foundOccupant); i++) {
+			foundOccupant = (window.players[i].Position.indexOf(Point) >= 0);
+			if(foundOccupant) {
+				occupant = window.players[i];
+			}
+		}
+		return ({
+			 isVisible: !rect.hasAttribute("display")
+			,occupiedBy: occupant
+		});
+	};
 	gameBoardLayer.WhatsHere = function(Point) {
 		var tile = this.getElementsByTagName("rect")[Point];
 		var results = 0;
@@ -268,8 +289,11 @@ function GameBoardExtension(gameBoardLayer) {
 }
 /*
 var gameBoard = new GameBoardExtension($elem("gameBoard"));
-gameBoard.ResetSizeForScreen(42, 600, 5);
+gameBoard.ResetSizeForScreen(squareSize, windowWidth, document.defaultView.innerWidth, document.defaultView.innerHeight, padding);
 console.log(gameBoard.RectData[40]);
 console.log(gameBoard.Filters);
-
+var iconFactory = new IconsFactory( $elem("layer_gamePieces") , gameBoard, true );
+var u1 = iconFactory.createIcon(0, [(16*5)], true);
+u1.MakeMoves(["Right","Up"]);
+u1.BeAttacked(2);
 */
