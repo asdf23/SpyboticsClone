@@ -446,19 +446,48 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.ShowMoveablePlaces = function() {
+			var depthMarker = new Array();
 			var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.IconData.Move, ({FilterType: "NonMoveable", FilterSubType: this }));
 			var moveablePlaces = this.getCardinalPoints(this.Position[0]);
 			moveablePlaces.remove(badPoints);
 			for(var i=1; i<this.IconData.Move; i++) {
 				var newPoints = null;
 				var moveablePlacesLength = moveablePlaces.length;
+				depthMarker.push(moveablePlacesLength);
 				for(var k=0; k<moveablePlacesLength; k++) {
 					newPoints = this.getCardinalPoints(moveablePlaces[k]);
 					newPoints.remove(badPoints);
 					moveablePlaces.merge(newPoints);
 				}
 			}
-			debug_markArrayInMap(this.Position[0], moveablePlaces);
+			moveablePlaces.remove(this.Position[0]);
+			var iconSet = 0;
+			for(var j=0; j<moveablePlaces.length; j++) {
+				var iconIndex = icon_moveable_4;
+				switch(iconSet) {
+					case 0:
+						iconIndex = icon_moveable_0;
+						break;
+					case 1:
+						iconIndex = icon_moveable_1;
+						break;
+					case 2:
+						iconIndex = icon_moveable_2;
+						break;
+					case 3:
+						iconIndex = icon_moveable_3;
+						break;
+					default:
+						iconIndex = icon_moveable_4;
+						break;
+				}
+				var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
+				iconFactoryInstance.createIcon(iconIndex, [moveablePlaces[j]], true);
+				delete iconFactoryInstance;
+				if( (j+1) >= depthMarker[iconSet] ) {
+					iconSet++;
+				}
+			}
 		};
 		icon.getCardinalPoints = function(Point) {
 			return [
