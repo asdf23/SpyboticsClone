@@ -380,6 +380,7 @@ console.log(gameBoard.RectData[40]);
 console.log(gameBoard.Filters);
 var iconFactory = new IconsFactory( $elem("layer_gamePieces") , gameBoard, true );
 var u1 = iconFactory.createIcon(0, [(16*5)], true);
-u1.ChainMoves(["Right","Up"]);
+u1.ChainMoves(["Right","Right", "Right", "Right", "Right", "Right"]);
 u1.BeAttacked(2);
+u1.ShowMoveablePlaces();
 */
