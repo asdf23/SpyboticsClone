@@ -10,6 +10,16 @@ Array.prototype.playerMove2 = function(NewPosition, MaxLength) {
 		return null;
 	}
 };
+Array.prototype.merge = function(val) {
+	var uniqueValues = new Array();
+	for(var i=0; i<val.length; i++) {
+		if( this.indexOf(val[i]) == -1 ) {
+			this.push(val[i]);
+			uniqueValues.push(val[i]);
+		}
+	}
+	return uniqueValues;
+};
 Array.prototype.actualSize = function() { // Unique lenght
 	var o = {}, i, l = this.length, r = [];
 	for(i=0; i<l;i+=1) {
@@ -20,6 +30,15 @@ Array.prototype.actualSize = function() { // Unique lenght
 	}
 	return r.length;
 };
+Array.prototype.intersect = function(b) {
+	var results = new Array();
+	for(var i=0; i<this.length; i++) {
+		if(b.indexOf(this[i]) >= 0) {
+			results.push(this[i]);
+		}
+	}
+	return results;
+}
 var icon_load = 100;
 var icon_selected = 101;
 var icon_moved = 102;
@@ -281,13 +300,10 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				console.log("invalid move - cannot move " + direction);
 			}
 		};
-		icon.MakeMoves = function(moveList) {
+		icon.ChainMoves = function(moveList) {
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
-console.log("waiting for");
-console.log(superClass.DelayMove + timingDelay);
 				setTimeout(function(a, b) {
-console.log("executing"); //IS THIS SLOW??
 					a.MoveOne(b);
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
@@ -370,7 +386,27 @@ console.log("executing"); //IS THIS SLOW??
 			}
 		};
 		icon.ShowMoveablePlaces = function() {
-			console.log("requires game board functionality");
+			var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.IconData.Move, ({FilterType: "NonMoveable", FilterSubType: this }));
+			var moveablePlaces = this.getCardinalPoints(this.Position[0]);
+			moveablePlaces.remove(badPoints);
+			for(var i=1; i<this.IconData.Move; i++) {
+				var newPoints = null;
+				var moveablePlacesLength = moveablePlaces.length;
+				for(var k=0; k<moveablePlacesLength; k++) {
+					newPoints = this.getCardinalPoints(moveablePlaces[k]);
+					newPoints.remove(badPoints);
+					moveablePlaces.merge(newPoints);
+				}
+			}
+			debug_markArrayInMap(this.Position[0], moveablePlaces);
+		};
+		icon.getCardinalPoints = function(Point) {
+			return [
+				 gameBoardLayer.PointAbovePoint(Point, 1)
+				,gameBoardLayer.PointBelowPoint(Point, 1)
+				,gameBoardLayer.PointLeftToPoint(Point, 1)
+				,gameBoardLayer.PointRightToPoint(Point, 1)
+			];
 		};
 		icon.ShowAttackablePlaces = function() {
 			console.log("requires game board functionality");

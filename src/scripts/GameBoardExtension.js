@@ -1,10 +1,4 @@
 function GameBoardExtension(gameBoardLayer) {
-	gameBoardLayer.Filters = ({
-		 Visible: 1
-		,Enemies: 2
-		,Players: 4
-		//,Utiilty: 8
-	});
 	gameBoardLayer.SquareSize = null;
 	gameBoardLayer.Scale = null;
 	gameBoardLayer.RectData = new Array();
@@ -105,58 +99,150 @@ function GameBoardExtension(gameBoardLayer) {
 			return null;
 		}
 	};
+	/*
+		Filter:
+			({
+				FilterType:
+				FilterSubType:
+			})
+			
+			Visible	true/false
+			MoveableEnemyPerspective Self
+			MoveablePlayerPerspective Self
+			HittableEnemyPerspective
+			HittablePlayerPerspective
+	*/
 	gameBoardLayer.BranchOut = function(PointOrigin, Width, Filter) {
 		var results = new Array();
 		for(var i=1; i<=Width; i++) {
 			var a = this.PointLeftToPoint(PointOrigin, i);
-			if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+			if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 				results.push(a);
 			}
 			a = this.PointRightToPoint(PointOrigin, i);
-			if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+			if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 				results.push(a);
 			}
 			a = this.PointAbovePoint(PointOrigin, i);
-			if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+			if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 				results.push(a);
 			}
 			a = this.PointBelowPoint(PointOrigin, i);
-			if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+			if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 				results.push(a);
 			}
 			for(var j=0; j<=Width-i; j++) {
 				a = this.PointDownLeftToPoint(PointOrigin, i, j);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointDownRightToPoint(PointOrigin, i, j);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointUpRightToPoint(PointOrigin, j, i);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointDownRightToPoint(PointOrigin, j, i);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointUpLeftToPoint(PointOrigin, i, j);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointUpRightToPoint(PointOrigin, i, j);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointUpLeftToPoint(PointOrigin, j, i);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
 				a = this.PointDownLeftToPoint(PointOrigin, j, i);
-				if((!isNaN(a)) && (results.indexOf(a) == -1)) {
+				if((!isNaN(a)) && (a != null) && (results.indexOf(a) == -1)) {
 					results.push(a);
 				}
+			}
+		}
+		if(Filter != null) {
+			
+			if((Filter.FilterSubType === true) || (Filter.FilterType == "MoveableEnemyPerspective") || (Filter.FilterType == "MoveablePlayerPerspective") || (Filter.FilterType == "HittableEnemyPerspective") || (Filter.FilterType == "HittablePlayerPerspective") ) {
+				var tiles = this.getElementsByTagName("rect");
+				for(var i=0; i<results.length; i++) {
+					if( tiles[ results[i] ].hasAttribute("display") ) {
+						results.remove( results[i] );
+					}
+				}
+			} else if((Filter.FilterSubType === false)) {
+				console.log("warning removeing all hidden tiles may not have the effect you would presume");
+				var tiles = this.getElementsByTagName("rect");
+				for(var i=0; i<results.length; i++) {
+					if( ! tiles[ results[i] ].hasAttribute("display") ) {
+						results.remove( results[i] );
+					}
+				}
+			}
+			
+			if(Filter.FilterType == "MoveableEnemyPerspective") {
+				for(var i=0; i<window.enemies.length; i++) {
+					if(Filter.FilterSubType != window.enemies[i]) {
+						results.remove( window.enemies[i].Position );
+					}
+				}
+				for(var i=0; i<window.players.length; i++) {
+					results.remove( window.players[i].Position );
+				}
+			}
+			
+			if(Filter.FilterType == "MoveablePlayerPerspective") {
+				for(var i=0; i<window.enemies.length; i++) {
+					results.remove( window.enemies[i].Position );
+				}
+				for(var i=0; i<window.players.length; i++) {
+					if(Filter.FilterSubType != window.players[i]) {
+						results.remove( window.players[i].Position );
+					}
+				}
+			}
+			
+			if(Filter.FilterType == "NonMoveable") {
+				var resultsCopy = results.clone();
+				var allOccupied = new Array();
+				for(var i=0; i<window.enemies.length; i++) {
+					if(Filter.FilterSubType != window.enemies[i]) {
+						allOccupied.merge( window.enemies[i].Position );
+					}
+				}
+				for(var i=0; i<window.players.length; i++) {
+					if(Filter.FilterSubType != window.players[i]) {
+						allOccupied.merge( window.players[i].Position );
+					}
+				}
+				results = allOccupied.intersect(results);
+				var tiles = this.getElementsByTagName("rect");
+				for(var i=0; i<resultsCopy.length; i++) {
+					if( tiles[resultsCopy[i]].hasAttribute("display") ) {
+						results.push(resultsCopy[i]);
+					}
+				}
+			}
+			
+			if(Filter.FilterType == "HittableEnemyPerspective") {
+				var allPlayers = new Array();
+				for(var i=0; i<window.players.length; i++) {
+					allPlayers.merge( window.players[i].Position );
+				}
+				results = allPlayers.intersect(results);
+			}
+			
+			if(Filter.FilterType == "HittablePlayerPerspective") {
+				var allEnemies = new Array();
+				for(var i=0; i<window.enemies.length; i++) {
+					allEnemies.merge( window.enemies[i].Position );
+				}
+				results = allEnemies.intersect(results);
 			}
 		}
 		return results;
@@ -294,6 +380,6 @@ console.log(gameBoard.RectData[40]);
 console.log(gameBoard.Filters);
 var iconFactory = new IconsFactory( $elem("layer_gamePieces") , gameBoard, true );
 var u1 = iconFactory.createIcon(0, [(16*5)], true);
-u1.MakeMoves(["Right","Up"]);
+u1.ChainMoves(["Right","Up"]);
 u1.BeAttacked(2);
 */
