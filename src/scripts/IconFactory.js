@@ -308,7 +308,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.CanMoveRight = function() {
 			return this.CanMoveDirection("Right");
 		};
-		icon.MoveOne = function(direction) {
+		icon.MoveOne = function(direction, callback) {
 			var newPoint;
 			switch(direction) {
 				case "Up":
@@ -359,6 +359,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					var rect = this.Rects.pop();
 					rect.parentNode.removeChild(rect);
 				}
+				if(callback != null) {
+					callback(this);
+				}
 				gamePiecesLayer.appendChild(this);
 			} else {
 				console.log("invalid move - cannot move " + direction);
@@ -368,31 +371,31 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
 				setTimeout(function(a, b) {
-					a.MoveOne(b);
+					a.MoveOne(b, null);
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
 				timingDelay += superClass.DelayMove;
 			}
 		};
-		icon.MoveUp = function() {
-			setTimeout(function(a) {
-				a.MoveOne("Up");
-			}, superClass.DelayMove, this);
+		icon.MoveUp = function(callback) {
+			setTimeout(function(a, b) {
+				a.MoveOne("Up", b);
+			}, superClass.DelayMove, this, callback);
 		};
-		icon.MoveDown = function() {
-			setTimeout(function(a) {
-				a.MoveOne("Down");
-			}, superClass.DelayMove, this);
+		icon.MoveDown = function(callback) {
+			setTimeout(function(a, b) {
+				a.MoveOne("Down", b);
+			}, superClass.DelayMove, this, callback);
 		};
-		icon.MoveLeft = function() {
-			setTimeout(function(a) {
-				a.MoveOne("Left");
-			}, superClass.DelayMove, this);
+		icon.MoveLeft = function(callback) {
+			setTimeout(function(a, b) {
+				a.MoveOne("Left", b);
+			}, superClass.DelayMove, this, callback);
 		};
-		icon.MoveRight = function() {
-			setTimeout(function(a) {
-				a.MoveOne("Right");
-			}, superClass.DelayMove, this);
+		icon.MoveRight = function(callback) {
+			setTimeout(function(a, b) {
+				a.MoveOne("Right", b);
+			}, superClass.DelayMove, this, callback);
 		};
 		icon.MakeMove = function() {
 			console.log("calculating best move");
@@ -445,39 +448,52 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				timingDelay += superClass.DelayAttack;
 			}
 		};
+		icon.resetForAnotherMove = function(c) {
+			console.log("resetForAnotherMove()");
+			var callShowMoveablePlaces = false;
+			c.RemainingMoves--;
+			if(c.RemainingMoves > 0) {
+				callShowMoveablePlaces = true;
+			}
+			if(c.MovementIndicators != null) {
+				for(var i=0; i<c.MovementIndicators.length; i++) {
+					c.MovementIndicators[i].parentNode.removeChild(c.MovementIndicators[i]);
+				}
+			}
+			c.MovementIndicators = new Array();
+			if(callShowMoveablePlaces) {
+				c.ShowMoveablePlaces();
+			}
+		};
 		icon.userIndicatedMove = function(Point, IconToMove) {
 			console.log("der movin: " + Point.toString());
 			if( Point == (this.Position[0] + 1) ) {
 				return function() {
-					IconToMove.MoveRight();
+					IconToMove.MoveRight(this.resetForAnotherMove);
 				};
 			} else if( Point == (this.Position[0] + 16) ) {
 				return function() {
-					IconToMove.MoveDown();
+					IconToMove.MoveDown(this.resetForAnotherMove);
 				};
 			} else if( Point == (this.Position[0] - 1) ) {
 				return function() {
-					IconToMove.MoveLeft();
+					IconToMove.MoveLeft(this.resetForAnotherMove);
 				};
 			} else if( Point == (this.Position[0] - 16) ) {
 				return function() {
-					IconToMove.MoveUp();
+					IconToMove.MoveUp(this.resetForAnotherMove);
 				};
 			}
 		};
 		icon.ShowMoveablePlaces = function() {
-			if(this.MovementIndicators != null) {
-				for(var i=0; i<this.MovementIndicators.length; i++) {
-					this.MovementIndicators[i].parentNode.removeChild(this.MovementIndicators[i]);
-				}
-			} else {
+			if(this.MovementIndicators == null) {
 				this.MovementIndicators = new Array();
 			}
 			var depthMarker = new Array();
-			var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.IconData.Move, ({FilterType: "NonMoveable", FilterSubType: this }));
+			var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.RemainingMoves, ({FilterType: "NonMoveable", FilterSubType: this }));
 			var moveablePlaces = this.getCardinalPoints(this.Position[0]);
 			moveablePlaces.remove(badPoints);
-			for(var i=1; i<this.IconData.Move; i++) {
+			for(var i=1; i<this.RemainingMoves; i++) {
 				var newPoints = null;
 				var moveablePlacesLength = moveablePlaces.length;
 				depthMarker.push(moveablePlacesLength);
