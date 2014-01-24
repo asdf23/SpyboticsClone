@@ -325,6 +325,7 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.LoadLevel = function(LevelID) {
 		window.enemies = new Array();
 		window.players = new Array();
+		window.utilities = new Array();
 		var levelMap = Levels[LevelID];
 		var tiles = gameBoardLayer.getElementsByTagName("rect");
 		for(var i=0; i<levelMap.length; i++) {

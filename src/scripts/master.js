@@ -1032,6 +1032,7 @@ function $attribNS(id, namespace, name, value) {
 function loadLevel(LevelID) {
 	window.enemies = new Array();
 	window.players = new Array();
+	window.utilities = new Array();
 	var levelMap = Levels[LevelID].Map;
 	var tiles = $elem("gameBoard").getElementsByTagName("rect");
 	for(var i=0; i<levelMap.length; i++) {
