@@ -397,10 +397,53 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				a.MoveOne("Right", b);
 			}, superClass.DelayMove, this, callback);
 		};
-		icon.MakeMove = function() {
-			console.log("calculating best move");
+
+		icon.AutomateMove = function() {
+			console.log("calculating best move for: " + this.IconData.AI);
+			switch(this.IconData.AI) {
+				default:
+					console.log("This enemy's AI has not been implemented: " + Icons[window.enemies[i].IconIndex].AI);
+					//Some players may try to use the strongest attack, furthest attack
+					break;
+				case "AttackInRangeOrMoveToFirstPlayerYX":
+					if(this.Target == null) {
+						var targetedPlayer = null;
+						var topLeftMostPosition = -1;
+						for(var i=0; i<window.players.length; i++) {
+							if((topLeftMostPosition == -1) || (window.players[i].Position[0] < topLeftMostPosition)) {
+								topLeftMostPosition = window.players[i].Position[0];
+								targetedPlayer = window.players[i];
+							}
+						}
+						this.Target = targetedPlayer;
+					}
+					if( this.Target == null ) {
+						this.ShowCompletedMove();
+					} else {
+						var attack = this.IconData.Attack[0];
+						var enemySight = gameBoardLayer.BranchOut(this.Position[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
+						this.Target = gameBoardLayer.GetIconAtPoint(enemySight[0]); //forget the goal lets hit the low hanging fruit
+						if(enemySight.length == 0) {
+							//Find closest point of target
+							var closestPoint = -1;
+							var targetPosition = null;
+							for(var i=0; i<this.Target.Position.length; i++) {
+								if( (closestPoint == -1) || (closestPoint < gameBoardLayer.DistanceBetweenPoints(this.Position[0], this.Target.Position[i])) ) {
+									closestPoint = gameBoardLayer.DistanceBetweenPoints(this.Position[0], this.Target.Position[i]);
+									targetPosition = this.Target.Position[i];
+								}
+							}
+							console.log("desired destination: " + targetPosition.toString());
+							this.ShowCompletedMove();
+						} else {
+							this.Target.BeAttacked(attack.Attack);
+							this.ShowCompletedMove();
+						}
+					}
+					break;
+			}
 		};
-		icon.BeAttacked = function(AttackStrength) {
+		icon.BeAttacked = function(AttackStrength) { //TODO: error attacks are not targeted, always end shows hit when that may be out of range of attack
 			var iconIsErased = false;
 			var timingDelay = 0;
 			for(var i=0; ((i<AttackStrength) && (this.Position.length > 0) && (!iconIsErased)); i++) {
@@ -449,7 +492,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.resetForAnotherMove = function(c) {
-			console.log("resetForAnotherMove()");
 			var callShowMoveablePlaces = false;
 			c.RemainingMoves--;
 			if(c.RemainingMoves > 0) {
@@ -466,7 +508,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.userIndicatedMove = function(Point, IconToMove) {
-			console.log("der movin: " + Point.toString());
 			if( Point == (this.Position[0] + 1) ) {
 				return function() {
 					IconToMove.MoveRight(this.resetForAnotherMove);

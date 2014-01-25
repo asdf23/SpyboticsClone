@@ -99,6 +99,11 @@ function GameBoardExtension(gameBoardLayer) {
 			return null;
 		}
 	};
+	gameBoardLayer.DistanceBetweenPoints = function(Point1, Point2) {
+		var d1 = Math.abs(this.ColumnOfPoint(Point1) - this.ColumnOfPoint(Point2));
+		var d2 = Math.abs(this.RowOfPoint(Point1) - this.RowOfPoint(Point2));
+		return d1 + d2;
+	};
 	/*
 		Filter:
 			({
@@ -322,6 +327,20 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.GetSquareData = function(Point) {
 		return this.RectData[Point];
 	};
+	gameBoardLayer.GetIconAtPoint = function(Point) {
+		var icon = null;
+		for(var i=0; (i<window.players.length) && (icon == null); i++) {
+			if(window.players[i].Position.indexOf(Point) >= 0) {
+				icon = window.players[i];
+			}
+		}
+		for(var i=0; (i<window.enemies.length) && (icon == null); i++) {
+			if(window.enemies[i].Position.indexOf(Point) >= 0) {
+				icon = window.enemies[i];
+			}
+		}
+		return icon;
+	};
 	gameBoardLayer.LoadLevel = function(LevelID) {
 		window.enemies = new Array();
 		window.players = new Array();
@@ -382,6 +401,11 @@ console.log(gameBoard.Filters);
 var iconFactory = new IconsFactory( $elem("layer_gamePieces") , gameBoard, true );
 var u1 = iconFactory.createIcon(0, [(16*5)], true);
 u1.ChainMoves(["Right","Right", "Right", "Right", "Right", "Right"]);
+
+var u2 = iconFactory.createIcon(2, [(16*5)], true);
+u2.ChainMoves(["Up","Right", "Right", "Right", "Right", "Right", "Right"]);
+u2.AutomateMove()
+
 u1.BeAttacked(2);
 u1.ShowMoveablePlaces();
 */
