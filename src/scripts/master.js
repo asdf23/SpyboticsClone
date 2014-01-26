@@ -1484,7 +1484,7 @@ function debug_markArrayInMap(specialMark, toMark) {
 	Prototype Enhancements
 */
 Array.prototype.remove = function(val) {
-	if(typeof(val) == "object") {
+	if((typeof(val) == "object") && (val.length)) {
 		for(var i=0; i<val.length; i++) {
 			var index = this.indexOf(val[i]);
 			if( index>=0 ) {

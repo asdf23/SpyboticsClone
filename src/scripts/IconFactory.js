@@ -20,7 +20,7 @@ Array.prototype.merge = function(val) {
 	}
 	return uniqueValues;
 };
-Array.prototype.actualSize = function() { // Unique lenght
+Array.prototype.actualSize = function() { // Unique length
 	var o = {}, i, l = this.length, r = [];
 	for(i=0; i<l;i+=1) {
 		o[this[i]] = this[i];
@@ -261,21 +261,25 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.CanMove = function() {
 			return ((!this.IconData.isUtility) && (this.IconData.Move > 0))
 		};
-		icon.CanMoveDirection = function(direction) {
+		icon.CanMoveDirection = function(direction, OverrideBasePosition) {
 			if( this.CanMove() ) {
+				var fromPosition = this.Position[0];
+				if( (OverrideBasePosition != null) && (!isNaN(parseInt(OverrideBasePosition, 10))) ) {
+					fromPosition = parseInt(OverrideBasePosition, 10);
+				}
 				var newPoint = null;
 				switch(direction) {
 					case "Up":
-						newPoint = gameBoardLayer.PointAbovePoint(this.Position[0], 1);
+						newPoint = gameBoardLayer.PointAbovePoint(fromPosition, 1);
 						break;
 					case "Down":
-						newPoint = gameBoardLayer.PointBelowPoint(this.Position[0], 1);
+						newPoint = gameBoardLayer.PointBelowPoint(fromPosition, 1);
 						break;
 					case "Left":
-						newPoint = gameBoardLayer.PointLeftToPoint(this.Position[0], 1);
+						newPoint = gameBoardLayer.PointLeftToPoint(fromPosition, 1);
 						break;
 					case "Right":
-						newPoint = gameBoardLayer.PointRightToPoint(this.Position[0], 1);
+						newPoint = gameBoardLayer.PointRightToPoint(fromPosition, 1);
 						break;
 					default:
 						console.log("invalid direction: " + direction.toString());
@@ -371,7 +375,24 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
 				setTimeout(function(a, b) {
-					a.MoveOne(b, null);
+					if(typeof(b) == "string") {
+						switch(b) {
+							default:
+								console.log("Chain move not implemented: " + b);
+								break;
+							case "Up":
+							case "Down":
+							case "Left":
+							case "Right":
+								a.MoveOne(b, null);
+								break;
+							case "Complete":
+								a.ShowCompletedMove();
+								break;
+						}
+					} else {
+						b.Icon.BeAttacked(b.Attack);
+					}
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
 				timingDelay += superClass.DelayMove;
@@ -397,13 +418,14 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				a.MoveOne("Right", b);
 			}, superClass.DelayMove, this, callback);
 		};
-
 		icon.AutomateMove = function() {
 			console.log("calculating best move for: " + this.IconData.AI);
+			//save off postion and commit at end
+			var tempPosition = this.Position.clone();
+			//Set target
 			switch(this.IconData.AI) {
 				default:
-					console.log("This enemy's AI has not been implemented: " + Icons[window.enemies[i].IconIndex].AI);
-					//Some players may try to use the strongest attack, furthest attack
+					console.log("This enemy's target AI has not been implemented: " + this.IconData.AI);
 					break;
 				case "AttackInRangeOrMoveToFirstPlayerYX":
 					if(this.Target == null) {
@@ -417,30 +439,113 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						}
 						this.Target = targetedPlayer;
 					}
-					if( this.Target == null ) {
+					break;
+			}
+			//Low hanging fruit Discard target for closer enemy (unless AI does not allow this)
+			var turnEnded = false;
+			switch(this.IconData.AI) {
+				default:
+					console.log("This enemy's LHF AI has not been implemented: " + Icons[window.enemies[i].IconIndex].AI);
+					break;
+				case "AttackInRangeOrMoveToFirstPlayerYX":
+					var attack = this.IconData.Attack[0];
+					var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
+					if(enemySight.length > 0) {
+						turnEnded = true;
+						var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
+						iconToAttack.BeAttacked(attack.Attack);
 						this.ShowCompletedMove();
-					} else {
-						var attack = this.IconData.Attack[0];
-						var enemySight = gameBoardLayer.BranchOut(this.Position[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
-						this.Target = gameBoardLayer.GetIconAtPoint(enemySight[0]); //forget the goal lets hit the low hanging fruit
-						if(enemySight.length == 0) {
-							//Find closest point of target
-							var closestPoint = -1;
-							var targetPosition = null;
-							for(var i=0; i<this.Target.Position.length; i++) {
-								if( (closestPoint == -1) || (closestPoint < gameBoardLayer.DistanceBetweenPoints(this.Position[0], this.Target.Position[i])) ) {
-									closestPoint = gameBoardLayer.DistanceBetweenPoints(this.Position[0], this.Target.Position[i]);
-									targetPosition = this.Target.Position[i];
-								}
-							}
-							console.log("desired destination: " + targetPosition.toString());
-							this.ShowCompletedMove();
-						} else {
-							this.Target.BeAttacked(attack.Attack);
-							this.ShowCompletedMove();
-						}
 					}
 					break;
+			}
+			if(!turnEnded) {
+				var moveList = new Array();
+				//Calculate move
+				switch(this.IconData.AI) {
+					default:
+						console.log("This enemy's move AI has not been implemented: " + Icons[window.enemies[i].IconIndex].AI);
+						break;
+					case "AttackInRangeOrMoveToFirstPlayerYX":
+						//find closest point in target
+						var closestPoint = -1;
+						var targetPosition = null;
+						for(var i=0; i<this.Target.Position.length; i++) {
+							var possiblyCloserDistance = gameBoardLayer.DistanceBetweenPoints(tempPosition[0], this.Target.Position[i]);
+							if( (closestPoint == -1) || (possiblyCloserDistance < closestPoint) ) {
+								closestPoint = possiblyCloserDistance;
+								targetPosition = this.Target.Position[i];
+							}
+						}
+						var targetRow = gameBoardLayer.RowOfPoint(targetPosition);
+						var targetColumn = gameBoardLayer.ColumnOfPoint(targetPosition);
+						var thisRow = gameBoardLayer.RowOfPoint(tempPosition[0]);
+						var thisColumn = gameBoardLayer.ColumnOfPoint(tempPosition[0]);
+						var attemptsToMove = 0;
+						while((this.RemainingMoves >0) && (attemptsToMove <= this.IconData.Move)) {
+							var successfultMove = false;
+							if(targetRow != thisRow) {
+								console.log("desire to move up/down");
+								var rowChangePossible = this.CanMoveDirection( targetRow < thisRow ? "Up" : "Down", tempPosition[0] );
+								if(rowChangePossible) {
+									console.log("Move " + ( targetRow < thisRow ? "Up" : "Down" ));
+									var newPoint = null;
+									if(targetRow < thisRow) {
+										newPoint = gameBoardLayer.PointAbovePoint(tempPosition[0], 1);
+										moveList.push("Up");
+									} else {
+										newPoint = gameBoardLayer.PointBelowPoint(tempPosition[0], 1);
+										moveList.push("Down");
+									}
+									tempPosition.playerMove2( newPoint );
+									successfultMove = true;
+									this.RemainingMoves--;
+								}
+							}
+							if(!successfultMove) {
+								if(targetColumn != thisColumn) {
+									console.log("desire to move left/right");
+									var columnChangePossible = this.CanMoveDirection( targetColumn < thisColumn ? "Left" : "Right", tempPosition[0] );
+									if(columnChangePossible) {
+										console.log("Move " + ( targetColumn < thisColumn ? "Left" : "Right" ));
+										var newPoint = null;
+										if(targetColumn < thisColumn) {
+											newPoint = gameBoardLayer.PointLeftToPoint(tempPosition[0], 1);
+											moveList.push("Left");
+										} else {
+											newPoint = gameBoardLayer.PointRightToPoint(tempPosition[0], 1);
+											moveList.push("Right");
+										}
+										tempPosition.playerMove2( newPoint );
+										successfultMove = true;
+										this.RemainingMoves--;
+									}
+								}
+							}
+							attemptsToMove++;
+						} // while calculation of each possible move
+						moveList.push("Complete");
+						break;
+				} //switch Calculate move
+				//After moves see if there is another attack availalbe
+				switch(this.IconData.AI) {
+					default:
+						console.log("This enemy's Final blow AI has not been implemented: " + this.IconData.AI);
+						break;
+					case "AttackInRangeOrMoveToFirstPlayerYX": //TODO: unknown crash around here...
+						var attack = this.IconData.Attack[0];
+						var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
+						if(enemySight.length > 0) {
+							var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
+							//iconToAttack.BeAttacked(attack.Attack);
+							moveList.push({
+								 Icon: iconToAttack
+								,Attack: attack.Attack
+							});
+						}
+						break;
+				}
+				console.log(moveList);
+				this.ChainMoves(moveList);
 			}
 		};
 		icon.BeAttacked = function(AttackStrength) { //TODO: error attacks are not targeted, always end shows hit when that may be out of range of attack
