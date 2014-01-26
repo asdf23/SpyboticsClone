@@ -372,6 +372,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.ChainMoves = function(moveList) {
+			this.ClearCompletedMove();
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
 				setTimeout(function(a, b) {
@@ -422,6 +423,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			console.log("calculating best move for: " + this.IconData.AI);
 			//save off postion and commit at end
 			var tempPosition = this.Position.clone();
+			this.ClearCompletedMove();
 			//Set target
 			switch(this.IconData.AI) {
 				default:
@@ -523,7 +525,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							}
 							attemptsToMove++;
 						} // while calculation of each possible move
-						moveList.push("Complete");
+						//movee to last 
+						//moveList.push("Complete");
 						break;
 				} //switch Calculate move
 				//After moves see if there is another attack availalbe
@@ -531,7 +534,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					default:
 						console.log("This enemy's Final blow AI has not been implemented: " + this.IconData.AI);
 						break;
-					case "AttackInRangeOrMoveToFirstPlayerYX": //TODO: unknown crash around here...
+					case "AttackInRangeOrMoveToFirstPlayerYX":
 						var attack = this.IconData.Attack[0];
 						var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
 						if(enemySight.length > 0) {
@@ -544,6 +547,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						}
 						break;
 				}
+				moveList.push("Complete");
 				console.log(moveList);
 				this.ChainMoves(moveList);
 			}
@@ -699,6 +703,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.ClearCompletedMove = function() {
 			if(this.CompletedMove != null) {
 				this.CompletedMove.parentNode.removeChild(this.CompletedMove);
+				this.CompletedMove = null;
 			}
 		};
 		icon.ShowCompletedMove = function() {
@@ -724,6 +729,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.ClearSelected = function() {
 			if(this.Selected != null) {
 				this.Selected.parentNode.removeChild(this.Selected);
+				this.Selected = null;
 			}
 		};
 		return icon;

@@ -346,11 +346,12 @@ function GameBoardExtension(gameBoardLayer) {
 		window.players = new Array();
 		window.utilities = new Array();
 		var levelMap = Levels[LevelID];
+		var iconFactoryInstance = new IconsFactory($elem("layer_gamePieces") , $elem("gameBoard"));
 		var tiles = gameBoardLayer.getElementsByTagName("rect");
-		for(var i=0; i<levelMap.length; i++) {
-			switch( levelMap.substr(i, 1) ) {
+		for(var i=0; i<levelMap.Map.length; i++) {
+			switch( levelMap.Map.substr(i, 1) ) {
 				default:
-					console.log(levelMap.substr(i, 1) + " not implemented");
+					console.log(levelMap.Map.substr(i, 1) + " not implemented");
 					break;
 				case "_":
 					tiles[i].setAttribute("display", "none");
@@ -358,38 +359,20 @@ function GameBoardExtension(gameBoardLayer) {
 				case "A":
 				case "B":
 					tiles[i].removeAttribute("display");
-					tiles[i].setAttribute("class", "tile" + levelMap.substr(i, 1));
+					tiles[i].setAttribute("class", "tile" + levelMap.Map.substr(i, 1));
 					break;
 				case "#":
-					var box = tiles[i].getClientRects()[0];
-//ici
-					var loadIcon = createIcon(icon_load, ({
-						 x: box.left
-						,y: box.top
-						,position: i
-					}));
-					loadIcon.addEventListener("click", loadProgram, false);
+					iconFactoryInstance.createIcon(icon_load, [i], true);
 					break;
 				case "1":
 				case "2":
 				case "3":
-					var iconIndex = parseInt(levelMap.substr(i, 1), 10);
-					var box = tiles[i].getClientRects()[0];
-					var icon = createIcon( iconIndex, ({
-						 x: box.left
-						,y: box.top
-						,position: i
-					}));
-					if( Icons[iconIndex].isEnemy ) {
-						window.enemies.push({
-							 IconIndex: iconIndex
-							,Position: [i]
-							,UseElement: icon
-						});
-					}
+					var iconIndex = parseInt(levelMap.Map.substr(i, 1), 10);
+					iconFactoryInstance.createIcon(iconIndex, [i], true);
 					break;
 			}
 		}
+		delete iconFactoryInstance;
 	};
 	return gameBoardLayer;
 }
