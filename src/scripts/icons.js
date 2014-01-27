@@ -8,6 +8,7 @@ var icon_moveable_1 = 106;
 var icon_moveable_2 = 107;
 var icon_moveable_3 = 108;
 var icon_moveable_4 = 109;
+var icon_attackable = 110;
 var icon_hack = 0;
 var icon_slingshot = 1;
 var icon_sentinel = 2;
@@ -116,6 +117,17 @@ var Icons = ({
 	,109: {
 		 Name: "Moveable0"
 		,SVGName: "icon-moveable-3"
+		,isEnemy: false
+		,isPlayer: false
+		,isUtility: true
+		,Move: 0
+		,MaxSize: 1
+		,Attack: null
+		,Alternate: null
+	}
+	,110: {
+		 Name: "Attackable"
+		,SVGName: "icon-attackable"
 		,isEnemy: false
 		,isPlayer: false
 		,isUtility: true

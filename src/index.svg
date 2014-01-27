@@ -400,6 +400,36 @@
 				 height="95"
 				 class="color1"/>
 		</g>
+		<g
+			 id="icon-attackable">
+			<rect
+				 x="0"
+				 y="0"
+				 width="100"
+				 height="100"
+				 class="icon" />
+			<rect
+				 x="2.5"
+				 y="2.5"
+				 width="95"
+				 height="95"
+				 class="color1" />
+			<path
+				 d="M 5,35 5,65 15,50 z"
+				 class="color2" />
+			<path
+				 d="M 95,35 95,65 85,50 z"
+				 class="color2" />
+			<path
+				 d="M 35,5 65,5 50,15 z"
+				 class="color2" />
+			<path
+				 d="M 35,95 65,95 50,85 z"
+				 class="color2" />
+			<path
+				 d="M 10,10 10,25 48,50 10,75 10,90 25,90 50,52 75,90 90,90 90,75 52,50 90,25 90,10 75,10 50,48 25,10 z"
+				 class="color3" />
+		</g>
 		<!-- 
 			      _______                    
 			     / /_   _|                   

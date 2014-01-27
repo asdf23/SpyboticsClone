@@ -58,7 +58,7 @@ function init(svgElem) {
 	$elem("buttonCancel").addEventListener("click", cancelButtonClick, false);
 
 	initGame();
-	loadLevel(0);
+	//loadLevel(0);
 	console.log("/init()");
 }
 function initGame() {

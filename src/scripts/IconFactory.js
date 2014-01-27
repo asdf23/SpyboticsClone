@@ -49,6 +49,7 @@ var icon_moveable_1 = 106;
 var icon_moveable_2 = 107;
 var icon_moveable_3 = 108;
 var icon_moveable_4 = 109;
+var icon_attackable = 110;
 var icon_hack = 0;
 var icon_slingshot = 1;
 var icon_sentinel = 2;
@@ -123,7 +124,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Alternate: null
 		}
 		,106: {
-			 Name: "Moveable0"
+			 Name: "Moveable1"
 			,SVGName: "icon-moveable-1"
 			,isEnemy: false
 			,isPlayer: false
@@ -134,7 +135,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Alternate: null
 		}
 		,107: {
-			 Name: "Moveable0"
+			 Name: "Moveable2"
 			,SVGName: "icon-moveable-2"
 			,isEnemy: false
 			,isPlayer: false
@@ -145,7 +146,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Alternate: null
 		}
 		,108: {
-			 Name: "Moveable0"
+			 Name: "Moveable3"
 			,SVGName: "icon-moveable-3"
 			,isEnemy: false
 			,isPlayer: false
@@ -156,8 +157,19 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Alternate: null
 		}
 		,109: {
-			 Name: "Moveable0"
+			 Name: "Moveable4"
 			,SVGName: "icon-moveable-4"
+			,isEnemy: false
+			,isPlayer: false
+			,isUtility: true
+			,Move: 0
+			,MaxSize: 1
+			,Attack: null
+			,Alternate: null
+		}
+		,110: {
+			 Name: "Attackable"
+			,SVGName: "icon-attackable"
 			,isEnemy: false
 			,isPlayer: false
 			,isUtility: true
@@ -231,6 +243,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.Selected = null;
 		icon.CompletedMove = null;
 		icon.MovementIndicators = null;
+		icon.AttackableIndicators = null;
 		icon.RemainingMoves = 0;
 		for(var i=1; i<InitalizePositions.length; i++) {
 			//var rectPosition = GetPositionData(InitalizePositions[i]);
@@ -465,7 +478,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				//Calculate move
 				switch(this.IconData.AI) {
 					default:
-						console.log("This enemy's move AI has not been implemented: " + Icons[window.enemies[i].IconIndex].AI);
+						console.log("This enemy's move AI has not been implemented: " + this.IconData.AI);
 						break;
 					case "AttackInRangeOrMoveToFirstPlayerYX":
 						//find closest point in target
@@ -654,6 +667,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				}
 			}
 			moveablePlaces.remove(this.Position[0]);
+			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
 			var iconSet = 0;
 			for(var j=0; j<moveablePlaces.length; j++) {
 				var iconIndex = icon_moveable_4;
@@ -676,18 +690,17 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						iconIndex = icon_moveable_4;
 						break;
 				}
-				var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
 				var mover = iconFactoryInstance.createIcon(iconIndex, [moveablePlaces[j]], false);
 				this.MovementIndicators.push(mover);
 				if(hookEvent) {
 					var iconToMove = this;
 					mover.addEventListener("click", iconToMove.userIndicatedMove(mover.Position[0], this), false);
 				}
-				delete iconFactoryInstance;
 				if( (j+1) >= depthMarker[iconSet] ) {
 					iconSet++;
 				}
 			}
+			delete iconFactoryInstance;
 		};
 		icon.getCardinalPoints = function(Point) {
 			return [
@@ -698,7 +711,27 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			];
 		};
 		icon.ShowAttackablePlaces = function() {
-			console.log("requires game board functionality");
+			if(this.AttackableIndicators == null) {
+				this.AttackableIndicators = new Array();
+			}
+			//TODO: deal with set of attacks
+			var attack = this.IconData.Attack[0];
+			var attackAblePoints = gameBoardLayer.BranchOut(this.Position[0], attack.AttackSize, ({FilterType: "HittablePlayerPerspective", FilterSubType: null }) );
+			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
+			for(var i=0; i<attackAblePoints.length; i++) {
+				var ap = attackAblePoints[i];
+				var as = attack.Attack;
+				var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
+				//INFO: good example here of passing parameters to a dynamic function
+				useAttack.addEventListener("click", function(a,b){
+					return function() {
+						console.log("Position:" + a.toString() + " AttackStrength:" + b.toString());
+						var enemy = gameBoardLayer.GetIconAtPoint(a);
+						enemy.BeAttacked(b);
+					};
+				}(ap, as), false);
+			}
+			delete iconFactoryInstance;
 		};
 		icon.ClearCompletedMove = function() {
 			if(this.CompletedMove != null) {

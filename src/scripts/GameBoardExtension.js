@@ -171,6 +171,10 @@ function GameBoardExtension(gameBoardLayer) {
 				}
 			}
 		}
+if(Filter.FilterType == "HittablePlayerPerspective") {
+	console.log("Hittable inital blocks");
+	debug_markArrayInMap(-1, results);
+}
 		if(Filter != null) {
 			
 			if((Filter.FilterSubType === true) || (Filter.FilterType == "MoveableEnemyPerspective") || (Filter.FilterType == "MoveablePlayerPerspective") || (Filter.FilterType == "HittableEnemyPerspective") || (Filter.FilterType == "HittablePlayerPerspective") ) {
@@ -247,7 +251,11 @@ function GameBoardExtension(gameBoardLayer) {
 				for(var i=0; i<window.enemies.length; i++) {
 					allEnemies.merge( window.enemies[i].Position );
 				}
+console.log("allEnemies:"); 
+debug_markArrayInMap(-1, allEnemies);
 				results = allEnemies.intersect(results);
+console.log("Hittable post intersect blocks");
+debug_markArrayInMap(-1, results);
 			}
 		}
 		return results;
