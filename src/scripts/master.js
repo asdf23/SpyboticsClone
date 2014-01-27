@@ -43,14 +43,14 @@ function init(svgElem) {
 	if(deviceIsTouchEnabled) {
 		//touch screen supported
 		console.log("touch events");
-		gb.addEventListener("touchstart", gameBoardDragStart, false);
-		svg.addEventListener("touchend", gameBoardDragStop, false);
-		svg.addEventListener("touchcancel", gameBoardDragStop, false);
-		svg.addEventListener("touchleave", gameBoardDragStop, false);
+//		gb.addEventListener("touchstart", gameBoardDragStart, false);
+//		svg.addEventListener("touchend", gameBoardDragStop, false);
+//		svg.addEventListener("touchcancel", gameBoardDragStop, false);
+//		svg.addEventListener("touchleave", gameBoardDragStop, false);
 	} else {
 		//standard mouse supported
-		gb.addEventListener("mousedown", gameBoardDragStart, false);
-		svg.addEventListener("mouseup", gameBoardDragStop, false);
+//		gb.addEventListener("mousedown", gameBoardDragStart, false);
+//		svg.addEventListener("mouseup", gameBoardDragStop, false);
 	}
 	$elem("buttonUndo").addEventListener("click", undoButtonClick, false);
 	$attrib("buttonExecute", "data-level", 1);
@@ -73,8 +73,8 @@ function initGame() {
 	}
 	var programs = $elem("ls_window_content", [0]).children;
 	while(programs.length > 0) {
-		console.log("c=");
-		console.log( $elem("ls_window_content", [0,0]) );
+		//console.log("c=");
+		//console.log( $elem("ls_window_content", [0,0]) );
 		var c = $elem("ls_window_content", [0,0]);
 		c.parentNode.removeChild(c);
 		programs = $elem("ls_window_content", [0]).children;

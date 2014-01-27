@@ -2,6 +2,59 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.SquareSize = null;
 	gameBoardLayer.Scale = null;
 	gameBoardLayer.RectData = new Array();
+	
+	gameBoardLayer.StartX = 0;
+	gameBoardLayer.EndedX = 0;
+	
+	gameBoardLayer.StartBoardDragging = function() {
+		console.log("User indicated the start of a moveable board");
+		this.addEventListener("mousedown", this.gameBoardDragStarted, false);
+	};
+	gameBoardLayer.StopBoardDragging = function() {
+		console.log("User indicated the stop of a moveable board");
+		this.parentNode.removeEventListener("mousemove", this.gameBoardDragging);
+		this.removeEventListener("mousedown", this.gameBoardDragStarted);
+		this.parentNode.removeEventListener("mouseup", this.gameBoardDragStopped);
+	};
+	gameBoardLayer.gameBoardDragStarted = function(event) {
+		//console.log("mouseDown event");
+		//console.log(this);
+		//console.log(event.clientX); //= position of mouse
+		if(this.StartX == 0) {
+			this.StartX = event.clientX ;
+		} else {
+			this.StartX = this.StartX - event.clientX ;
+		}
+		this.parentNode.addEventListener("mousemove", this.gameBoardDragging, false);
+		this.parentNode.addEventListener("mouseup", this.gameBoardDragStopped, false);
+	};
+	gameBoardLayer.gameBoardDragStopped = function(event) {
+		//console.log("mouseUp event");
+		//console.log(this);
+		//console.log(event);
+		//console.log(event.clientX); //= position of mouse
+		
+		/* following was working until drag was added */
+		//var g = $elem("gameBoard");
+		//g.EndedX = event.clientX;
+		//var translateX = g.transform.animVal[0].matrix.e;
+		//var diff = (g.EndedX - g.StartX);
+		//g.transform.baseVal[0].matrix.e = (diff + translateX);
+		/* previous was working until drag was added */
+		
+		var g = $elem("gameBoard");
+		g.StartX = event.clientX;
+		this.removeEventListener("mousemove", g.gameBoardDragging);
+		//console.log("removed mouse move event");
+	};
+	gameBoardLayer.gameBoardDragging = function(event) {
+		//console.log("mouseMove event");
+		//console.log(this);
+		var g = $elem("gameBoard");
+		g.transform.baseVal[0].matrix.e = (event.clientX - g.StartX);
+	};
+	
+	
 	gameBoardLayer.RowOfPoint = function(Point) {
 		return parseInt((Point / window.gameBoardSpacesWide), 10);
 	};
@@ -251,11 +304,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 				for(var i=0; i<window.enemies.length; i++) {
 					allEnemies.merge( window.enemies[i].Position );
 				}
-console.log("allEnemies:"); 
-debug_markArrayInMap(-1, allEnemies);
 				results = allEnemies.intersect(results);
-console.log("Hittable post intersect blocks");
-debug_markArrayInMap(-1, results);
 			}
 		}
 		return results;
