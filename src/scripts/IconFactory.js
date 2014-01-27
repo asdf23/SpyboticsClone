@@ -722,14 +722,19 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				var ap = attackAblePoints[i];
 				var as = attack.Attack;
 				var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
+				this.AttackableIndicators.push(useAttack);
 				//INFO: good example here of passing parameters to a dynamic function
-				useAttack.addEventListener("click", function(a,b){
+				useAttack.addEventListener("click", function(point, attackStrength, attacker){
 					return function() {
-						console.log("Position:" + a.toString() + " AttackStrength:" + b.toString());
-						var enemy = gameBoardLayer.GetIconAtPoint(a);
-						enemy.BeAttacked(b);
+						console.log("Position:" + point.toString() + " AttackStrength:" + attackStrength.toString());
+						var enemy = gameBoardLayer.GetIconAtPoint(point);
+						enemy.BeAttacked(attackStrength);
+						for(var k=0; k<attacker.AttackableIndicators.length; k++) {
+							attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
+						}
+						attacker.AttackableIndicators = new Array();
 					};
-				}(ap, as), false);
+				}(ap, as, this), false);
 			}
 			delete iconFactoryInstance;
 		};
