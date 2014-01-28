@@ -15,8 +15,13 @@ function GameBoardExtension(gameBoardLayer) {
 	
 	gameBoardLayer.StartBoardDragging = function() {
 		console.log("User indicated the start of a moveable board");
-		this.RightEdge = this.getBBox().width - document.defaultView.innerWidth;
-		this.addEventListener("mousedown", this.gameBoardDragStarted, false);
+		this.RightEdge = document.defaultView.innerWidth - (this.getBBox().width + windowWidth); //Global variable here
+		if(this.RightEdge > 0) {
+			console.log("Dragging is not required, screen is too small");
+			return;
+		} else {
+			this.addEventListener("mousedown", this.gameBoardDragStarted, false);
+		}
 	};
 	gameBoardLayer.StopBoardDragging = function() {
 		console.log("User indicated the stop of a moveable board");
