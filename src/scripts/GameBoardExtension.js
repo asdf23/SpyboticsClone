@@ -424,7 +424,12 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 					tiles[i].setAttribute("class", "tile" + levelMap.Map.substr(i, 1));
 					break;
 				case "#":
-					iconFactoryInstance.createIcon(icon_load, [i], true);
+					var loadIcon = iconFactoryInstance.createIcon(icon_load, [i], true);
+					loadIcon.addEventListener("click", function(Point) {
+						return function() {
+							console.log("Load current icon at Point: " + Point.toString());
+						};
+					}(i), false);
 					break;
 				case "1":
 				case "2":
