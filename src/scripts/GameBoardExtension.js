@@ -3,11 +3,19 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.Scale = null;
 	gameBoardLayer.RectData = new Array();
 	
+	/*
+	  ___                     _             _              _    
+	 |   \ _ _ __ _ __ _ __ _(_)_ _  __ _  | |   ___  __ _(_)__ 
+	 | |) | '_/ _` / _` / _` | | ' \/ _` | | |__/ _ \/ _` | / _|
+	 |___/|_| \__,_\__, \__, |_|_||_\__, | |____\___/\__, |_\__|
+	               |___/|___/       |___/            |___/      
+	*/
 	gameBoardLayer.StartX = 0;
-	gameBoardLayer.EndedX = 0;
+	gameBoardLayer.RightEdge = 0;
 	
 	gameBoardLayer.StartBoardDragging = function() {
 		console.log("User indicated the start of a moveable board");
+		this.RightEdge = this.getBBox().width - document.defaultView.innerWidth;
 		this.addEventListener("mousedown", this.gameBoardDragStarted, false);
 	};
 	gameBoardLayer.StopBoardDragging = function() {
@@ -17,44 +25,36 @@ function GameBoardExtension(gameBoardLayer) {
 		this.parentNode.removeEventListener("mouseup", this.gameBoardDragStopped);
 	};
 	gameBoardLayer.gameBoardDragStarted = function(event) {
-		//console.log("mouseDown event");
-		//console.log(this);
-		//console.log(event.clientX); //= position of mouse
-		if(this.StartX == 0) {
-			this.StartX = event.clientX ;
-		} else {
-			this.StartX = this.StartX - event.clientX ;
-		}
+		this.StartX =  event.clientX - this.transform.animVal[0].matrix.e;
 		this.parentNode.addEventListener("mousemove", this.gameBoardDragging, false);
 		this.parentNode.addEventListener("mouseup", this.gameBoardDragStopped, false);
 	};
-	gameBoardLayer.gameBoardDragStopped = function(event) {
-		//console.log("mouseUp event");
-		//console.log(this);
-		//console.log(event);
-		//console.log(event.clientX); //= position of mouse
-		
-		/* following was working until drag was added */
-		//var g = $elem("gameBoard");
-		//g.EndedX = event.clientX;
-		//var translateX = g.transform.animVal[0].matrix.e;
-		//var diff = (g.EndedX - g.StartX);
-		//g.transform.baseVal[0].matrix.e = (diff + translateX);
-		/* previous was working until drag was added */
-		
-		var g = $elem("gameBoard");
-		g.StartX = event.clientX;
-		this.removeEventListener("mousemove", g.gameBoardDragging);
-		//console.log("removed mouse move event");
-	};
 	gameBoardLayer.gameBoardDragging = function(event) {
-		//console.log("mouseMove event");
-		//console.log(this);
+		/* perfect drag
 		var g = $elem("gameBoard");
 		g.transform.baseVal[0].matrix.e = (event.clientX - g.StartX);
+		*/
+		var g = $elem("gameBoard");
+		var t = (event.clientX - g.StartX);
+		if(t > 0) {
+			t =0;
+		} else if( t < g.RightEdge ) {
+			t = g.RightEdge;
+		}
+		g.transform.baseVal[0].matrix.e = t;
 	};
-	
-	
+	gameBoardLayer.gameBoardDragStopped = function(event) {
+		var g = $elem("gameBoard");
+		this.removeEventListener("mousemove", g.gameBoardDragging);
+		console.log(g.transform.animVal[0].matrix.e);
+	};
+	/*
+	    _____                     _             _              _    
+	   / /   \ _ _ __ _ __ _ __ _(_)_ _  __ _  | |   ___  __ _(_)__ 
+	  / /| |) | '_/ _` / _` / _` | | ' \/ _` | | |__/ _ \/ _` | / _|
+	 /_/ |___/|_| \__,_\__, \__, |_|_||_\__, | |____\___/\__, |_\__|
+	                   |___/|___/       |___/            |___/      
+	*/
 	gameBoardLayer.RowOfPoint = function(Point) {
 		return parseInt((Point / window.gameBoardSpacesWide), 10);
 	};
