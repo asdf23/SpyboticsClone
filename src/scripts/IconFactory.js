@@ -809,4 +809,12 @@ console.log(u1.Position);
 console.log("Rects:");
 console.log(u1.Rects);
 u1.MoveRight();
+
+git add src/images/icon128.png
+git add src/images/icon16.png
+git add src/images/icon32.png
+git add src/images/icon48.png
+git add src/images/icon64.png
+git add src/manifest.webapp
+
 */

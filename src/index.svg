@@ -24,6 +24,7 @@
 	<svg:script xlink:href="scripts/icons.js" />
 	<svg:script xlink:href="scripts/IconFactory.js" />
 	<svg:script xlink:href="scripts/GameBoardExtension.js" />
+	<svg:script xlink:href="scripts/ControlPanelExtension.js" />
 	<defs>
 		<!-- 
 			  _____                    
