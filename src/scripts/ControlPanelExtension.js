@@ -16,6 +16,16 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.button1 = svg.getElementById("button1"); //1st Rect with style fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
 	controlPanelLayer.button2 = svg.getElementById("button2"); //2nd Rect with style fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
 	controlPanelLayer.button3 = svg.getElementById("button3"); //3rd Rect with style fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
+	controlPanelLayer.button1Rect = controlPanelLayer.button1.children[0];
+	controlPanelLayer.button1Rect = controlPanelLayer.button2.children[0];
+	controlPanelLayer.button1Rect = controlPanelLayer.button3.children[0];
+	controlPanelLayer.button1FO = controlPanelLayer.button1.children[1];
+	controlPanelLayer.button1FO = controlPanelLayer.button2.children[1];
+	controlPanelLayer.button1FO = controlPanelLayer.button3.children[1];
+	controlPanelLayer.button1DIV = controlPanelLayer.button1.children[1].children[0];
+	controlPanelLayer.button1DIV = controlPanelLayer.button2.children[1].children[0];
+	controlPanelLayer.button1DIV = controlPanelLayer.button3.children[1].children[0];
+
 	controlPanelLayer.manHelpCommand = svg.getElementById("man_help_command"); //ForiegnObject with div with div of text of Attack command
 	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
@@ -76,12 +86,59 @@ function ControlPanelExtension(controlPanelLayer) {
 			//case 
 		}
 	};
-	controlPanelLayer.ResetUI = function(windowWidth, scrollBarWidth) {
+	controlPanelLayer.ResetUI = function(windowWidth, scrollBarWidth, padding) {
+		var scrollHeight = fontSizes[bashFontIndex].Height * lsPageLength;
+		var buttonHeight = fontSizes[buttonFontIndex].Height + padding;
+
 		this.lsWindowTitle.setAttribute("width", windowWidth);
+		this.lsWindowContent.setAttribute("width", (windowWidth - scrollBarWidth));
 		this.lsWindowContentBackground.setAttribute("width", windowWidth);
 		this.lsWindowContentBackground.setAttribute("width", windowWidth - scrollBarWidth);
 		this.manWindowTitlebar.setAttribute("width", windowWidth);
 		this.manWindowContentBackground.setAttribute("width", windowWidth);
+
+		this.lsWindowContent.setAttribute("height", scrollHeight);
+		this.lsWindowContentContainer.setAttribute("height", (scrollHeight - padding));
+		this.lsWindowContentBackground.setAttribute("height", scrollHeight);
+
+		var lastBottom = this.lsWindowContent.getClientRects()[0].bottom;
+		var nextY = (lastBottom + (padding/2));
+		this.manWindowTitlebar.setAttribute("y", nextY);
+		this.manWindowTitle.setAttribute("y", nextY);
+		this.manWindowTitleBackground.setAttribute("y", nextY);
+		lastBottom = this.manWindowTitlebar.getClientRects()[0].bottom;
+		nextY = lastBottom;
+		this.manWindowContentBackground.setAttribute("height", (document.defaultView.innerHeight - (lastBottom + buttonHeight) ));
+		this.manWindowContentBackground.setAttribute("y", nextY);
+		this.manCurrentIcon.setAttribute("x", padding);
+		this.manCurrentIcon.setAttribute("y", padding + lastBottom);
+		this.manGeneralInfo.setAttribute("x", (padding + squareSize + padding));
+		this.manGeneralInfo.setAttribute("y", padding + lastBottom);
+		this.manCurrentIcon.getClientRects()[0].bottom;
+		this.manHeader.setAttribute("y", padding + lastBottom);
+		lastBottom = this.manHeader.getClientRects()[0].bottom;
+		this.button1Rect.setAttribute("width", windowWidth);
+		this.button1Rect.setAttribute("y", lastBottom + padding);
+		this.button1FO.setAttribute("y", lastBottom + padding + (padding/2));
+		this.button1FO.setAttribute("width", windowWidth);
+		lastBottom = this.button1.getClientRects()[0].bottom;
+		this.button2Rect.setAttribute("width", windowWidth);
+		this.button2Rect.setAttribute("y", lastBottom + padding);
+		this.button2FO.setAttribute("y", lastBottom + padding + (padding/2));
+		this.button2FO.setAttribute("width", windowWidth);
+		lastBottom = this.button2.getClientRects()[0].bottom;
+		this.button3Rect.setAttribute("width", windowWidth);
+		this.button3Rect.setAttribute("y", lastBottom + padding);
+		this.button3FO.setAttribute("y", lastBottom + padding + (padding/2));
+		this.button3FO.setAttribute("width", windowWidth);
+		lastBottom = this.button3.getClientRects()[0].bottom;
+		var nextHeight = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: Figure out what to do with screen height
+		this.manHelpCommand.setAttribute("width", windowWidth);
+		this.manHelpCommand.setAttribute("y", (lastBottom + padding));
+		this.manHelpCommand.setAttribute("height", nextHeight);
+		ici line 767 master
+
+
 	}
 	return controlPanelLayer;
 }
