@@ -66,7 +66,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,101: {
 			 Name: "Selection"
@@ -77,7 +76,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,102: {
 			 Name: "Moved"
@@ -88,7 +86,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,103: {
 			 Name: "Occupied"
@@ -99,7 +96,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,104: {
 			 Name: "AttackAnimation"
@@ -110,7 +106,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,105: {
 			 Name: "Moveable0"
@@ -121,7 +116,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,106: {
 			 Name: "Moveable1"
@@ -132,7 +126,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,107: {
 			 Name: "Moveable2"
@@ -143,7 +136,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,108: {
 			 Name: "Moveable3"
@@ -154,7 +146,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,109: {
 			 Name: "Moveable4"
@@ -165,7 +156,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,110: {
 			 Name: "Attackable"
@@ -176,7 +166,6 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 0
 			,MaxSize: 1
 			,Attack: null
-			,Alternate: null
 		}
 		,0: {
 			 Name: "Hack"
@@ -188,9 +177,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 2
 			,MaxSize: 3
 			,Attack: [
-						{Name: "Slice", MinSizeForAttack: 1, Attack: 2, AttackSize: 1}
+						{Name: "Slice", MinSizeForAttack: 1, AttackStrength: 2, AttackDistance: 1, AttackType: "StandardAttack"}
 					]
-			,Alternate: []
 		}
 		,1: {
 			 Name: "Slingshot"
@@ -202,9 +190,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 2
 			,MaxSize: 2
 			,Attack: [
-						{Name: "Stone", MinSizeForAttack: 1, Attack: 2, AttackSize: 2}
+						{Name: "Stone", MinSizeForAttack: 1, AttackStrength: 2, AttackDistance: 2, AttackType: "StandardAttack"}
 					]
-			,Alternate: []
 		}
 		,2: {
 			 Name: "Sentinel"
@@ -216,9 +203,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			,Move: 2
 			,MaxSize: 3
 			,Attack: [
-						{Name: "Cut", MinSizeForAttack: 1, Attack: 1, AttackSize: 1}
+						{Name: "Cut", MinSizeForAttack: 1, AttackStrength: 1, AttackDistance: 1, AttackType: "StandardAttack"}
 					]
-			,Alternate: []
 			,AI: "AttackInRangeOrMoveToFirstPlayerYX"
 		}
 		//Static(ish) Properties
@@ -405,7 +391,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								break;
 						}
 					} else {
-						b.Icon.BeAttacked(b.Attack);
+						b.Icon.BeAttacked(b.AttackStrength);
 					}
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
@@ -464,11 +450,11 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					break;
 				case "AttackInRangeOrMoveToFirstPlayerYX":
 					var attack = this.IconData.Attack[0];
-					var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
+					var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackDistance, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
 					if(enemySight.length > 0) {
 						turnEnded = true;
 						var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
-						iconToAttack.BeAttacked(attack.Attack);
+						iconToAttack.BeAttacked(attack.AttackStrength);
 						this.ShowCompletedMove();
 					}
 					break;
@@ -549,13 +535,13 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						break;
 					case "AttackInRangeOrMoveToFirstPlayerYX":
 						var attack = this.IconData.Attack[0];
-						var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackSize, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
+						var enemySight = gameBoardLayer.BranchOut(tempPosition[0], attack.AttackDistance, ({FilterType: "HittableEnemyPerspective", FilterSubType: null }));
 						if(enemySight.length > 0) {
 							var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
 							//iconToAttack.BeAttacked(attack.Attack);
 							moveList.push({
 								 Icon: iconToAttack
-								,Attack: attack.Attack
+								,Attack: attack.AttackStrength
 							});
 						}
 						break;
@@ -716,11 +702,11 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 			//TODO: deal with set of attacks
 			var attack = this.IconData.Attack[0];
-			var attackAblePoints = gameBoardLayer.BranchOut(this.Position[0], attack.AttackSize, ({FilterType: "HittablePlayerPerspective", FilterSubType: null }) );
+			var attackAblePoints = gameBoardLayer.BranchOut(this.Position[0], attack.AttackDistance, ({FilterType: "HittablePlayerPerspective", FilterSubType: null }) );
 			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
 			for(var i=0; i<attackAblePoints.length; i++) {
 				var ap = attackAblePoints[i];
-				var as = attack.Attack;
+				var as = attack.AttackStrength;
 				var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
 				this.AttackableIndicators.push(useAttack);
 				//INFO: good example here of passing parameters to a dynamic function

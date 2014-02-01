@@ -8,11 +8,17 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.manWindowTitlebar = svg.getElementById("man_window_titlebar"); //Gray titlebar 
 	controlPanelLayer.manWindowTitleBackground = svg.getElementById("man_window_title_background"); //titlebar text background
 	controlPanelLayer.manWindowTitle = svg.getElementById("man_window_title"); //ForiegnObject to contain div
+	controlPanelLayer.manWindowTitleDIV = controlPanelLayer.manWindowTitle.children[0];
 	controlPanelLayer.manWindowTitleText = controlPanelLayer.manWindowTitle.children[0]; //div to manWindowTitle
 	controlPanelLayer.manWindowContentBackground = svg.getElementById("man_window_content_background"); //Background to man window
 	controlPanelLayer.manCurrentIcon = svg.getElementById("man_current_icon"); //Use for icon
 	controlPanelLayer.manGeneralInfo = svg.getElementById("man_general_info"); //ForiegnObject of <div> with 2 inner divs for Move and Max Size
+	controlPanelLayer.manGeneralInfoContainer = controlPanelLayer.manGeneralInfo.children[0];
+	controlPanelLayer.manGeneralInfoDIVMove = controlPanelLayer.manGeneralInfoContainer.children[0];
+	controlPanelLayer.manGeneralInfoDIVSize = controlPanelLayer.manGeneralInfoContainer.children[1];
 	controlPanelLayer.manHeader = svg.getElementById("man_header"); //ForiegnObject of <div> with 2 inner divs for Program Name and "Arguments"
+	controlPanelLayer.manHeaderContainer = controlPanelLayer.manHeader.children[0];
+	controlPanelLayer.manHeaderDIVProgramName = controlPanelLayer.manHeaderContainer.children[0];
 	controlPanelLayer.button1 = svg.getElementById("button1"); //a G position 1st with rect,FO > div
 	controlPanelLayer.button2 = svg.getElementById("button2"); //a G position 2nd with rect,FO > div
 	controlPanelLayer.button3 = svg.getElementById("button3"); //a G position 3rd with rect,FO > div
@@ -39,10 +45,59 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.buttonCancelDIV = controlPanelLayer.buttonCancel.children[1].children[0];
 
 	controlPanelLayer.manHelpCommand = svg.getElementById("man_help_command"); //ForiegnObject with div with div of text of Attack command
+	controlPanelLayer.manHelpCommandDIV = controlPanelLayer.manHelpCommand.children[0];
 	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G
-	controlPanelLayer.LoadUserIcons = function(LoadSlot) {
+	controlPanelLayer.ManProgram = function(IconData) {
+		this.manGeneralInfoDIVMove = IconData.Move;
+		this.manGeneralInfoDIVSize = IconData.MaxSize;
+		this.manHeaderDIVProgramName = IconData.Name;
+		this.manCurrentIcon.setAttributeNS(xlinkNS, "href", "#" + IconData.SVGName);
+		this.manCurrentIcon.removeAttribute("display");
+		this.manGeneralInfo.removeAttribute("display");
+		this.manHeader.removeAttribute("display");
+		this.manHelpCommandDIV = IconData.Description;
+		this.manHelpCommand.removeAttribute("display");
+		controlPanelLayer.manWindowTitleDIV.innerHTML = "man " + IconData.Name;
+		//TOOD: hide show buttons, move alternate to Attack.AttackType
+		if(IconData.Attack != null) {
+			if( IconData.Attack.length > 0 ) {
+				this.button1.setAttribute("style", this.AttackTypeToFill(IconData.Attack[0].AttackType));
+				this.button1DIV.innerHTML = IconData.Attack[0].Name;
+				this.button1.removeAttribute("display", "none");
+				this.button1.addEventListener("click",function(sender) {
+					return function() {
+						console.log(sender);
+					}
+				}(IconData.Attack[0]),false);
+			} else {
+				this.button1.setAttribute("display", "none");
+			}
+			if( IconData.Attack.length > 1 ) {
+				this.button2.setAttribute("style", this.AttackTypeToFill(IconData.Attack[1].AttackType));
+				this.button2DIV.innerHTML = Attack[1].Name;
+				this.button2.removeAttribute("display", "none");
+				this.button2.addEventListener("click",function(sender) {
+					return function() {
+						console.log(sender);
+					}
+				}(IconData.Attack[1]),false);
+			} else {
+				this.button2.setAttribute("display", "none");
+			}
+			this.button3.setAttribute("display", "none");
+		}
+	}
+	controlPanelLayer.AttackTypeToFill = function(AttackType) { //TODO: should this be moved?
+		switch(AttackType) {
+			default:
+				return "fill:url(#linearGradientAlternate)";
+			case "StandardAttack":
+				return "fill:url(#linearGradientAttack)";
+		}
+	}
+	controlPanelLayer.ResetUserPrograms = function(LoadSlot) {
 		if( localStorage["User.Programs." + LoadSlot.toString()] == undefined) {
 			localStorage["User.Programs." + LoadSlot.toString()] = JSON.stringify([{
 				 Program: icon_hack
@@ -65,11 +120,12 @@ function ControlPanelExtension(controlPanelLayer) {
 			div.IconCount = db[i].Count;
 			div.innerHTML = div.IconData.Name + " x" + div.IconCount.toString();
 			iconFactoryInstance.Icons[ db[i].Program ].Name + " x" + db[i].Count.toString();
-			div.addEventListener("click", function(d){ 
+			div.addEventListener("click", function(sender, d){ 
 											return function() {
 												console.log(d.IconData.Name + " x" + d.IconCount.toString());
+												sender.ManProgram(d.IconData);
 											}
-										}(div), false);
+										}(this, div), false);
 			this.lsWindowContentContainer.appendChild(div);
 		}
 		delete iconFactoryInstance;
@@ -185,6 +241,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manHelpCommand.setAttribute("width", windowWidth);
 		this.manHelpCommand.setAttribute("y", (lastBottom + padding));
 		this.manHelpCommand.setAttribute("height", nextHeight);
+		this.manHelpCommandDIV.style.height = nextHeight.toString() + "px";
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.manHelpCommand.hasAttribute("display");
 		this.manHelpCommand.removeAttribute("display");
@@ -204,12 +261,24 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.buttonExecuteFO.setAttribute("y", (lastBottom - (padding / 2)));
 		this.buttonCancelFO.setAttribute("width", windowWidth);
 		this.buttonCancelFO.setAttribute("y", (lastBottom - (padding / 2)));
-		
+		controlPanelLayer.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
 	}
 	return controlPanelLayer;
 }
 /*
 var controlPanel = new ControlPanelExtension($elem("ls_window"));
-controlPanel.LoadUserIcons(1); //1= save slot
+controlPanel.ResetUserPrograms(1); //1= save slot
 controlPanel.ResetUI(190, 10, 4)
+
+{
+	"draw_white_space": "all",
+	"font_size": 13,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"translate_tabs_to_spaces": false,
+	"trim_automatic_white_space": false
+}
+
 */

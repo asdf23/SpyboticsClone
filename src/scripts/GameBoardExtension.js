@@ -365,9 +365,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 		this.SquareSize = squareSize;
 		var scale = this.SquareSize / 100;
 		var scaleString = "scale(" + scale.toString() + "," + scale.toString() + ")";
-		console.log("assert next is gameBoardLayer");
-		console.log(this);
-		var tiles = this.getElementsByTagName("rect");
+		var tiles = this.getElementsByTagName("rect"); //this referrs to <g id=gameBoard
 		for(var i=0; i<tiles.length; i++) {
 			var x = windowWidth + padding + ((i % window.gameBoardSpacesWide) * (squareSize + (padding/2)));
 			var y = padding + parseInt(i/window.gameBoardSpacesWide, 10) * (squareSize + (padding/2));
