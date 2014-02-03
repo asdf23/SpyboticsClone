@@ -1,4 +1,22 @@
+/*
+	External data used by this class
+	windowWidth //maybe store and calculate here?
+	uses IconData
+	LoadSlot (save game)
+	Internal Player programs database: User.Programs.0
+	References iconFactoryInstance for IconData to show man page
+	Is passed a mode to control the control panel's appearance
+	resetui accepts windowWidth, scrollBarWidth, padding
+	required global: lsPageLength
+	required global: fontSizes[]
+	calls innerHeight directly
+	required global: buttonHeight
+	ResetUI needs GameBoard's gameBoard.RectData
+	ResetUI does not expect visibitly state
+*/
 function ControlPanelExtension(controlPanelLayer) {
+	controlPanelLayer.WindowWidth = 100; //All window widths should come from here
+	
 	//unneeded? controlPanelLayer.lsWindow = svg.getElementById("ls_window");
 	controlPanelLayer.lsWindowTitle = svg.getElementById("ls_window_title"); //Gray titlebar
 	controlPanelLayer.lsWindowContentBackground = svg.getElementById("ls_window_content_background"); //Background of program list
@@ -57,7 +75,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manCurrentIcon.removeAttribute("display");
 		this.manGeneralInfo.removeAttribute("display");
 		this.manHeader.removeAttribute("display");
-		this.manHelpCommandDIV = IconData.Description;
+		this.manHelpCommandDIV.innerHTML = IconData.Description;
 		this.manHelpCommand.removeAttribute("display");
 		controlPanelLayer.manWindowTitleDIV.innerHTML = "man " + IconData.Name;
 		//TOOD: hide show buttons, move alternate to Attack.AttackType
@@ -155,11 +173,12 @@ function ControlPanelExtension(controlPanelLayer) {
 		}
 	};
 	controlPanelLayer.ResetUI = function(windowWidth, scrollBarWidth, padding) {
+		this.WindowWidth = windowWidth;
 		var scrollHeight = fontSizes[bashFontIndex].Height * lsPageLength; //TOOD: use of global
 		var buttonHeight = fontSizes[buttonFontIndex].Height + padding;
 		
 		this.lsWindowTitle.setAttribute("width", windowWidth);
-		if(this.lsWindowContentContainer.children.length > lsPageLength) {
+		if(this.lsWindowContentContainer.children.length > lsPageLength) { //TODO: use of global
 			this.lsWindowContent.setAttribute("width", (windowWidth - scrollBarWidth));
 		this.lsWindowContentBackground.setAttribute("width", windowWidth - scrollBarWidth);
 		} else {
@@ -181,10 +200,10 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manWindowTitleBackground.setAttribute("y", nextY);
 		lastBottom = this.manWindowTitlebar.getClientRects()[0].bottom;
 		nextY = lastBottom;
-		this.manWindowContentBackground.setAttribute("height", (document.defaultView.innerHeight - (lastBottom + buttonHeight) )); //TODO: use of screen width
+		this.manWindowContentBackground.setAttribute("height", (document.defaultView.innerHeight - (lastBottom + buttonHeight) )); //TODO: use of screen width, use of global
 		this.manWindowContentBackground.setAttribute("y", nextY);
-		this.manCurrentIcon.setAttribute("x", padding);
-		this.manCurrentIcon.setAttribute("y", padding + lastBottom);
+		this.manCurrentIcon.setAttribute("x", (1 / this.manCurrentIcon.transform.animVal[0].matrix.a) * (padding));
+		this.manCurrentIcon.setAttribute("y", (1 / this.manCurrentIcon.transform.animVal[0].matrix.d) * (padding + lastBottom));
 		this.manGeneralInfo.setAttribute("x", (padding + squareSize + padding));
 		this.manGeneralInfo.setAttribute("y", padding + lastBottom);
 		var rectPosition = svg.getElementById("gameBoard").RectData[0]
@@ -192,7 +211,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		//Error: cannot getClientRects on invisible item
 		var wasInvisible = this.manCurrentIcon.hasAttribute("display");
 		this.manCurrentIcon.removeAttribute("display");
-		this.manCurrentIcon.getClientRects()[0].bottom;
+		lastBottom = this.manCurrentIcon.getClientRects()[0].bottom;
 		if(wasInvisible) {
 			this.manCurrentIcon.setAttribute("display", "none");
 		}
@@ -237,7 +256,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.button3.setAttribute("display", "none");
 		}
-		var nextHeight = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: Figure out what to do with screen height
+		var nextHeight = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: Figure out what to do with screen height, global use
 		this.manHelpCommand.setAttribute("width", windowWidth);
 		this.manHelpCommand.setAttribute("y", (lastBottom + padding));
 		this.manHelpCommand.setAttribute("height", nextHeight);
@@ -250,17 +269,17 @@ function ControlPanelExtension(controlPanelLayer) {
 			this.manHelpCommand.setAttribute("display", "none");
 		}
 		this.buttonUndoRect.setAttribute("width", windowWidth);
-		this.buttonUndoRect.setAttribute("y", lastBottom);
+		this.buttonUndoRect.setAttribute("y", (lastBottom - (padding / 2)));
 		this.buttonExecuteRect.setAttribute("width", windowWidth);
-		this.buttonExecuteRect.setAttribute("y", lastBottom);
+		this.buttonExecuteRect.setAttribute("y", (lastBottom - (padding / 2)));
 		this.buttonCancelRect.setAttribute("width", windowWidth);
-		this.buttonCancelRect.setAttribute("y", lastBottom);
+		this.buttonCancelRect.setAttribute("y", (lastBottom - (padding / 2)));
 		this.buttonUndoFO.setAttribute("width", windowWidth);
-		this.buttonUndoFO.setAttribute("y", (lastBottom - (padding / 2)));
+		this.buttonUndoFO.setAttribute("y", lastBottom);
 		this.buttonExecuteFO.setAttribute("width", windowWidth);
-		this.buttonExecuteFO.setAttribute("y", (lastBottom - (padding / 2)));
+		this.buttonExecuteFO.setAttribute("y", lastBottom);
 		this.buttonCancelFO.setAttribute("width", windowWidth);
-		this.buttonCancelFO.setAttribute("y", (lastBottom - (padding / 2)));
+		this.buttonCancelFO.setAttribute("y", lastBottom);
 		controlPanelLayer.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
 	}
 	return controlPanelLayer;

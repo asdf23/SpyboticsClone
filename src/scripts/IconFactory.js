@@ -1,3 +1,19 @@
+/*
+	Need to kill playerMove with playerMove2
+	Need to remove actualSize
+	Requires GamePicesLayer 
+	Requires GameBoardLayer
+	Requires GameBoardLayer to have alled ResetSizeForScreen
+	Creates/uses global window.enemies
+	Creates/uses global window.players
+	Creates/uses global window.utilities
+	Calls functions from gameBoard
+	ShowMoveablePlaces,ShowAttackablePlaces creates instance of self
+	has superClass perhaps nonsense
+	has array playerMove2
+	has array.merge
+	has array intersect
+*/
 Array.prototype.playerMove2 = function(NewPosition, MaxLength) {
 	var indexOfPrevious = this.indexOf(NewPosition);
 	if(indexOfPrevious >= 0) {

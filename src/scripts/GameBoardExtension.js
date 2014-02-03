@@ -1,3 +1,18 @@
+/*
+		External data used by this class
+		has public SquareSize 
+		has public Scale
+		has public RectData
+		creates click (not tap) events
+		requires global gameBoardSpacesWide
+		requires global gameBoardSpacesHigh
+		uses debug_markArrayInMap
+		needs array.remove
+		uses array.merge
+		uses array.intersect
+		ResetSizeForScreen is passed squareSize (sets self), windowWidth, screenWidth, screenHeight, padding
+		LoadLevel calls iconFactory
+*/
 function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.SquareSize = null;
 	gameBoardLayer.Scale = null;
