@@ -18,6 +18,12 @@ foreignObject div {
 	color: #0000FF;
 	font-family: Fira Mono;
 }
+.textMeasurerText {
+	/*width: 100%;*/
+	color: #FFFFFF;
+	padding: 0px;
+	margin: 0px;
+}
 .titleBar {
 	fill-opacity:1;
 	stroke-color: rgb(135,135,139);
@@ -54,7 +60,7 @@ foreignObject div {
 	height: 100%;
 	color: #FFFFFF;
 	font-family: Fira Mono;
-	white-space:nowrap;
+	white-space: nowrap;
 	font-weight: bolder;
 }
 .windowScrollable {

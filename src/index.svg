@@ -19,6 +19,7 @@
 	 inkscape:version="0.48.4 r9939"
 	 sodipodi:docname="index.svg"
 	 onload="init(this)">
+	<svg:script xlink:href="scripts/FontInfo.js" />
 	<svg:script xlink:href="scripts/master.js" />
 	<svg:script xlink:href="scripts/levels.js" />
 	<svg:script xlink:href="scripts/icons.js" />
@@ -568,6 +569,18 @@
 				 style="stop-color:#000000" />
 		</linearGradient>
 	</defs>
+	<g
+		 id="layer_fontMeasurer" >
+		<foreignObject
+			 x="0%"
+			 y="0%"
+			 width="100%"
+			 height="100%"
+			 opacity="0.1" >
+			<xhtml:span
+			 class="textMeasurerText"></xhtml:span>
+		</foreignObject>
+	</g>
 	<g
 		 id="layer_background" >
 		 <!--
