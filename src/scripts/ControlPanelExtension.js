@@ -6,8 +6,8 @@
 	Internal Player programs database: User.Programs.0
 	References iconFactoryInstance for IconData to show man page
 	Is passed a mode to control the control panel's appearance
-	resetui accepts windowWidth, scrollBarWidth, padding
-	required global: lsPageLength
+	resetui accepts windowWidth, scrollBarWidth, padding -- scrollbarWidth to be calculated
+	required global: lsPageLength -- removed
 	required global: fontSizes[]
 	calls innerHeight directly
 	required global: buttonHeight
@@ -15,7 +15,10 @@
 	ResetUI does not expect visibitly state
 */
 function ControlPanelExtension(controlPanelLayer) {
-	controlPanelLayer.WindowWidth = 100; //All window widths should come from here
+	controlPanelLayer.WindowWidth = 190; //All window widths should come from here
+	console.log("WindowWidth is currently hard-coded this should be calculated");
+	controlPanelLayer.lsPageLength = 3;
+	controlPanelLayer.CurrentProgram = null;
 	
 	//unneeded? controlPanelLayer.lsWindow = svg.getElementById("ls_window");
 	controlPanelLayer.lsWindowTitle = svg.getElementById("ls_window_title"); //Gray titlebar
@@ -67,10 +70,10 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G
-	controlPanelLayer.ManProgram = function(IconData) {
-		this.manGeneralInfoDIVMove = IconData.Move;
-		this.manGeneralInfoDIVSize = IconData.MaxSize;
-		this.manHeaderDIVProgramName = IconData.Name;
+	controlPanelLayer.ManProgram = function(IconData, div) {
+		this.manGeneralInfoDIVMove.innerHTML = "Move: " + IconData.Move.toString();
+		this.manGeneralInfoDIVSize.innerHTML = "Max Size: " + IconData.MaxSize.toString();
+		this.manHeaderDIVProgramName.innerHTML = IconData.Name;
 		this.manCurrentIcon.setAttributeNS(xlinkNS, "href", "#" + IconData.SVGName);
 		this.manCurrentIcon.removeAttribute("display");
 		this.manGeneralInfo.removeAttribute("display");
@@ -78,6 +81,11 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manHelpCommandDIV.innerHTML = IconData.Description;
 		this.manHelpCommand.removeAttribute("display");
 		controlPanelLayer.manWindowTitleDIV.innerHTML = "man " + IconData.Name;
+		if(div != null) {
+			this.CurrentProgram  = div;
+		} else {
+			this.CurrentProgram  = null;
+		}
 		//TOOD: hide show buttons, move alternate to Attack.AttackType
 		if(IconData.Attack != null) {
 			if( IconData.Attack.length > 0 ) {
@@ -134,6 +142,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		for(var i=0; i<db.length; i++) {
 			var div = document.createElementNS(xhtmlNS, "div");
 			div.setAttribute("class", "scrollableWindowContent");
+			div.IconIndex = db[i].Program;
 			div.IconData = iconFactoryInstance.Icons[ db[i].Program ];
 			div.IconCount = db[i].Count;
 			div.innerHTML = div.IconData.Name + " x" + div.IconCount.toString();
@@ -141,7 +150,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			div.addEventListener("click", function(sender, d){ 
 											return function() {
 												console.log(d.IconData.Name + " x" + d.IconCount.toString());
-												sender.ManProgram(d.IconData);
+												sender.ManProgram(d.IconData, d);
 											}
 										}(this, div), false);
 			this.lsWindowContentContainer.appendChild(div);
@@ -172,42 +181,70 @@ function ControlPanelExtension(controlPanelLayer) {
 			//case 
 		}
 	};
-	controlPanelLayer.ResetUI = function(windowWidth, scrollBarWidth, padding) {
-		this.WindowWidth = windowWidth;
-		var scrollHeight = fontSizes[bashFontIndex].Height * lsPageLength; //TOOD: use of global
-		var buttonHeight = fontSizes[buttonFontIndex].Height + padding;
-		
-		this.lsWindowTitle.setAttribute("width", windowWidth);
-		if(this.lsWindowContentContainer.children.length > lsPageLength) { //TODO: use of global
-			this.lsWindowContent.setAttribute("width", (windowWidth - scrollBarWidth));
-		this.lsWindowContentBackground.setAttribute("width", windowWidth - scrollBarWidth);
+	controlPanelLayer.ResetUI = function(padding) {
+		var scrollBarWidth = this.lsWindowContent.width.baseVal.value - this.lsWindowContentContainer.clientWidth;
+		if( isNaN(scrollBarWidth) ) {
+			console.log("failed to set scrollBarWidth");
+			scrollBarWidth = 10;
 		} else {
-			this.lsWindowContent.setAttribute("width", (windowWidth));
-			this.lsWindowContentBackground.setAttribute("width", windowWidth);
+			console.log("set scrollBarWidth to " + scrollBarWidth.toString());
 		}
-		this.lsWindowContentBackground.setAttribute("width", windowWidth);
-		this.manWindowTitlebar.setAttribute("width", windowWidth);
-		this.manWindowContentBackground.setAttribute("width", windowWidth);
+		var longestPlayerIconName = "";
+		for(var i in window.iconFactory.Icons){
+			if(window.iconFactory.Icons[i].isPlayer) {
+				if( window.iconFactory.Icons[i].Name.length > longestPlayerIconName.length ) {
+					longestPlayerIconName = window.iconFactory.Icons[i].Name;
+				}
+			}
+		}
+		if(longestPlayerIconName == "") {
+			throw "Icon data is corrupted.";
+		}
+		//should set controlPanelLayer.WindowWidth here
 		
-		this.lsWindowContent.setAttribute("height", scrollHeight);
-		this.lsWindowContentContainer.setAttribute("height", (scrollHeight - padding));
-		this.lsWindowContentBackground.setAttribute("height", scrollHeight);
+		var scrollTextSize = window.fontInfo.GetMaxFontSizeForElement(this.lsWindowContentContainer, this.lsPageLength, longestPlayerIconName);
+		var scrollHeight = scrollTextSize.height;
+		console.log(scrollTextSize);
+		
+		this.lsWindowTitle.width.baseVal.value = this.WindowWidth;
+		//If scroll bar self hides
+		//if(this.lsWindowContentContainer.children.length > this.lsPageLength) { //TODO: use of global
+		//	this.lsWindowContent.setAttribute("width", (this.WindowWidth - scrollBarWidth));
+		//	this.lsWindowContentBackground.setAttribute("width", this.WindowWidth - scrollBarWidth);
+		//} else {
+		//	this.lsWindowContent.setAttribute("width", (this.WindowWidth));
+		//	this.lsWindowContentBackground.setAttribute("width", this.WindowWidth);
+		//}
+		//Otherwise
+		var widthMinusXOffset = (this.WindowWidth - this.lsWindowContent.x.baseVal.value);
+		this.lsWindowContent.width.baseVal.value = widthMinusXOffset;
+		this.lsWindowContentContainer.style.width = widthMinusXOffset;
+		this.lsWindowContentBackground.width.baseVal.value = this.WindowWidth;
+		
+		this.manWindowTitlebar.width.baseVal.value = this.WindowWidth;
+		this.manWindowContentBackground.width.baseVal.value = this.WindowWidth;
+		
+		this.lsWindowContent.height.baseVal.value = scrollHeight;
+		this.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
+		this.lsWindowContentBackground.height.baseVal.value = scrollHeight;
 		
 		var lastBottom = this.lsWindowContent.getClientRects()[0].bottom;
 		var nextY = (lastBottom + (padding/2));
-		this.manWindowTitlebar.setAttribute("y", nextY);
-		this.manWindowTitle.setAttribute("y", nextY);
-		this.manWindowTitleBackground.setAttribute("y", nextY);
+		this.manWindowTitlebar.y.baseVal.value = nextY;
+		this.manWindowTitle.y.baseVal.value = nextY;
+		this.manWindowTitleBackground.y.baseVal.value = nextY;
 		lastBottom = this.manWindowTitlebar.getClientRects()[0].bottom;
 		nextY = lastBottom;
-		this.manWindowContentBackground.setAttribute("height", (document.defaultView.innerHeight - (lastBottom + buttonHeight) )); //TODO: use of screen width, use of global
-		this.manWindowContentBackground.setAttribute("y", nextY);
-		this.manCurrentIcon.setAttribute("x", (1 / this.manCurrentIcon.transform.animVal[0].matrix.a) * (padding));
-		this.manCurrentIcon.setAttribute("y", (1 / this.manCurrentIcon.transform.animVal[0].matrix.d) * (padding + lastBottom));
-		this.manGeneralInfo.setAttribute("x", (padding + squareSize + padding));
-		this.manGeneralInfo.setAttribute("y", padding + lastBottom);
-		var rectPosition = svg.getElementById("gameBoard").RectData[0]
+		var buttonHeight = window.fontInfo.GetMaxFontSizeForElement(this.button1DIV, 1, "S").height + (padding / 2); //a guess chicken and egg problem
+		this.manWindowContentBackground.height.baseVal.value = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: use of screen width, use of global
+		this.manWindowContentBackground.y.baseVal.value = nextY;
+		var rectPosition = window.gameBoardExtension.RectData[0];
 		this.manCurrentIcon.setAttribute("transform", rectPosition.transform);
+		this.manCurrentIcon.x.baseVal.value = (1 / this.manCurrentIcon.transform.baseVal[0].matrix.a) * (padding);
+		this.manCurrentIcon.y.baseVal.value = (1 / this.manCurrentIcon.transform.baseVal[0].matrix.d) * (padding + lastBottom);
+		this.manGeneralInfo.x.baseVal.value = (padding + window.gameBoardExtension.SquareSize + padding);
+		this.manGeneralInfo.y.baseVal.value = padding + lastBottom;
+		
 		//Error: cannot getClientRects on invisible item
 		var wasInvisible = this.manCurrentIcon.hasAttribute("display");
 		this.manCurrentIcon.removeAttribute("display");
@@ -215,7 +252,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.manCurrentIcon.setAttribute("display", "none");
 		}
-		this.manHeader.setAttribute("y", padding + lastBottom);
+		this.manHeader.y.baseVal.value = (padding + lastBottom);
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.manHeader.hasAttribute("display");
 		this.manHeader.removeAttribute("display");
@@ -223,10 +260,10 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.manHeader.setAttribute("display", "none");
 		}
-		this.button1Rect.setAttribute("width", windowWidth);
-		this.button1Rect.setAttribute("y", lastBottom + padding);
-		this.button1FO.setAttribute("y", lastBottom + padding + (padding/2));
-		this.button1FO.setAttribute("width", windowWidth);
+		this.button1Rect.width.baseVal.value = this.WindowWidth;
+		this.button1Rect.y.baseVal.value = (lastBottom + padding);
+		this.button1FO.y.baseVal.value = (lastBottom + padding + (padding/2));
+		this.button1FO.width.baseVal.value = this.WindowWidth;
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.button1.hasAttribute("display");
 		this.button1.removeAttribute("display");
@@ -234,10 +271,10 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.button1.setAttribute("display", "none");
 		}
-		this.button2Rect.setAttribute("width", windowWidth);
-		this.button2Rect.setAttribute("y", lastBottom + padding);
-		this.button2FO.setAttribute("y", lastBottom + padding + (padding/2));
-		this.button2FO.setAttribute("width", windowWidth);
+		this.button2Rect.width.baseVal.value = this.WindowWidth;
+		this.button2Rect.y.baseVal.value = (lastBottom + padding);
+		this.button2FO.y.baseVal.value = (lastBottom + padding + (padding/2));
+		this.button2FO.width.baseVal.value = this.WindowWidth;
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.button2.hasAttribute("display");
 		this.button2.removeAttribute("display");
@@ -245,10 +282,10 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.button2.setAttribute("display", "none");
 		}
-		this.button3Rect.setAttribute("width", windowWidth);
-		this.button3Rect.setAttribute("y", lastBottom + padding);
-		this.button3FO.setAttribute("y", lastBottom + padding + (padding/2));
-		this.button3FO.setAttribute("width", windowWidth);
+		this.button3Rect.width.baseVal.value = this.WindowWidth;
+		this.button3Rect.y.baseVal.value = (lastBottom + padding);
+		this.button3FO.y.baseVal.value = (lastBottom + padding + (padding/2));
+		this.button3FO.width.baseVal.value = this.WindowWidth;
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.button3.hasAttribute("display");
 		this.button3.removeAttribute("display");
@@ -257,9 +294,9 @@ function ControlPanelExtension(controlPanelLayer) {
 			this.button3.setAttribute("display", "none");
 		}
 		var nextHeight = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: Figure out what to do with screen height, global use
-		this.manHelpCommand.setAttribute("width", windowWidth);
-		this.manHelpCommand.setAttribute("y", (lastBottom + padding));
-		this.manHelpCommand.setAttribute("height", nextHeight);
+		this.manHelpCommand.width.baseVal.value = this.WindowWidth;
+		this.manHelpCommand.y.baseVal.value = (lastBottom + padding);
+		this.manHelpCommand.height.baseVal.value = nextHeight;
 		this.manHelpCommandDIV.style.height = nextHeight.toString() + "px";
 		//Error: cannot getClientRects on invisible item
 		wasInvisible = this.manHelpCommand.hasAttribute("display");
@@ -268,18 +305,18 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.manHelpCommand.setAttribute("display", "none");
 		}
-		this.buttonUndoRect.setAttribute("width", windowWidth);
-		this.buttonUndoRect.setAttribute("y", (lastBottom - (padding / 2)));
-		this.buttonExecuteRect.setAttribute("width", windowWidth);
-		this.buttonExecuteRect.setAttribute("y", (lastBottom - (padding / 2)));
-		this.buttonCancelRect.setAttribute("width", windowWidth);
-		this.buttonCancelRect.setAttribute("y", (lastBottom - (padding / 2)));
-		this.buttonUndoFO.setAttribute("width", windowWidth);
-		this.buttonUndoFO.setAttribute("y", lastBottom);
-		this.buttonExecuteFO.setAttribute("width", windowWidth);
-		this.buttonExecuteFO.setAttribute("y", lastBottom);
-		this.buttonCancelFO.setAttribute("width", windowWidth);
-		this.buttonCancelFO.setAttribute("y", lastBottom);
+		this.buttonUndoRect.width.baseVal.value = this.WindowWidth;
+		this.buttonUndoRect.y.baseVal.value = (lastBottom - (padding / 2));
+		this.buttonExecuteRect.width.baseVal.value = this.WindowWidth;
+		this.buttonExecuteRect.y.baseVal.value = (lastBottom - (padding / 2));
+		this.buttonCancelRect.width.baseVal.value = this.WindowWidth;
+		this.buttonCancelRect.y.baseVal.value = (lastBottom - (padding / 2));
+		this.buttonUndoFO.width.baseVal.value = this.WindowWidth;
+		this.buttonUndoFO.y.baseVal.value = lastBottom;
+		this.buttonExecuteFO.width.baseVal.value = this.WindowWidth;
+		this.buttonExecuteFO.y.baseVal.value = lastBottom;
+		this.buttonCancelFO.width.baseVal.value = this.WindowWidth;
+		this.buttonCancelFO.y.baseVal.value = lastBottom;
 		controlPanelLayer.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
 	}
 	return controlPanelLayer;
@@ -287,7 +324,7 @@ function ControlPanelExtension(controlPanelLayer) {
 /*
 var controlPanel = new ControlPanelExtension($elem("ls_window"));
 controlPanel.ResetUserPrograms(1); //1= save slot
-controlPanel.ResetUI(190, 10, 4)
+controlPanel.ResetUI(190, 4)
 
 {
 	"draw_white_space": "all",

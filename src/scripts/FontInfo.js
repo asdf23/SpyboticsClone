@@ -13,11 +13,18 @@ function FontInfo(fontMeasurerLayer) {
 		this.SPAN.innerHTML = "";
 		return bBox;
 	};
-	this.GetMaxFontSizeForSize = function(Element, Size, String) { //Size available for text
+	this.GetMaxFontSizeForElement = function(Element, LinesOfText, String) { //Size available for text
 		var foundIdealFont = false;
 		var lastFontSize = this.MINIMUM_POSSIBLE_FONT;
+		var size = Element.getBoundingClientRect();
 		this.setDivToStyleOfElement(Element);
-		this.SPAN.innerHTML = String;
+		this.SPAN.innerHTML = "";
+		for(var i=0; i<LinesOfText; i++) {
+			this.SPAN.innerHTML += String;
+			if((i+1) < LinesOfText) {
+				this.SPAN.innerHTML += "<xhtml:br />";
+			}
+		}
 		for(var i=this.MINIMUM_POSSIBLE_FONT; (i<=this.MAXIMUM_POSSIBLE_FONT) && (!foundIdealFont); i+= this.FONT_ITERATION_SIZE) {
 			lastFontSize = i;
 			this.SPAN.style.fontSize = i.toString() + "px";
@@ -28,12 +35,18 @@ function FontInfo(fontMeasurerLayer) {
 			console.log("FO Size:");
 			console.log(this.SPAN.parentNode.getClientRects()[0]);
 			*/
-			if( (bBox.height > Size.height) || (bBox.width > Size.width) ) {
+			if( (bBox.height > size.height) || (bBox.width > size.width) ) {
 				foundIdealFont = true;
 			}
 		}
+		this.SPAN.style.fontSize = lastFontSize.toString() + "px";
+		var bBox = this.SPAN.getBoundingClientRect();
 		this.SPAN.innerHTML = "";
-		return lastFontSize.toString() + "px";
+		return ({
+			 fontSize: lastFontSize.toString() + "px"
+			,height: bBox.height
+			,width: bBox.width
+		});
 	};
 	this.SetMaxFontSizeForSize = function(Element, Size, String) { //Size available for text
 		var foundIdealFont = false;

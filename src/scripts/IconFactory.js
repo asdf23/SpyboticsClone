@@ -14,47 +14,7 @@
 	has array.merge
 	has array intersect
 */
-Array.prototype.playerMove2 = function(NewPosition, MaxLength) {
-	var indexOfPrevious = this.indexOf(NewPosition);
-	if(indexOfPrevious >= 0) {
-		this.splice(indexOfPrevious, 1);
-	}
-	this.unshift(NewPosition);
-	if( this.length > MaxLength ) {
-		return this.pop();
-	} else {
-		return null;
-	}
-};
-Array.prototype.merge = function(val) {
-	var uniqueValues = new Array();
-	for(var i=0; i<val.length; i++) {
-		if( this.indexOf(val[i]) == -1 ) {
-			this.push(val[i]);
-			uniqueValues.push(val[i]);
-		}
-	}
-	return uniqueValues;
-};
-Array.prototype.actualSize = function() { // Unique length
-	var o = {}, i, l = this.length, r = [];
-	for(i=0; i<l;i+=1) {
-		o[this[i]] = this[i];
-	}
-	for(i in o) {
-		r.push(o[i]);
-	}
-	return r.length;
-};
-Array.prototype.intersect = function(b) {
-	var results = new Array();
-	for(var i=0; i<this.length; i++) {
-		if(b.indexOf(this[i]) >= 0) {
-			results.push(this[i]);
-		}
-	}
-	return results;
-}
+
 var icon_load = 100;
 var icon_selected = 101;
 var icon_moved = 102;
@@ -348,7 +308,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			if( gameBoardLayer.PointIsValid(newPoint) ) { //prevent off board moves but not overlapping enemies
 				//var newPositionData = superClass.GetPositionData(newPoint);
 				var newPositionData = gameBoardLayer.RectData[newPoint];
-				var removeRectPosition = this.Position.playerMove2(newPoint, this.IconData.MaxSize);
+				var removeRectPosition = this.Position.playerMove(newPoint, this.IconData.MaxSize);
 				icon.setAttribute("x", newPositionData.x);
 				icon.setAttribute("y", newPositionData.y);
 				for(var i=1; i<this.Position.length; i++) {
@@ -513,7 +473,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 										newPoint = gameBoardLayer.PointBelowPoint(tempPosition[0], 1);
 										moveList.push("Down");
 									}
-									tempPosition.playerMove2( newPoint );
+									tempPosition.playerMove( newPoint );
 									successfultMove = true;
 									this.RemainingMoves--;
 								}
@@ -532,7 +492,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 											newPoint = gameBoardLayer.PointRightToPoint(tempPosition[0], 1);
 											moveList.push("Right");
 										}
-										tempPosition.playerMove2( newPoint );
+										tempPosition.playerMove( newPoint );
 										successfultMove = true;
 										this.RemainingMoves--;
 									}
@@ -582,11 +542,11 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					nodeToDestroy = this;
 				}
 				setTimeout(function(a, b, icon) {
-					var scale = squareSize/100;
+					//var scale = window.gameBoardExtension.SquareSize/100;
 					var g = document.createElementNS(svgNS, "g");
 					g.setAttribute("transform", "translate(" + a.actualX.toString() + "," + a.actualY.toString() + ")" );
 					var use = document.createElementNS(svgNS, "use");
-					use.setAttribute("transform", "scale(" + scale.toString() + "," + scale.toString() + ")");
+					use.setAttribute("transform", "scale(" + window.gameBoardExtension.Scale.toString() + "," + window.gameBoardExtension.Scale.toString() + ")");
 					use.setAttributeNS(xlinkNS, "href", "#" + superClass[icon_attack_animation].SVGName);
 					var animatableObjects = new Array();
 					var s = new Array();
@@ -775,6 +735,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		return icon;
 	}
 }
+function sortPrograms(a,b) { 
+	return b.Program - a.Program;
+}
 /*
 var iconFactory = new IconsFactory( $elem("layer_gamePieces") , $elem("gameBoard"), true );
 var u1 = iconFactory.createIcon(0, [40+16*3], true);
@@ -811,12 +774,4 @@ console.log(u1.Position);
 console.log("Rects:");
 console.log(u1.Rects);
 u1.MoveRight();
-
-git add src/images/icon128.png
-git add src/images/icon16.png
-git add src/images/icon32.png
-git add src/images/icon48.png
-git add src/images/icon64.png
-git add src/manifest.webapp
-
 */

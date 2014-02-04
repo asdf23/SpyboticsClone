@@ -17,6 +17,8 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.SquareSize = null;
 	gameBoardLayer.Scale = null;
 	gameBoardLayer.RectData = new Array();
+	gameBoardLayer.GameBoardSpacesHigh = 12;
+	gameBoardLayer.GameBoardSpacesWide = 16;
 	
 	/*
 	  ___                     _             _              _    
@@ -30,7 +32,7 @@ function GameBoardExtension(gameBoardLayer) {
 	
 	gameBoardLayer.StartBoardDragging = function() {
 		console.log("User indicated the start of a moveable board");
-		this.RightEdge = document.defaultView.innerWidth - (this.getBBox().width + windowWidth); //Global variable here
+		this.RightEdge = document.defaultView.innerWidth - (this.getBBox().width + window.controlPanelExtension.WindowWidth); //Global variable here
 		if(this.RightEdge > 0) {
 			console.log("Dragging is not required, screen is too small");
 			return;
@@ -76,14 +78,14 @@ function GameBoardExtension(gameBoardLayer) {
 	                   |___/|___/       |___/            |___/      
 	*/
 	gameBoardLayer.RowOfPoint = function(Point) {
-		return parseInt((Point / window.gameBoardSpacesWide), 10);
+		return parseInt((Point / this.GameBoardSpacesWide), 10);
 	};
 	gameBoardLayer.ColumnOfPoint = function(Point) {
-		return Point % window.gameBoardSpacesWide;
+		return Point % this.GameBoardSpacesWide;
 	};
 	gameBoardLayer.PointIsValid = function(Point) {
 		if(Point != null) {
-			return ((Point >=0) && (Point < (window.gameBoardSpacesHigh * window.gameBoardSpacesWide )));
+			return ((Point >=0) && (Point < (this.GameBoardSpacesHigh * this.GameBoardSpacesWide )));
 		} else {
 			return false;
 		}
@@ -92,7 +94,7 @@ function GameBoardExtension(gameBoardLayer) {
 		if(Point == null) {
 			return null;
 		} else {
-			Point -= window.gameBoardSpacesWide * Amount;
+			Point -= this.GameBoardSpacesWide * Amount;
 			if(this.PointIsValid(Point)) {
 				return Point;
 			} else {
@@ -104,7 +106,7 @@ function GameBoardExtension(gameBoardLayer) {
 		if(Point == null) {
 			return null;
 		} else {
-			Point += window.gameBoardSpacesWide * Amount;
+			Point += this.GameBoardSpacesWide * Amount;
 			if(this.PointIsValid(Point)) {
 				return Point;
 			} else {
@@ -376,26 +378,26 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 			,Players: p
 		});
 	};
-	gameBoardLayer.ResetSizeForScreen = function(squareSize, windowWidth, screenWidth, screenHeight, padding) {
-		this.SquareSize = squareSize;
+	gameBoardLayer.ResetSizeForScreen = function(ScreenSize, padding) {
+		this.SquareSize = ((ScreenSize.height - (padding*2 + (this.GameBoardSpacesHigh*2)))/ this.GameBoardSpacesHigh);
 		var scale = this.SquareSize / 100;
 		var scaleString = "scale(" + scale.toString() + "," + scale.toString() + ")";
 		var tiles = this.getElementsByTagName("rect"); //this referrs to <g id=gameBoard
 		for(var i=0; i<tiles.length; i++) {
-			var x = windowWidth + padding + ((i % window.gameBoardSpacesWide) * (squareSize + (padding/2)));
-			var y = padding + parseInt(i/window.gameBoardSpacesWide, 10) * (squareSize + (padding/2));
-			tiles[i].setAttribute("width", squareSize);
-			tiles[i].setAttribute("height", squareSize);
+			var x = window.controlPanelExtension.WindowWidth + padding + ((i % this.GameBoardSpacesWide) * (this.SquareSize + (padding/2)));
+			var y = padding + parseInt(i/this.GameBoardSpacesWide, 10) * (this.SquareSize + (padding/2));
+			tiles[i].setAttribute("width", this.SquareSize);
+			tiles[i].setAttribute("height", this.SquareSize);
 			tiles[i].setAttribute("x", x);
 			tiles[i].setAttribute("y", y);
 			this.RectData.push({
 				 actualX: x
 				,actualY: y
-				,width: squareSize
-				,height: squareSize
+				,width: this.SquareSize
+				,height: this.SquareSize
 				,transform: scaleString
-				,x: ((screenWidth*(1/scale)) / (screenWidth / x))
-				,y: ((screenHeight*(1/scale)) / (screenHeight / y))
+				,x: ((ScreenSize.width*(1/scale)) / (ScreenSize.width / x))
+				,y: ((ScreenSize.height*(1/scale)) / (ScreenSize.height / y))
 			});
 		}
 	};
@@ -421,7 +423,6 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 		window.players = new Array();
 		window.utilities = new Array();
 		var levelMap = Levels[LevelID];
-		var iconFactoryInstance = new IconsFactory($elem("layer_gamePieces") , $elem("gameBoard"));
 		var tiles = gameBoardLayer.getElementsByTagName("rect");
 		for(var i=0; i<levelMap.Map.length; i++) {
 			switch( levelMap.Map.substr(i, 1) ) {
@@ -437,10 +438,23 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 					tiles[i].setAttribute("class", "tile" + levelMap.Map.substr(i, 1));
 					break;
 				case "#":
-					var loadIcon = iconFactoryInstance.createIcon(icon_load, [i], true);
+					var loadIcon = window.iconFactory.createIcon(icon_load, [i], true);
 					loadIcon.addEventListener("click", function(Point) {
 						return function() {
 							console.log("Load current icon at Point: " + Point.toString());
+							if( window.controlPanelExtension.CurrentProgram != null ) {
+								console.log("will load: ");
+								console.log(window.controlPanelExtension.CurrentProgram);
+								if( window.controlPanelExtension.CurrentProgram.IconCount > 0 ) {
+									window.controlPanelExtension.CurrentProgram.IconCount--;
+									window.controlPanelExtension.CurrentProgram.innerHTML = window.controlPanelExtension.CurrentProgram.IconData.Name + " x" + window.controlPanelExtension.CurrentProgram.IconCount.toString();
+									window.iconFactory.createIcon(window.controlPanelExtension.CurrentProgram.IconIndex, [Point], true);
+								} else {
+									console.log("no instances of program left to load");
+								}
+							} else {
+								console.log("will no active program to load");
+							}
 						};
 					}(i), false);
 					break;
@@ -448,17 +462,16 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 				case "2":
 				case "3":
 					var iconIndex = parseInt(levelMap.Map.substr(i, 1), 10);
-					iconFactoryInstance.createIcon(iconIndex, [i], true);
+					window.iconFactory.createIcon(iconIndex, [i], true);
 					break;
 			}
 		}
-		delete iconFactoryInstance;
 	};
 	return gameBoardLayer;
 }
 /*
 var gameBoard = new GameBoardExtension($elem("gameBoard"));
-gameBoard.ResetSizeForScreen(squareSize, windowWidth, document.defaultView.innerWidth, document.defaultView.innerHeight, padding);
+gameBoard.ResetSizeForScreen(({height; 320, width: 400}), windowWidth, document.defaultView.innerWidth, document.defaultView.innerHeight, padding);
 console.log(gameBoard.RectData[40]);
 console.log(gameBoard.Filters);
 var iconFactory = new IconsFactory( $elem("layer_gamePieces") , gameBoard, true );

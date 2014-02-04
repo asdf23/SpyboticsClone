@@ -20,12 +20,12 @@
 	 sodipodi:docname="index.svg"
 	 onload="init(this)">
 	<svg:script xlink:href="scripts/FontInfo.js" />
-	<svg:script xlink:href="scripts/master.js" />
+	<svg:script xlink:href="scripts/BackgroundExtension.js" />
 	<svg:script xlink:href="scripts/levels.js" />
-	<svg:script xlink:href="scripts/icons.js" />
 	<svg:script xlink:href="scripts/IconFactory.js" />
 	<svg:script xlink:href="scripts/GameBoardExtension.js" />
 	<svg:script xlink:href="scripts/ControlPanelExtension.js" />
+	<svg:script xlink:href="scripts/master2.js" />
 	<defs>
 		<!-- 
 			  _____                    
