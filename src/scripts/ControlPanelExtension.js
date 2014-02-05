@@ -20,8 +20,9 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.lsPageLength = 3;
 	controlPanelLayer.CurrentProgram = null;
 	
-	//unneeded? controlPanelLayer.lsWindow = svg.getElementById("ls_window");
+	controlPanelLayer.lsWindow = svg.getElementById("ls_window");
 	controlPanelLayer.lsWindowTitle = svg.getElementById("ls_window_title"); //Gray titlebar
+	controlPanelLayer.lsWindowTitleDIV = controlPanelLayer.lsWindow.children[2].children[0]; //DIV for ls /bin
 	controlPanelLayer.lsWindowContentBackground = svg.getElementById("ls_window_content_background"); //Background of program list
 	controlPanelLayer.lsWindowContent = svg.getElementById("ls_window_content"); //ForiegnObject with div with n-Divs for programs
 	controlPanelLayer.lsWindowContentContainer = controlPanelLayer.lsWindowContent.children[0]; //Div that contains divs of ls programs
@@ -29,8 +30,7 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.manWindowTitlebar = svg.getElementById("man_window_titlebar"); //Gray titlebar 
 	controlPanelLayer.manWindowTitleBackground = svg.getElementById("man_window_title_background"); //titlebar text background
 	controlPanelLayer.manWindowTitle = svg.getElementById("man_window_title"); //ForiegnObject to contain div
-	controlPanelLayer.manWindowTitleDIV = controlPanelLayer.manWindowTitle.children[0];
-	controlPanelLayer.manWindowTitleText = controlPanelLayer.manWindowTitle.children[0]; //div to manWindowTitle
+	controlPanelLayer.manWindowTitleDIV = controlPanelLayer.manWindowTitle.children[0]; //div to manWindowTitle
 	controlPanelLayer.manWindowContentBackground = svg.getElementById("man_window_content_background"); //Background to man window
 	controlPanelLayer.manCurrentIcon = svg.getElementById("man_current_icon"); //Use for icon
 	controlPanelLayer.manGeneralInfo = svg.getElementById("man_general_info"); //ForiegnObject of <div> with 2 inner divs for Move and Max Size
@@ -136,6 +136,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		while(this.lsWindowContentContainer.children.length > 0) {
 			this.lsWindowContentContainer.removeChild(this.lsWindowContentContainer.children[0]);
 		}
+		this.lsWindowTitleDIV.innerHTML = "ls /bin";
 		var iconFactoryInstance = new IconsFactory($elem("layer_gamePieces") , $elem("gameBoard"));
 		var db = JSON.parse(localStorage["User.Programs." + LoadSlot.toString()]);
 		db = db.sort(sortPrograms);
@@ -160,7 +161,8 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.button2.setAttribute("display", "none");
 				this.button3.setAttribute("display", "none");
 				this.manHelpCommand.setAttribute("display", "none");
-				controlPanelLayer.manWindowTitleText = "$";
+				this.lsWindowTitleDIV.innerHTML = "$";
+				this.manWindowTitleDIV.innerHTML = "$";
 				break;
 			case "LoadGame":
 				break;
@@ -169,7 +171,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			//case 
 		}
 	};
-	controlPanelLayer.ResetUI = function(padding) {
+	controlPanelLayer.ResetUI = function(padding) { //requires gameBoardExtension.SquareSize (from gameBoardLayer.ResetSizeForScreen)
 		var scrollBarWidth = this.lsWindowContent.width.baseVal.value - this.lsWindowContentContainer.clientWidth;
 		if( isNaN(scrollBarWidth) ) {
 			console.log("failed to set scrollBarWidth");
@@ -189,6 +191,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			throw "Icon data is corrupted.";
 		}
 		//should set controlPanelLayer.WindowWidth here
+		this.WindowWidth = (padding + window.gameBoardExtension.SquareSize + padding) + window.fontInfo.GetDimentionsOfString(this.manGeneralInfoDIVMove, "Move: 333 ").width + padding;
 		
 		var scrollTextSize = window.fontInfo.GetMaxFontSizeForElement(this.lsWindowContentContainer, this.lsPageLength, longestPlayerIconName);
 		var scrollHeight = scrollTextSize.height;

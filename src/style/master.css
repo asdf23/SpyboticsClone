@@ -85,6 +85,7 @@ foreignObject div {
 }
 .scrollableWindowContent {
 	cursor: pointer;
+	clear: both;
 }
 .button {
 	stroke: rgb(135,135,135);

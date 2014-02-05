@@ -24,6 +24,7 @@ function init(svgElem) {
 	window.gameBoardExtension = new GameBoardExtension( $elem("gameBoard") );
 	window.iconFactory = new IconsFactory( $elem("layer_gamePieces"), window.gameBoardExtension );
 	
+	window.controlPanelExtension.SetMode("Init");
 	window.gameBoardExtension.ResetSizeForScreen(getScreenDimensions(), 4);
 	window.deviceIsTouchEnabled = ('ontouchstart' in document.documentElement);
 	window.backgroundExtension.SetBackground( window.backgroundExtension.Types_Background.ASCIIGarbage );
