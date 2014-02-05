@@ -19,6 +19,7 @@ function ControlPanelExtension(controlPanelLayer) {
 	console.log("WindowWidth is currently hard-coded this should be calculated");
 	controlPanelLayer.lsPageLength = 3;
 	controlPanelLayer.CurrentProgram = null;
+	controlPanelLayer.CurrentMode = null;
 	
 	controlPanelLayer.lsWindow = svg.getElementById("ls_window");
 	controlPanelLayer.lsWindowTitle = svg.getElementById("ls_window_title"); //Gray titlebar
@@ -147,6 +148,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		delete iconFactoryInstance;
 	}
 	controlPanelLayer.SetMode = function(Mode) {
+		this.CurrentMode = Mode;
 		switch(Mode) {
 			default:
 				console.log("Unknown mode: " + Mode);
