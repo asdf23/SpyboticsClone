@@ -140,19 +140,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		var db = JSON.parse(localStorage["User.Programs." + LoadSlot.toString()]);
 		db = db.sort(sortPrograms);
 		for(var i=0; i<db.length; i++) {
-			var div = document.createElementNS(xhtmlNS, "div");
-			div.setAttribute("class", "scrollableWindowContent");
-			div.IconIndex = db[i].Program;
-			div.IconData = iconFactoryInstance.Icons[ db[i].Program ];
-			div.IconCount = db[i].Count;
-			div.innerHTML = div.IconData.Name + " x" + div.IconCount.toString();
-			iconFactoryInstance.Icons[ db[i].Program ].Name + " x" + db[i].Count.toString();
-			div.addEventListener("click", function(sender, d){ 
-											return function() {
-												console.log(d.IconData.Name + " x" + d.IconCount.toString());
-												sender.ManProgram(d.IconData, d);
-											}
-										}(this, div), false);
+			var div = new ProgramInstanceExtension(db[i].Program, db[i].Count);
 			this.lsWindowContentContainer.appendChild(div);
 		}
 		delete iconFactoryInstance;

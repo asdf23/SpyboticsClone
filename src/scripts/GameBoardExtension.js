@@ -445,9 +445,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 							if( window.controlPanelExtension.CurrentProgram != null ) {
 								console.log("will load: ");
 								console.log(window.controlPanelExtension.CurrentProgram);
-								if( window.controlPanelExtension.CurrentProgram.IconCount > 0 ) {
-									window.controlPanelExtension.CurrentProgram.IconCount--;
-									window.controlPanelExtension.CurrentProgram.innerHTML = window.controlPanelExtension.CurrentProgram.IconData.Name + " x" + window.controlPanelExtension.CurrentProgram.IconCount.toString();
+								if( window.controlPanelExtension.CurrentProgram.DecreaseInstance() ) {
 									window.iconFactory.createIcon(window.controlPanelExtension.CurrentProgram.IconIndex, [Point], true);
 								} else {
 									console.log("no instances of program left to load");
