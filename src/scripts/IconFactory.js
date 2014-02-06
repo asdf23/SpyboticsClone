@@ -207,6 +207,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.MovementIndicators = null;
 		icon.AttackableIndicators = null;
 		icon.RemainingMoves = 0;
+		icon.NextInChain = null;
 		for(var i=1; i<InitalizePositions.length; i++) {
 			//var rectPosition = GetPositionData(InitalizePositions[i]);
 			var rectPosition = gameBoardLayer.RectData[InitalizePositions[i]];
@@ -401,6 +402,14 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								break;
 							case "Complete":
 								a.ShowCompletedMove();
+								if( a.NextInChain != null ) {
+									console.log("calling NextInChain callback...");
+									if(a.NextInChain.Sender != null) {
+										a.NextInChain.Method.call(a.NextInChain.Sender);
+									} else {
+										a.NextInChain.Method();
+									}
+								}
 								break;
 						}
 					} else {

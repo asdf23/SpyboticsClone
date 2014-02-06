@@ -397,6 +397,58 @@ function ControlPanelExtension(controlPanelLayer) {
 			}
 		}
 	}, false);
+	controlPanelLayer.buttonExecute.addEventListener("click", function() {
+		console.log("Execute click");
+		while(window.utilities.length > 0) {
+			window.utilities[0].parentNode.removeChild(window.utilities[0]);
+			window.utilities.remove(window.utilities[0]);
+		}
+		var levelMap = Levels[window.gameBoardExtension.CurrentLevel];
+		if( levelMap.FirstMove == "Enemy" ) {
+			//some kind of massive chaining of events....
+			for(var i=0; i<window.enemies.length; i++) {
+				window.enemies[i].RemainingMoves = window.enemies[i].IconData.Move;
+				if((i+1) < window.enemies.length) {
+					//another icon after this one..
+					window.enemies[i].NextInChain = ({
+						 Sender: window.enemies[i+1]
+						,Method: window.enemies[i+1].AutomateMove
+					});
+				} else {
+					//last icon
+					window.enemies[i].NextInChain = ({
+						 Sender: window.players[0]
+						,Method: window.players[0].ShowMoveablePlaces
+					});
+				}
+			}
+			for(var i=0; i<window.players.length; i++) {
+				window.players[i].RemainingMoves = window.players[i].IconData.Move;
+				if((i+1) < window.players.length) {
+					//another icon after this one..
+					window.players[i].NextInChain = ({
+						 Sender: window.players[i+1]
+						,Method: window.players[i+1].ShowMoveablePlaces
+					});
+				} else {
+					//last icon
+					window.players[i].NextInChain = ({
+						 Sender: null
+						,Method: function() {
+							console.log("Completed full move");
+						}
+					});
+				}
+			}
+			if(window.enemies.length > 0) {
+				window.enemies[0].AutomateMove();
+			} else {
+				window.players[0].ShowMoveablePlaces()
+			}
+		} else {
+			console.log("not implemented");
+		}
+	}, false);
 	return controlPanelLayer;
 }
 /*
