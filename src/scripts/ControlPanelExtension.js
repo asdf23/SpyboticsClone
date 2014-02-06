@@ -15,6 +15,24 @@
 	ResetUI does not expect visibitly state
 */
 function ControlPanelExtension(controlPanelLayer) {
+	controlPanelLayer.Types_Mode = ({
+		 Hidden: ({
+			 Value: 0
+			,Name: "Hidden"
+		})
+		,Init: ({
+			 Value: 0
+			,Name: "Init"
+		})
+		,LoadingGame: ({
+			 Value: 0
+			,Name: "LoadingGame"
+		})
+		,InGame: ({
+			 Value: 0
+			,Name: "InGame"
+		})
+	});
 	controlPanelLayer.WindowWidth = 190; //All window widths should come from here
 	console.log("WindowWidth is currently hard-coded this should be calculated");
 	controlPanelLayer.lsPageLength = 3;
@@ -153,9 +171,9 @@ function ControlPanelExtension(controlPanelLayer) {
 			default:
 				console.log("Unknown mode: " + Mode);
 				break;
-			case "Hidden":
+			case this.Types_Mode.Hidden:
 				break;
-			case "Init":
+			case this.Types_Mode.Init:
 				this.manCurrentIcon.setAttribute("display", "none");
 				this.manGeneralInfo.setAttribute("display", "none");
 				this.manHeader.setAttribute("display", "none");
@@ -166,11 +184,10 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.lsWindowTitleDIV.innerHTML = "$";
 				this.manWindowTitleDIV.innerHTML = "$";
 				break;
-			case "LoadGame":
+			case this.Types_Mode.LoadingGame:
 				break;
-			case "PlayGame":
+			case this.Types_Mode.InGame:
 				break;
-			//case 
 		}
 	};
 	controlPanelLayer.ResetUI = function(padding) { //requires gameBoardExtension.SquareSize (from gameBoardLayer.ResetSizeForScreen)

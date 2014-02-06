@@ -24,12 +24,13 @@ function init(svgElem) {
 	window.gameBoardExtension = new GameBoardExtension( $elem("gameBoard") );
 	window.iconFactory = new IconsFactory( $elem("layer_gamePieces"), window.gameBoardExtension );
 	
-	window.controlPanelExtension.SetMode("Init");
+	window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.Init);
 	window.gameBoardExtension.ResetSizeForScreen(getScreenDimensions(), 4);
 	window.deviceIsTouchEnabled = ('ontouchstart' in document.documentElement);
 	window.backgroundExtension.SetBackground( window.backgroundExtension.Types_Background.ASCIIGarbage );
 	window.controlPanelExtension.ResetUserPrograms(1); //1= save slot
 	window.controlPanelExtension.ResetUI(2);
+	window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.LoadingGame);
 	window.gameBoardExtension.LoadLevel(0);
 	
 	console.log("/init()");

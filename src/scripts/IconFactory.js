@@ -224,12 +224,48 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		}
 		//Allow for object to be tracked by others
 		if( RegisterIcon ) {
+			var listenToClickEvents = false;
 			if( icon.IconData.isEnemy ) {
 				window.enemies.push(icon);
+				listenToClickEvents = true;
 			} else if( icon.IconData.isPlayer ) {
 				window.players.push(icon);
+				listenToClickEvents = true;
 			} else if( icon.IconData.isUtility ) {
 				window.utilities.push(icon);
+			}
+			if(listenToClickEvents) {
+				icon.addEventListener("click", function() {
+					switch( window.controlPanelExtension.CurrentMode ) {
+						default:
+							console.log("Unknown mode: " + window.controlPanelExtension.CurrentMode.Name);
+							break;
+						case window.controlPanelExtension.Types_Mode.Hidden:
+						case window.controlPanelExtension.Types_Mode.Init:
+							//should not have a clickable event
+							console.log("In " + window.controlPanelExtension.CurrentMode.Name + " mode, why is there an icon on the screen?");
+							break;
+						case window.controlPanelExtension.Types_Mode.LoadingGame:
+							//toggle Highlight, show Man, toggle cancel button / Begin battle button
+							if( icon.Selected ) {
+								icon.ClearSelected();
+							} else {
+								for(var i=0; i<window.players.length; i++) {
+									window.players[i].ClearSelected();
+								}
+								for(var i=0; i<window.enemies.length; i++) {
+									window.enemies[i].ClearSelected();
+								}
+								icon.ShowSelected();
+							}
+							window.controlPanelExtension.ManProgram(icon.IconData, null);
+							console.log("need window.controlPanelExtension.ShowCancelButton");
+							break;
+						case window.controlPanelExtension.Types_Mode.InGame:
+							//toggle end remaining moves, show undo move
+							break;
+					}
+				}, false);
 			}
 		}
 		//Methods
