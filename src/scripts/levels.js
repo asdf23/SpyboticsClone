@@ -13,5 +13,7 @@ var Levels = ({
 				 "________________" +
 				 "________________"
 			,Objectives: ["Exterminate"]
+			,FirstMove: "Enemy"
+			,MinimumBadgeRequired: 0
 	}
 });

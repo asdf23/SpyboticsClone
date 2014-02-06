@@ -19,7 +19,7 @@ function GameBoardExtension(gameBoardLayer) {
 	gameBoardLayer.RectData = new Array();
 	gameBoardLayer.GameBoardSpacesHigh = 12;
 	gameBoardLayer.GameBoardSpacesWide = 16;
-	
+	gameBoardLayer.CurrentLevel = null;
 	/*
 	  ___                     _             _              _    
 	 |   \ _ _ __ _ __ _ __ _(_)_ _  __ _  | |   ___  __ _(_)__ 
@@ -420,6 +420,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 		return icon;
 	};
 	gameBoardLayer.LoadLevel = function(LevelID) {
+		this.CurrentLevel = LevelID;
 		window.enemies = new Array();
 		window.players = new Array();
 		window.utilities = new Array();

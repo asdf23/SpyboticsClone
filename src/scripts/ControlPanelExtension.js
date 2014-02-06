@@ -21,16 +21,30 @@ function ControlPanelExtension(controlPanelLayer) {
 			,Name: "Hidden"
 		})
 		,Init: ({
-			 Value: 0
+			 Value: 1
 			,Name: "Init"
 		})
 		,LoadingGame: ({
-			 Value: 0
+			 Value: 2
 			,Name: "LoadingGame"
 		})
 		,InGame: ({
-			 Value: 0
+			 Value: 3
 			,Name: "InGame"
+		})
+	});
+	controlPanelLayer.Types_Button = ({
+		 Cancel: ({
+			 Value: 0
+			,Name: "Cancel"
+		})
+		,Undo: ({
+			 Value: 1
+			,Name: "Undo"
+		})
+		,Execute: ({
+			 Value: 2
+			,Name: "Execute"
 		})
 	});
 	controlPanelLayer.WindowWidth = 190; //All window widths should come from here
@@ -83,13 +97,21 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.buttonUndoDIV = controlPanelLayer.buttonUndo.children[1].children[0];
 	controlPanelLayer.buttonExecuteDIV = controlPanelLayer.buttonExecute.children[1].children[0];
 	controlPanelLayer.buttonCancelDIV = controlPanelLayer.buttonCancel.children[1].children[0];
-
+	
 	controlPanelLayer.manHelpCommand = svg.getElementById("man_help_command"); //ForiegnObject with div with div of text of Attack command
 	controlPanelLayer.manHelpCommandDIV = controlPanelLayer.manHelpCommand.children[0];
 	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G
-	controlPanelLayer.ManProgram = function(IconData, div) {
+	controlPanelLayer.FindProgram = function(IconData) {
+		for(var i=0; i<this.lsWindowContentContainer.children.length; i++) {
+			if(this.lsWindowContentContainer.children[i].IconData == IconData) {
+				return this.lsWindowContentContainer.children[i];
+			}
+		}
+		return null;
+	};
+	controlPanelLayer.ManProgram = function(IconData) {
 		this.manGeneralInfoDIVMove.innerHTML = "Move: " + IconData.Move.toString();
 		this.manGeneralInfoDIVSize.innerHTML = "Max Size: " + IconData.MaxSize.toString();
 		this.manHeaderDIVProgramName.innerHTML = IconData.Name;
@@ -100,6 +122,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manHelpCommandDIV.innerHTML = IconData.Description;
 		this.manHelpCommand.removeAttribute("display");
 		controlPanelLayer.manWindowTitleDIV.innerHTML = "man " + IconData.Name;
+		var div = this.FindProgram(IconData);
 		if(div != null) {
 			this.CurrentProgram  = div;
 		} else {
@@ -133,7 +156,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			}
 			this.button3.setAttribute("display", "none");
 		}
-	}
+	};
 	controlPanelLayer.AttackTypeToFill = function(AttackType) { //TODO: should this be moved?
 		switch(AttackType) {
 			default:
@@ -141,7 +164,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			case "StandardAttack":
 				return "fill:url(#linearGradientAttack)";
 		}
-	}
+	};
 	controlPanelLayer.ResetUserPrograms = function(LoadSlot) {
 		if( localStorage["User.Programs." + LoadSlot.toString()] == undefined) {
 			localStorage["User.Programs." + LoadSlot.toString()] = JSON.stringify([{
@@ -164,7 +187,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			this.lsWindowContentContainer.appendChild(div);
 		}
 		delete iconFactoryInstance;
-	}
+	};
 	controlPanelLayer.SetMode = function(Mode) {
 		this.CurrentMode = Mode;
 		switch(Mode) {
@@ -183,10 +206,33 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.manHelpCommand.setAttribute("display", "none");
 				this.lsWindowTitleDIV.innerHTML = "$";
 				this.manWindowTitleDIV.innerHTML = "$";
+				this.ShowButton(this.Types_Button.Execute);
 				break;
 			case this.Types_Mode.LoadingGame:
 				break;
 			case this.Types_Mode.InGame:
+				break;
+		}
+	};
+	controlPanelLayer.ShowButton = function(Button) {
+		switch(Button) {
+			default:
+				console.log("Unknown button mode: " + Button.Name);
+				break;
+			case this.Types_Button.Cancel:
+				this.buttonUndo.setAttribute("display", "none");
+				this.buttonExecute.setAttribute("display", "none");
+				this.buttonCancel.removeAttribute("display");
+				break;
+			case this.Types_Button.Undo:
+				this.buttonCancel.setAttribute("display", "none");
+				this.buttonExecute.setAttribute("display", "none");
+				this.buttonUndo.removeAttribute("display");
+				break;
+			case this.Types_Button.Execute:
+				this.buttonCancel.setAttribute("display", "none");
+				this.buttonUndo.setAttribute("display", "none");
+				this.buttonExecute.removeAttribute("display");
 				break;
 		}
 	};
@@ -245,7 +291,15 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manWindowTitleBackground.y.baseVal.value = nextY;
 		lastBottom = this.manWindowTitlebar.getClientRects()[0].bottom;
 		nextY = lastBottom;
-		var buttonHeight = window.fontInfo.GetMaxFontSizeForElement(this.button1DIV, 1, "S").height + (padding / 2); //a guess chicken and egg problem
+		var wasInvisible = false;
+		var buttonHeight = this.button1FO.height.baseVal.value;
+		wasInvisible = this.button1.hasAttribute("display");
+		this.button1.removeAttribute("display");
+		buttonHeight = window.fontInfo.GetMaxFontSizeForElement(this.button1DIV, 1, "S").height + (padding / 2); //a guess chicken and egg problem
+		if(wasInvisible) {
+			this.button1.setAttribute("display", "none");
+		}
+		console.log("buttonHeight: " + buttonHeight.toString());
 		this.manWindowContentBackground.height.baseVal.value = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: use of screen width, use of global
 		this.manWindowContentBackground.y.baseVal.value = nextY;
 		var rectPosition = window.gameBoardExtension.RectData[0];
@@ -256,7 +310,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manGeneralInfo.y.baseVal.value = padding + lastBottom;
 		
 		//Error: cannot getClientRects on invisible item
-		var wasInvisible = this.manCurrentIcon.hasAttribute("display");
+		wasInvisible = this.manCurrentIcon.hasAttribute("display");
 		this.manCurrentIcon.removeAttribute("display");
 		lastBottom = this.manCurrentIcon.getClientRects()[0].bottom;
 		if(wasInvisible) {
@@ -327,8 +381,22 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.buttonExecuteFO.y.baseVal.value = lastBottom;
 		this.buttonCancelFO.width.baseVal.value = this.WindowWidth;
 		this.buttonCancelFO.y.baseVal.value = lastBottom;
-		controlPanelLayer.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
-	}
+		this.lsWindowContentContainer.style.height = (scrollHeight - padding).toString() + "px";
+	};
+	controlPanelLayer.buttonCancel.addEventListener("click", function() {
+		console.log("Cancel Click");
+		for(var i=0; i<window.players.length; i++) {
+			if(window.players[i].Selected) {
+				window.players[i].ClearSelected();
+				window.players[i].parentNode.removeChild(window.players[i]);
+				window.players.remove( window.players[i] );
+				if(window.controlPanelExtension.CurrentProgram != null) {
+					window.controlPanelExtension.CurrentProgram.IncreaseInstance();
+					window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
+				}
+			}
+		}
+	}, false);
 	return controlPanelLayer;
 }
 /*

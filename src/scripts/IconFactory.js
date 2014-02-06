@@ -249,6 +249,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							//toggle Highlight, show Man, toggle cancel button / Begin battle button
 							if( icon.Selected ) {
 								icon.ClearSelected();
+								window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
 							} else {
 								for(var i=0; i<window.players.length; i++) {
 									window.players[i].ClearSelected();
@@ -257,9 +258,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 									window.enemies[i].ClearSelected();
 								}
 								icon.ShowSelected();
+								window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Cancel);
 							}
-							window.controlPanelExtension.ManProgram(icon.IconData, null);
-							console.log("need window.controlPanelExtension.ShowCancelButton");
+							window.controlPanelExtension.ManProgram(icon.IconData);
 							break;
 						case window.controlPanelExtension.Types_Mode.InGame:
 							//toggle end remaining moves, show undo move
