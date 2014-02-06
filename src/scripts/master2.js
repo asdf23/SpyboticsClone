@@ -222,8 +222,8 @@ function dateTimeReviver(key, value) {
 */
 function debug_markArrayInMap(specialMark, toMark) {
 	var result = new Array();
-	for(var i=0; i<gameBoardSpacesHigh; i++) {
-		for(var j=0; j<gameBoardSpacesWide; j++) {
+	for(var i=0; i<window.gameBoardExtension.GameBoardSpacesHigh; i++) {
+		for(var j=0; j<window.gameBoardExtension.GameBoardSpacesWide; j++) {
 			if( specialMark == (i*16 + j) ) {
 				result.push("@");
 			} else if( toMark.indexOf( i*16 + j ) >= 0 ) {

@@ -381,7 +381,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 	gameBoardLayer.ResetSizeForScreen = function(ScreenSize, padding) {
 		this.SquareSize = ((ScreenSize.height - (padding*2 + (this.GameBoardSpacesHigh*2)))/ this.GameBoardSpacesHigh);
 		window.controlPanelExtension.WindowWidth = (padding + this.SquareSize + padding) + window.fontInfo.GetDimentionsOfString(window.controlPanelExtension.manGeneralInfoDIVMove, "Move: 333 ").width + padding;
-		var scale = this.SquareSize / 100;
+		var scale = this.Scale = this.SquareSize / 100;
 		var scaleString = "scale(" + scale.toString() + "," + scale.toString() + ")";
 		var tiles = this.getElementsByTagName("rect"); //this referrs to <g id=gameBoard
 		for(var i=0; i<tiles.length; i++) {

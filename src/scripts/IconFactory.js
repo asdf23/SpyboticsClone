@@ -187,6 +187,37 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		,DelayAttack: 400
 		,DelayMove: 200
 	});
+	this.RemoveAllIconsByType = function(IconIndex) {
+		if( this.Icons[IconIndex].isPlayer ) {
+			while((window.players.length > 0) && (i<window.players.length)) {
+				if( window.players[i].IconData.SVGName == window.iconFactory.Icons[IconIndex].SVGName ) {
+					window.players[i].parentNode.removeChild(window.players[i]);
+					window.players.remove(window.players[i]);
+				} else {
+					i++;
+				}
+			}
+		} else if( this.Icons[IconIndex].isEnemy ) {
+			while((window.enemies.length > 0) && (i<window.enemies.length)) {
+				if( window.enemies[i].IconData.SVGName == window.iconFactory.Icons[IconIndex].SVGName ) {
+					window.enemies[i].parentNode.removeChild(window.enemies[i]);
+					window.enemies.remove(window.enemies[i]);
+				} else {
+					i++;
+				}
+			}
+		} else if( this.Icons[IconIndex].isUtility ) {
+			var i = 0;
+			while((window.utilities.length > 0) && (i<window.utilities.length)) {
+				if( window.utilities[i].IconData.SVGName == window.iconFactory.Icons[IconIndex].SVGName ) {
+					window.utilities[i].parentNode.removeChild(window.utilities[i]);
+					window.utilities.remove(window.utilities[i]);
+				} else {
+					i++;
+				}
+			}
+		}
+	};
 	this.createIcon = function(IconIndex, InitalizePositions, RegisterIcon) {
 		var superClass = this.Icons;
 		//var rectPosition = this.Icons.GetPositionData(InitalizePositions[0]);
@@ -404,11 +435,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								a.ShowCompletedMove();
 								if( a.NextInChain != null ) {
 									console.log("calling NextInChain callback...");
-									if(a.NextInChain.Sender != null) {
-										a.NextInChain.Method.call(a.NextInChain.Sender);
-									} else {
-										a.NextInChain.Method();
-									}
+									a.NextInChain();
 								}
 								break;
 						}
@@ -635,6 +662,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			c.MovementIndicators = new Array();
 			if(callShowMoveablePlaces) {
 				c.ShowMoveablePlaces();
+			} else if( c.IconData.isPlayer ) {
+				c.ShowAttackablePlaces();
 			}
 		};
 		icon.userIndicatedMove = function(Point, IconToMove) {
@@ -726,23 +755,32 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var attack = this.IconData.Attack[0];
 			var attackAblePoints = gameBoardLayer.BranchOut(this.Position[0], attack.AttackDistance, ({FilterType: "HittablePlayerPerspective", FilterSubType: null }) );
 			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
-			for(var i=0; i<attackAblePoints.length; i++) {
-				var ap = attackAblePoints[i];
-				var as = attack.AttackStrength;
-				var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
-				this.AttackableIndicators.push(useAttack);
-				//INFO: good example here of passing parameters to a dynamic function
-				useAttack.addEventListener("click", function(point, attackStrength, attacker){
-					return function() {
-						console.log("Position:" + point.toString() + " AttackStrength:" + attackStrength.toString());
-						var enemy = gameBoardLayer.GetIconAtPoint(point);
-						enemy.BeAttacked(attackStrength);
-						for(var k=0; k<attacker.AttackableIndicators.length; k++) {
-							attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
-						}
-						attacker.AttackableIndicators = new Array();
-					};
-				}(ap, as, this), false);
+			if(attackAblePoints.length > 0) {
+				for(var i=0; i<attackAblePoints.length; i++) {
+					var ap = attackAblePoints[i];
+					var as = attack.AttackStrength;
+					var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
+					this.AttackableIndicators.push(useAttack);
+					//INFO: good example here of passing parameters to a dynamic function
+					useAttack.addEventListener("click", function(point, attackStrength, attacker){
+						return function() {
+							console.log("Position:" + point.toString() + " AttackStrength:" + attackStrength.toString());
+							var enemy = gameBoardLayer.GetIconAtPoint(point);
+							enemy.BeAttacked(attackStrength);
+							for(var k=0; k<attacker.AttackableIndicators.length; k++) {
+								attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
+							}
+							attacker.AttackableIndicators = new Array();
+							if(attacker.NextInChain != null) {
+								attacker.NextInChain();
+							}
+						};
+					}(ap, as, this), false);
+				}
+			} else {
+				if(this.NextInChain != null) {
+					this.NextInChain();
+				}
 			}
 			delete iconFactoryInstance;
 		};
