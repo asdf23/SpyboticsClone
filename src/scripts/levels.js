@@ -16,4 +16,21 @@ var Levels = ({
 			,FirstMove: "Enemy"
 			,MinimumBadgeRequired: 0
 	}
+	,1: {
+			 Map:"________________" +
+				 "________________" +
+				 "________________" +
+				 "_AAAAAAAA_______" +
+				 "_A______A_______" +
+				 "_A#AAAAA2_______" +
+				 "_A______A_______" +
+				 "_AAAAAAAA_______" +
+				 "________________" +
+				 "________________" +
+				 "________________" +
+				 "________________"
+			,Objectives: ["Exterminate"]
+			,FirstMove: "Enemy"
+			,MinimumBadgeRequired: 0
+	}
 });
