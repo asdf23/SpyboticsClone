@@ -400,6 +400,7 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.buttonExecute.addEventListener("click", function() {
 		console.log("Execute click");
 		window.iconFactory.RemoveAllIconsByType(icon_load);
+		window.iconFactory.RemoveAllIconsByType(icon_moved);
 		var levelMap = Levels[window.gameBoardExtension.CurrentLevel];
 		if( levelMap.FirstMove == "Enemy" ) {
 			//some kind of massive chaining of events....
@@ -413,6 +414,7 @@ function ControlPanelExtension(controlPanelLayer) {
 					window.enemies[i].NextInChain = window.players[0].ShowMoveablePlaces.bind(window.players[0]);
 				}
 			}
+			//TODO: the following won't work, user is prevented from selecting order of operation
 			for(var i=0; i<window.players.length; i++) {
 				window.players[i].RemainingMoves = window.players[i].IconData.Move;
 				if((i+1) < window.players.length) {

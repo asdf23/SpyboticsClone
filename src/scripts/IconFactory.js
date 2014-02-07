@@ -614,7 +614,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					iconIsErased = true;
 					nodeToDestroy = this;
 				}
-				setTimeout(function(a, b, icon) {
+				setTimeout(function(a, b, icon, completeRemoveable) {
 					//var scale = window.gameBoardExtension.SquareSize/100;
 					var g = document.createElementNS(svgNS, "g");
 					g.setAttribute("transform", "translate(" + a.actualX.toString() + "," + a.actualY.toString() + ")" );
@@ -637,6 +637,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					animatableObjects[0].addEventListener("end", function() {
 						g.parentNode.removeChild(g);
 						b.parentNode.removeChild(b);
+						if(completeRemoveable) {
+							b.ClearCompletedMove();
+						}
 					}, false);
 					g.appendChild(use);
 					gamePiecesLayer.appendChild(g);
@@ -644,7 +647,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						animatableObjects[i].beginElement();
 					}
 				}, superClass.DelayAttack + timingDelay
-				, attackPositionData, nodeToDestroy, document.getElementById(superClass[icon_attack_animation].SVGName));
+				, attackPositionData, nodeToDestroy, document.getElementById(superClass[icon_attack_animation].SVGName), iconIsErased);
 				timingDelay += superClass.DelayAttack;
 			}
 		};
