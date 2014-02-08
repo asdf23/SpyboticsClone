@@ -17,7 +17,7 @@ function ProgramInstanceExtension(IconIndex, Count) {
 	div.addEventListener("click", function(d){ 
 											return function() {
 												console.log(d.IconData.Name + " x" + d.IconCount.toString());
-												window.controlPanelExtension.ManProgram(d.IconData, d);
+												window.controlPanelExtension.ManProgram(d, d.IconData);
 											}
 										}(div), false);
 	div.DecreaseInstance = function() {

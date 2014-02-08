@@ -1,8 +1,8 @@
 function BackgroundExtension(backgroundLayer) {
 	backgroundLayer.Types_Background = ({
 		 ASCIIGarbage: ({
-		 	 value: 0
-		 	,GName: "ascii"
+			 value: 0
+			,GName: "ascii"
 		})
 		,BlockWorld: ({
 			 value: 1

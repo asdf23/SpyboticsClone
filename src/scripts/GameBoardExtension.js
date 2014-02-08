@@ -444,11 +444,11 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 					loadIcon.addEventListener("click", function(Point) {
 						return function() {
 							console.log("Load current icon at Point: " + Point.toString());
-							if( window.controlPanelExtension.CurrentProgram != null ) {
+							if( window.controlPanelExtension.ProgramStore != null ) {
 								console.log("will load: ");
-								console.log(window.controlPanelExtension.CurrentProgram);
-								if( window.controlPanelExtension.CurrentProgram.DecreaseInstance() ) {
-									window.iconFactory.createIcon(window.controlPanelExtension.CurrentProgram.IconIndex, [Point], true);
+								console.log(window.controlPanelExtension.ProgramStore);
+								if( window.controlPanelExtension.ProgramStore.DecreaseInstance() ) {
+									window.iconFactory.createIcon(window.controlPanelExtension.ProgramStore.IconIndex, [Point], true);
 								} else {
 									console.log("no instances of program left to load");
 								}

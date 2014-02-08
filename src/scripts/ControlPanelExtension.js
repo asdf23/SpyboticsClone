@@ -50,7 +50,8 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.WindowWidth = 190; //All window widths should come from here
 	console.log("WindowWidth is currently hard-coded this should be calculated");
 	controlPanelLayer.lsPageLength = 3;
-	controlPanelLayer.CurrentProgram = null;
+	controlPanelLayer.ProgramStore = null;
+	controlPanelLayer.ProgramInstance = null;
 	controlPanelLayer.CurrentMode = null;
 	
 	controlPanelLayer.lsWindow = svg.getElementById("ls_window");
@@ -103,6 +104,35 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G
+	
+	controlPanelLayer.button1.addEventListener("click", function(whichButton) {
+		return function() {
+			controlPanelLayer.AttackButtonClick(whichButton);
+		}
+	}(1), false);
+	controlPanelLayer.button2.addEventListener("click", function(whichButton) {
+		return function() {
+			controlPanelLayer.AttackButtonClick(whichButton);
+		}
+	}(2), false);
+	controlPanelLayer.button3.addEventListener("click", function(whichButton) {
+		return function() {
+			controlPanelLayer.AttackButtonClick(whichButton);
+		}
+	}(3), false);
+	controlPanelLayer.AttackButtonClick = function(whichButton) {
+		switch( this.CurrentMode ) {
+			default:
+				console.log("Mode: " + this.CurrentMode.Name);
+				if(controlPanelLayer.ProgramInstance != null) {
+					console.log("user requested for program");
+					console.log(controlPanelLayer.ProgramInstance);
+					console.log("to use attack");
+					console.log(controlPanelLayer.ProgramInstance.IconData.Attack[whichButton - 1]);
+				}
+				break;
+		}
+	};
 	controlPanelLayer.FindProgram = function(IconData) {
 		for(var i=0; i<this.lsWindowContentContainer.children.length; i++) {
 			if(this.lsWindowContentContainer.children[i].IconData == IconData) {
@@ -111,7 +141,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		}
 		return null;
 	};
-	controlPanelLayer.ManProgram = function(IconData) {
+	controlPanelLayer.ManProgram = function(sender, IconData) {
 		this.manGeneralInfoDIVMove.innerHTML = "Move: " + IconData.Move.toString();
 		this.manGeneralInfoDIVSize.innerHTML = "Max Size: " + IconData.MaxSize.toString();
 		this.manHeaderDIVProgramName.innerHTML = IconData.Name;
@@ -122,11 +152,12 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.manHelpCommandDIV.innerHTML = IconData.Description;
 		this.manHelpCommand.removeAttribute("display");
 		controlPanelLayer.manWindowTitleDIV.innerHTML = "man " + IconData.Name;
-		var div = this.FindProgram(IconData);
-		if(div != null) {
-			this.CurrentProgram  = div;
+		if(sender.tagName == "div") {
+			this.ProgramStore = sender;
+			this.ProgramInstance = null;
 		} else {
-			this.CurrentProgram  = null;
+			this.ProgramStore = this.FindProgram(IconData);
+			this.ProgramInstance = sender;
 		}
 		//TOOD: hide show buttons, move alternate to Attack.AttackType
 		if(IconData.Attack != null) {
@@ -134,11 +165,6 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.button1.setAttribute("style", this.AttackTypeToFill(IconData.Attack[0].AttackType));
 				this.button1DIV.innerHTML = IconData.Attack[0].Name;
 				this.button1.removeAttribute("display", "none");
-				this.button1.addEventListener("click",function(sender) {
-					return function() {
-						console.log(sender);
-					}
-				}(IconData.Attack[0]),false);
 			} else {
 				this.button1.setAttribute("display", "none");
 			}
@@ -146,15 +172,16 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.button2.setAttribute("style", this.AttackTypeToFill(IconData.Attack[1].AttackType));
 				this.button2DIV.innerHTML = Attack[1].Name;
 				this.button2.removeAttribute("display", "none");
-				this.button2.addEventListener("click",function(sender) {
-					return function() {
-						console.log(sender);
-					}
-				}(IconData.Attack[1]),false);
 			} else {
 				this.button2.setAttribute("display", "none");
 			}
-			this.button3.setAttribute("display", "none");
+			if( IconData.Attack.length > 1 ) {
+				this.button3.setAttribute("style", this.AttackTypeToFill(IconData.Attack[2].AttackType));
+				this.button3DIV.innerHTML = Attack[2].Name;
+				this.button3.removeAttribute("display", "none");
+			} else {
+				this.button3.setAttribute("display", "none");
+			}
 		}
 	};
 	controlPanelLayer.AttackTypeToFill = function(AttackType) { //TODO: should this be moved?
@@ -390,8 +417,8 @@ function ControlPanelExtension(controlPanelLayer) {
 				window.players[i].ClearSelected();
 				window.players[i].parentNode.removeChild(window.players[i]);
 				window.players.remove( window.players[i] );
-				if(window.controlPanelExtension.CurrentProgram != null) {
-					window.controlPanelExtension.CurrentProgram.IncreaseInstance();
+				if(window.controlPanelExtension.ProgramStore != null) {
+					window.controlPanelExtension.ProgramStore.IncreaseInstance();
 					window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
 				}
 			}
@@ -411,10 +438,12 @@ function ControlPanelExtension(controlPanelLayer) {
 					window.enemies[i].NextInChain = window.enemies[i+1].AutomateMove.bind(window.enemies[i+1]);
 				} else {
 					//last icon
+					//todo change some mode to player's turn and select first player allow for cancel
 					window.enemies[i].NextInChain = window.players[0].ShowMoveablePlaces.bind(window.players[0]);
 				}
 			}
 			//TODO: the following won't work, user is prevented from selecting order of operation
+			//When a user is selected it should be manned
 			for(var i=0; i<window.players.length; i++) {
 				window.players[i].RemainingMoves = window.players[i].IconData.Move;
 				if((i+1) < window.players.length) {

@@ -292,7 +292,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								icon.ShowSelected();
 								window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Cancel);
 							}
-							window.controlPanelExtension.ManProgram(icon.IconData);
+							window.controlPanelExtension.ManProgram(icon, icon.IconData);
 							break;
 						case window.controlPanelExtension.Types_Mode.InGame:
 							//toggle end remaining moves, show undo move
@@ -417,6 +417,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		};
 		icon.ChainMoves = function(moveList) {
 			this.ClearCompletedMove();
+			this.ClearSelected();
 			var timingDelay = 0;
 			for(var i=0; i<moveList.length; i++) {
 				setTimeout(function(a, b) {
