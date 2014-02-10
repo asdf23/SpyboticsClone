@@ -19,10 +19,8 @@ Although I'll use the Issues list to track specific problems in general here are
 2. New and more icons (playable characters and enemies)
 3. Music and sounds (there are none)
 4. The world map
-5. Enemy AI's
-6. User interaction (currently it is impossible for the player to make a move)
-7. There is a bug with animations
-8. Testing!
+5. New and more Enemy AI's
+6. Testing!
 
 ##Theming 
 Where possible I will pay tribute to bash. For instance instead of a "GO" button I'll use "./battle.sh"
