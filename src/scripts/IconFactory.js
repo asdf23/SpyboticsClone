@@ -679,11 +679,11 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						}
 					}
 					animatableObjects[0].addEventListener("end", function() {
-						g.parentNode.removeChild(g);
-						b.parentNode.removeChild(b);
 						if(completeRemoveable) {
 							b.ClearCompletedMove();
 						}
+						g.parentNode.removeChild(g);
+						b.parentNode.removeChild(b);
 						if(callBackInner != null) {
 							callBackInner();
 						}
