@@ -219,10 +219,10 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		}
 	};
 	this.createIcon = function(IconIndex, InitalizePositions, RegisterIcon) {
-if(InitalizePositions[0] == null) {
-	console.error("Error passed to createIcon, who was the caller?");
-	return;
-}
+		if(InitalizePositions[0] == null) {
+			console.error("Error passed to createIcon, who was the caller?");
+			return;
+		}
 		var superClass = this.Icons;
 		//var rectPosition = this.Icons.GetPositionData(InitalizePositions[0]);
 		var rectPosition = gameBoardLayer.RectData[InitalizePositions[0]];
@@ -465,12 +465,12 @@ if(InitalizePositions[0] == null) {
 								a.ShowCompletedMove();
 								if( a.NextInChain != null ) {
 									console.log("calling NextInChain callback...");
-									a.NextInChain();
+									a.NextInChain(); //TODO: <--- this should be moved after
 								}
 								break;
 						}
 					} else {
-						b.Icon.BeAttacked(b.AttackStrength, null);
+						b.Icon.BeAttacked(b.AttackStrength, null); //TODO: <-- this should be the last thing, not completed
 					}
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
@@ -534,8 +534,17 @@ if(InitalizePositions[0] == null) {
 					if(enemySight.length > 0) {
 						turnEnded = true;
 						var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
-						iconToAttack.BeAttacked(attack.AttackStrength, null);
-						this.ShowCompletedMove();
+						//iconToAttack.BeAttacked(attack.AttackStrength, null);
+						//this.ShowCompletedMove();
+						iconToAttack.BeAttacked(attack.AttackStrength, function(icn) {
+							return function() {
+								icn.ShowCompletedMove();
+								if( icn.NextInChain != null ) {
+									console.log("calling NextInChain callback...(2)");
+									icn.NextInChain(); 
+								}
+							}
+						}(this));
 					}
 					break;
 			}
@@ -631,9 +640,10 @@ if(InitalizePositions[0] == null) {
 				this.ChainMoves(moveList);
 			}
 		};
-		icon.BeAttacked = function(AttackStrength, callback) { //TODO: call callback on last iteration
+		icon.BeAttacked = function(AttackStrength, callback) {
 			var iconIsErased = false;
 			var timingDelay = 0;
+			var isLastIteration = false;
 			for(var i=0; ((i<AttackStrength) && (this.Position.length > 0) && (!iconIsErased)); i++) {
 				var attackPoint = this.Position.pop();
 				//var attackPositionData = superClass.GetPositionData(attackPoint);
@@ -645,7 +655,10 @@ if(InitalizePositions[0] == null) {
 					iconIsErased = true;
 					nodeToDestroy = this;
 				}
-				setTimeout(function(a, b, icon, completeRemoveable) {
+				if (!(((i+1)<AttackStrength) && (this.Position.length > 0) && (!iconIsErased))) {
+					isLastIteration = true;
+				}
+				setTimeout(function(a, b, icon, completeRemoveable, callBackInner) {
 					//var scale = window.gameBoardExtension.SquareSize/100;
 					var g = document.createElementNS(svgNS, "g");
 					g.setAttribute("transform", "translate(" + a.actualX.toString() + "," + a.actualY.toString() + ")" );
@@ -671,6 +684,9 @@ if(InitalizePositions[0] == null) {
 						if(completeRemoveable) {
 							b.ClearCompletedMove();
 						}
+						if(callBackInner != null) {
+							callBackInner();
+						}
 					}, false);
 					g.appendChild(use);
 					gamePiecesLayer.appendChild(g);
@@ -678,7 +694,7 @@ if(InitalizePositions[0] == null) {
 						animatableObjects[i].beginElement();
 					}
 				}, superClass.DelayAttack + timingDelay
-				, attackPositionData, nodeToDestroy, document.getElementById(superClass[icon_attack_animation].SVGName), iconIsErased);
+				, attackPositionData, nodeToDestroy, document.getElementById(superClass[icon_attack_animation].SVGName), iconIsErased, isLastIteration ? callback : null);
 				timingDelay += superClass.DelayAttack;
 			}
 		};
@@ -807,35 +823,37 @@ console.log("createIcon C");
 						return function() {
 							console.log("Position:" + point.toString() + " AttackStrength:" + attackStrength.toString());
 							var enemy = gameBoardLayer.GetIconAtPoint(point);
-							enemy.BeAttacked(attackStrength,null); //TODO: move non-immediate logic below to callback
+							enemy.BeAttacked(attackStrength, function() {
+								console.log("You should see this after attack has completed");
+								attacker.ShowCompletedMove();
+								if(attacker.NextInChain != null) {
+									attacker.NextInChain();
+								} else {
+									console.log("looking for next player");
+									var foundUnusedPlayer = false;
+									for(var i=0; ((i<window.players.length) && (!foundUnusedPlayer)); i++) {
+										if(window.players[i].CompletedMove == null) {
+											foundUnusedPlayer = true;
+											window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
+											window.players[i].RemainingMoves = window.players[i].IconData.Move;
+											window.players[i].ShowSelected();
+											window.players[i].ShowMoveablePlaces();
+										}
+									}
+									if(!foundUnusedPlayer) {
+										if(window.enemies.length > 0) {
+											window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.InGameEnemyTurn);
+											window.enemies[0].AutomateMove();
+										} else {
+											console.log("Did user win game?");
+										}
+									}
+								}
+							}); //TODO: move non-immediate logic below to callback
 							for(var k=0; k<attacker.AttackableIndicators.length; k++) {
 								attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
 							}
 							attacker.AttackableIndicators = new Array();
-							attacker.ShowCompletedMove();
-							if(attacker.NextInChain != null) {
-								attacker.NextInChain();
-							} else {
-								console.log("looking for next player");
-								var foundUnusedPlayer = false;
-								for(var i=0; ((i<window.players.length) && (!foundUnusedPlayer)); i++) {
-									if(window.players[i].CompletedMove == null) {
-										foundUnusedPlayer = true;
-										window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
-										window.players[i].RemainingMoves = window.players[i].IconData.Move;
-										window.players[i].ShowSelected();
-										window.players[i].ShowMoveablePlaces();
-									}
-								}
-								if(!foundUnusedPlayer) {
-									if(window.enemies.length > 0) {
-										window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.InGameEnemyTurn);
-										window.enemies[0].AutomateMove();
-									} else {
-										console.log("Did user win game?");
-									}
-								}
-							}
 						};
 					}(ap, as, this), false);
 				}
