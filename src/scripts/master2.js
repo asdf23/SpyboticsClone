@@ -31,10 +31,11 @@ function init(svgElem) {
 	window.controlPanelExtension.ResetUserPrograms(1); //1= save slot
 	window.controlPanelExtension.ResetUI(2);
 	window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.LoadingGame);
-	window.gameBoardExtension.LoadLevel(1);
+	window.gameBoardExtension.LoadLevel(0);
 	
 	console.log("/init()");
 }
+
 function getScreenDimensions() {
 	return ({
 		 width: document.defaultView.innerWidth

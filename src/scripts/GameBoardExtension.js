@@ -246,10 +246,6 @@ function GameBoardExtension(gameBoardLayer) {
 				}
 			}
 		}
-if(Filter.FilterType == "HittablePlayerPerspective") {
-	console.log("Hittable inital blocks");
-	debug_markArrayInMap(-1, results);
-}
 		if(Filter != null) {
 			
 			if((Filter.FilterSubType === true) || (Filter.FilterType == "MoveableEnemyPerspective") || (Filter.FilterType == "MoveablePlayerPerspective") || (Filter.FilterType == "HittableEnemyPerspective") || (Filter.FilterType == "HittablePlayerPerspective") ) {
@@ -448,6 +444,7 @@ if(Filter.FilterType == "HittablePlayerPerspective") {
 								console.log("will load: ");
 								console.log(window.controlPanelExtension.ProgramStore);
 								if( window.controlPanelExtension.ProgramStore.DecreaseInstance() ) {
+console.log("calling createIcon B");
 									window.iconFactory.createIcon(window.controlPanelExtension.ProgramStore.IconIndex, [Point], true);
 								} else {
 									console.log("no instances of program left to load");

@@ -219,6 +219,10 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		}
 	};
 	this.createIcon = function(IconIndex, InitalizePositions, RegisterIcon) {
+if(InitalizePositions[0] == null) {
+	console.error("Error passed to createIcon, who was the caller?");
+	return;
+}
 		var superClass = this.Icons;
 		//var rectPosition = this.Icons.GetPositionData(InitalizePositions[0]);
 		var rectPosition = gameBoardLayer.RectData[InitalizePositions[0]];
@@ -268,6 +272,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 			if(listenToClickEvents) {
 				icon.addEventListener("click", function() {
+					console.log("In " + window.controlPanelExtension.CurrentMode.Name + " mode.");
 					switch( window.controlPanelExtension.CurrentMode ) {
 						default:
 							console.log("Unknown mode: " + window.controlPanelExtension.CurrentMode.Name);
@@ -279,8 +284,8 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							break;
 						case window.controlPanelExtension.Types_Mode.LoadingGame:
 							//toggle Highlight, show Man, toggle cancel button / Begin battle button
-							if( icon.Selected ) {
-								icon.ClearSelected();
+							if( this.Selected ) {
+								this.ClearSelected();
 								window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
 							} else {
 								for(var i=0; i<window.players.length; i++) {
@@ -289,13 +294,34 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								for(var i=0; i<window.enemies.length; i++) {
 									window.enemies[i].ClearSelected();
 								}
-								icon.ShowSelected();
+								this.ShowSelected();
 								window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Cancel);
 							}
-							window.controlPanelExtension.ManProgram(icon, icon.IconData);
+							window.controlPanelExtension.ManProgram(this, this.IconData);
 							break;
-						case window.controlPanelExtension.Types_Mode.InGame:
+						case window.controlPanelExtension.Types_Mode.InGameEnemyTurn:
 							//toggle end remaining moves, show undo move
+							break;
+						case window.controlPanelExtension.Types_Mode.InGamePlayerTurn:
+							//toggle end remaining moves, show undo move
+							console.log("switch mode...");
+							if(this.IconData.isPlayer) {
+								console.log("clicked a player, will remove all moveable spaces on the board");
+								for(var i=0; i<window.players.length; i++) {
+									if( window.players[i].MovementIndicators != null ) {
+										while(window.players[i].MovementIndicators.length > 0) {
+											var use = window.players[i].MovementIndicators[0];
+											use.parentNode.removeChild(use);
+											window.players[i].MovementIndicators.remove(use);
+										}
+									}
+								}
+							}
+							this.ShowSelected();
+							window.controlPanelExtension.ManProgram(this, this.IconData);
+							if(!this.Complete) {
+								this.ShowMoveablePlaces();
+							}
 							break;
 					}
 				}, false);
@@ -411,6 +437,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					callback(this);
 				}
 				gamePiecesLayer.appendChild(this);
+				if(this.CompletedMove != null) {
+					gamePiecesLayer.appendChild(this.CompletedMove);
+				}
 			} else {
 				console.log("invalid move - cannot move " + direction);
 			}
@@ -441,7 +470,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								break;
 						}
 					} else {
-						b.Icon.BeAttacked(b.AttackStrength);
+						b.Icon.BeAttacked(b.AttackStrength, null);
 					}
 				}, superClass.DelayMove + timingDelay
 				, this, moveList[i]);
@@ -470,6 +499,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		};
 		icon.AutomateMove = function() {
 			console.log("calculating best move for: " + this.IconData.AI);
+			this.RemainingMoves = this.IconData.Move; //<--This might be a mistake
 			//save off postion and commit at end
 			var tempPosition = this.Position.clone();
 			this.ClearCompletedMove();
@@ -504,7 +534,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					if(enemySight.length > 0) {
 						turnEnded = true;
 						var iconToAttack = gameBoardLayer.GetIconAtPoint(enemySight[0]);
-						iconToAttack.BeAttacked(attack.AttackStrength);
+						iconToAttack.BeAttacked(attack.AttackStrength, null);
 						this.ShowCompletedMove();
 					}
 					break;
@@ -601,7 +631,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				this.ChainMoves(moveList);
 			}
 		};
-		icon.BeAttacked = function(AttackStrength) { //TODO: error attacks are not targeted, always end shows hit when that may be out of range of attack
+		icon.BeAttacked = function(AttackStrength, callback) { //TODO: call callback on last iteration
 			var iconIsErased = false;
 			var timingDelay = 0;
 			for(var i=0; ((i<AttackStrength) && (this.Position.length > 0) && (!iconIsErased)); i++) {
@@ -671,6 +701,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.userIndicatedMove = function(Point, IconToMove) {
+			IconToMove.ClearSelected();
 			if( Point == (this.Position[0] + 1) ) {
 				return function() {
 					IconToMove.MoveRight(this.resetForAnotherMove);
@@ -690,6 +721,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.ShowMoveablePlaces = function() {
+			this.ClearCompletedMove();
 			if(this.MovementIndicators == null) {
 				this.MovementIndicators = new Array();
 			}
@@ -708,40 +740,42 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 				}
 			}
 			moveablePlaces.remove(this.Position[0]);
-			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
+			//var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
 			var iconSet = 0;
 			for(var j=0; j<moveablePlaces.length; j++) {
-				var iconIndex = icon_moveable_4;
-				var hookEvent = false;
-				switch(iconSet) {
-					case 0:
-						iconIndex = icon_moveable_0;
-						hookEvent = true;
-						break;
-					case 1:
-						iconIndex = icon_moveable_1;
-						break;
-					case 2:
-						iconIndex = icon_moveable_2;
-						break;
-					case 3:
-						iconIndex = icon_moveable_3;
-						break;
-					default:
-						iconIndex = icon_moveable_4;
-						break;
-				}
-				var mover = iconFactoryInstance.createIcon(iconIndex, [moveablePlaces[j]], false);
-				this.MovementIndicators.push(mover);
-				if(hookEvent) {
-					var iconToMove = this;
-					mover.addEventListener("click", iconToMove.userIndicatedMove(mover.Position[0], this), false);
-				}
-				if( (j+1) >= depthMarker[iconSet] ) {
-					iconSet++;
+				if( moveablePlaces[j] != null ) {
+					var iconIndex = icon_moveable_4;
+					var hookEvent = false;
+					switch(iconSet) {
+						case 0:
+							iconIndex = icon_moveable_0;
+							hookEvent = true;
+							break;
+						case 1:
+							iconIndex = icon_moveable_1;
+							break;
+						case 2:
+							iconIndex = icon_moveable_2;
+							break;
+						case 3:
+							iconIndex = icon_moveable_3;
+							break;
+						default:
+							iconIndex = icon_moveable_4;
+							break;
+					}
+					var mover = window.iconFactory.createIcon(iconIndex, [moveablePlaces[j]], false);
+					this.MovementIndicators.push(mover);
+					if(hookEvent) {
+						var iconToMove = this;
+						mover.addEventListener("click", iconToMove.userIndicatedMove(mover.Position[0], this), false);
+					}
+					if( (j+1) >= depthMarker[iconSet] ) {
+						iconSet++;
+					}
 				}
 			}
-			delete iconFactoryInstance;
+			//delete iconFactoryInstance;
 		};
 		icon.getCardinalPoints = function(Point) {
 			return [
@@ -758,35 +792,81 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			//TODO: deal with set of attacks
 			var attack = this.IconData.Attack[0];
 			var attackAblePoints = gameBoardLayer.BranchOut(this.Position[0], attack.AttackDistance, ({FilterType: "HittablePlayerPerspective", FilterSubType: null }) );
-			var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
+			//var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
 			if(attackAblePoints.length > 0) {
 				for(var i=0; i<attackAblePoints.length; i++) {
 					var ap = attackAblePoints[i];
 					var as = attack.AttackStrength;
-					var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
+					//var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
+					//var useAttack = createIcon(icon_attackable, [ap], true);
+console.log("createIcon C");
+					var useAttack = window.iconFactory.createIcon(icon_attackable, [ap], true);
 					this.AttackableIndicators.push(useAttack);
 					//INFO: good example here of passing parameters to a dynamic function
 					useAttack.addEventListener("click", function(point, attackStrength, attacker){
 						return function() {
 							console.log("Position:" + point.toString() + " AttackStrength:" + attackStrength.toString());
 							var enemy = gameBoardLayer.GetIconAtPoint(point);
-							enemy.BeAttacked(attackStrength);
+							enemy.BeAttacked(attackStrength,null); //TODO: move non-immediate logic below to callback
 							for(var k=0; k<attacker.AttackableIndicators.length; k++) {
 								attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
 							}
 							attacker.AttackableIndicators = new Array();
+							attacker.ShowCompletedMove();
 							if(attacker.NextInChain != null) {
 								attacker.NextInChain();
+							} else {
+								console.log("looking for next player");
+								var foundUnusedPlayer = false;
+								for(var i=0; ((i<window.players.length) && (!foundUnusedPlayer)); i++) {
+									if(window.players[i].CompletedMove == null) {
+										foundUnusedPlayer = true;
+										window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
+										window.players[i].RemainingMoves = window.players[i].IconData.Move;
+										window.players[i].ShowSelected();
+										window.players[i].ShowMoveablePlaces();
+									}
+								}
+								if(!foundUnusedPlayer) {
+									if(window.enemies.length > 0) {
+										window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.InGameEnemyTurn);
+										window.enemies[0].AutomateMove();
+									} else {
+										console.log("Did user win game?");
+									}
+								}
 							}
 						};
 					}(ap, as, this), false);
 				}
 			} else {
+				console.log("cannot attack ending move");
+				this.ShowCompletedMove();
 				if(this.NextInChain != null) {
 					this.NextInChain();
+				} else {
+					console.log("looking for next player");
+					var foundUnusedPlayer = false;
+					for(var i=0; ((i<window.players.length) && (!foundUnusedPlayer)); i++) {
+						if(window.players[i].CompletedMove == null) {
+							foundUnusedPlayer = true;
+							window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
+							window.players[i].RemainingMoves = window.players[i].IconData.Move;
+							window.players[i].ShowSelected();
+							window.players[i].ShowMoveablePlaces();
+						}
+					}
+					if(!foundUnusedPlayer) {
+						if(window.enemies.length > 0) {
+							window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.InGameEnemyTurn);
+							window.enemies[0].AutomateMove();
+						} else {
+							console.log("Did user win game?");
+						}
+					}
 				}
 			}
-			delete iconFactoryInstance;
+			//delete iconFactoryInstance;
 		};
 		icon.ClearCompletedMove = function() {
 			if(this.CompletedMove != null) {
@@ -806,6 +886,16 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		};
 		icon.ShowSelected = function() {
 			if(this.Selected == null) {
+				for(var i=0; i<window.enemies.length; i++) {
+					if(window.enemies[i].Selected) {
+						window.enemies[i].ClearSelected();
+					}
+				}
+				for(var i=0; i<window.players.length; i++) {
+					if(window.players[i].Selected) {
+						window.players[i].ClearSelected();
+					}
+				}
 				this.Selected = document.createElementNS(svgNS, "use");
 				this.Selected.setAttribute("x", this.getAttribute("x"));
 				this.Selected.setAttribute("y", this.getAttribute("y"));

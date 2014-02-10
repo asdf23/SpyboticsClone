@@ -28,9 +28,13 @@ function ControlPanelExtension(controlPanelLayer) {
 			 Value: 2
 			,Name: "LoadingGame"
 		})
-		,InGame: ({
+		,InGameEnemyTurn: ({
 			 Value: 3
-			,Name: "InGame"
+			,Name: "InGameEnemyTurn"
+		})
+		,InGamePlayerTurn: ({
+			 Value: 4
+			,Name: "InGamePlayerTurn"
 		})
 	});
 	controlPanelLayer.Types_Button = ({
@@ -141,7 +145,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		}
 		return null;
 	};
-	controlPanelLayer.ManProgram = function(sender, IconData) {
+	controlPanelLayer.ManProgram = function(sender, IconData) { //Sender is div or use from ls or board
 		this.manGeneralInfoDIVMove.innerHTML = "Move: " + IconData.Move.toString();
 		this.manGeneralInfoDIVSize.innerHTML = "Max Size: " + IconData.MaxSize.toString();
 		this.manHeaderDIVProgramName.innerHTML = IconData.Name;
@@ -219,7 +223,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		this.CurrentMode = Mode;
 		switch(Mode) {
 			default:
-				console.log("Unknown mode: " + Mode);
+				console.log("Unknown mode: " + Mode.Name);
 				break;
 			case this.Types_Mode.Hidden:
 				break;
@@ -236,8 +240,13 @@ function ControlPanelExtension(controlPanelLayer) {
 				this.ShowButton(this.Types_Button.Execute);
 				break;
 			case this.Types_Mode.LoadingGame:
+				console.log("Set mode: " + Mode.Name);
 				break;
-			case this.Types_Mode.InGame:
+			case this.Types_Mode.InGameEnemyTurn:
+				console.log("Set mode: " + Mode.Name);
+				break;
+			case this.Types_Mode.InGamePlayerTurn:
+				console.log("Set mode: " + Mode.Name);
 				break;
 		}
 	};
@@ -429,8 +438,9 @@ function ControlPanelExtension(controlPanelLayer) {
 		window.iconFactory.RemoveAllIconsByType(icon_load);
 		window.iconFactory.RemoveAllIconsByType(icon_moved);
 		var levelMap = Levels[window.gameBoardExtension.CurrentLevel];
+		controlPanelLayer.ShowButton(controlPanelLayer.Types_Button.Undo);
 		if( levelMap.FirstMove == "Enemy" ) {
-			//some kind of massive chaining of events....
+			//massive chaining of events....
 			for(var i=0; i<window.enemies.length; i++) {
 				window.enemies[i].RemainingMoves = window.enemies[i].IconData.Move;
 				if((i+1) < window.enemies.length) {
@@ -438,31 +448,25 @@ function ControlPanelExtension(controlPanelLayer) {
 					window.enemies[i].NextInChain = window.enemies[i+1].AutomateMove.bind(window.enemies[i+1]);
 				} else {
 					//last icon
-					//todo change some mode to player's turn and select first player allow for cancel
-					window.enemies[i].NextInChain = window.players[0].ShowMoveablePlaces.bind(window.players[0]);
+					window.enemies[i].NextInChain = function() {
+						console.log("last enemy executing NextInChain (should reset back to player 1)");
+						for(var i=0; i<window.players.length; i++) {
+							window.players[i].RemainingMoves = window.players[i].IconData.Move;
+							window.players[i].ClearCompletedMove();
+						}
+						controlPanelLayer.SetMode(controlPanelLayer.Types_Mode.InGamePlayerTurn);
+						controlPanelLayer.ManProgram(window.players[0], window.players[0].IconData);
+						window.players[0].RemainingMoves = window.players[0].IconData.Move;
+						window.players[0].ShowSelected();
+						//controlPanelLayer.ProgramInstance = window.players[0];
+						window.players[0].ShowMoveablePlaces();
+					}; 
 				}
 			}
-			//TODO: the following won't work, user is prevented from selecting order of operation
-			//When a user is selected it should be manned
-			for(var i=0; i<window.players.length; i++) {
-				window.players[i].RemainingMoves = window.players[i].IconData.Move;
-				if((i+1) < window.players.length) {
-					//another icon after this one..
-					window.players[i].NextInChain = window.players[i+1].ShowMoveablePlaces.bind(window.players[i+1]);
-				} else {
-					//last icon
-					window.players[i].NextInChain = function() {
-						console.log("Completed full move");
-					};
-				}
-			}
-			if(window.enemies.length > 0) {
-				window.enemies[0].AutomateMove();
-			} else {
-				window.players[0].ShowMoveablePlaces()
-			}
+			controlPanelLayer.SetMode(controlPanelLayer.Types_Mode.InGameEnemyTurn);
+			window.enemies[0].AutomateMove();
 		} else {
-			console.log("not implemented");
+			console.log("First move " + levelMap.FirstMove + " not implemented");
 		}
 	}, false);
 	return controlPanelLayer;
