@@ -1076,7 +1076,7 @@
 			</foreignObject>
 		</g>
 		<g
-			 id="buttonUndo">
+			 id="buttonLogout">
 			<rect
 				 x="0"
 				 y="358"
@@ -1092,7 +1092,7 @@
 				<xhtml:div
 					 style="font-size: 12px;"
 					 class="buttonText">
-					UNDO
+					exit
 				</xhtml:div>
 			</foreignObject>
 		</g>

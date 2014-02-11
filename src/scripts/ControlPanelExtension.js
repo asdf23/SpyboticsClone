@@ -42,9 +42,9 @@ function ControlPanelExtension(controlPanelLayer) {
 			 Value: 0
 			,Name: "Cancel"
 		})
-		,Undo: ({
+		,Logout: ({
 			 Value: 1
-			,Name: "Undo"
+			,Name: "Logout"
 		})
 		,Execute: ({
 			 Value: 2
@@ -81,31 +81,31 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.button1 = svg.getElementById("button1"); //a G position 1st with rect,FO > div
 	controlPanelLayer.button2 = svg.getElementById("button2"); //a G position 2nd with rect,FO > div
 	controlPanelLayer.button3 = svg.getElementById("button3"); //a G position 3rd with rect,FO > div
-	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G at bottom left
+	controlPanelLayer.buttonLogout = svg.getElementById("buttonLogout"); //a G at bottom left
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G at bottom left
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G at bottom left
 	controlPanelLayer.button1Rect = controlPanelLayer.button1.children[0]; //fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
 	controlPanelLayer.button2Rect = controlPanelLayer.button2.children[0]; //fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
 	controlPanelLayer.button3Rect = controlPanelLayer.button3.children[0]; //fill:url(#linearGradientAttack|linearGradientAlternate|linearGradientNOP)
-	controlPanelLayer.buttonUndoRect = controlPanelLayer.buttonUndo.children[0];
+	controlPanelLayer.buttonLogoutRect = controlPanelLayer.buttonLogout.children[0];
 	controlPanelLayer.buttonExecuteRect = controlPanelLayer.buttonExecute.children[0];
 	controlPanelLayer.buttonCancelRect = controlPanelLayer.buttonCancel.children[0];
 	controlPanelLayer.button1FO = controlPanelLayer.button1.children[1];
 	controlPanelLayer.button2FO = controlPanelLayer.button2.children[1];
 	controlPanelLayer.button3FO = controlPanelLayer.button3.children[1];
-	controlPanelLayer.buttonUndoFO = controlPanelLayer.buttonUndo.children[1];
+	controlPanelLayer.buttonLogoutFO = controlPanelLayer.buttonLogout.children[1];
 	controlPanelLayer.buttonExecuteFO = controlPanelLayer.buttonExecute.children[1];
 	controlPanelLayer.buttonCancelFO = controlPanelLayer.buttonCancel.children[1];
 	controlPanelLayer.button1DIV = controlPanelLayer.button1.children[1].children[0];
 	controlPanelLayer.button2DIV = controlPanelLayer.button2.children[1].children[0];
 	controlPanelLayer.button3DIV = controlPanelLayer.button3.children[1].children[0];
-	controlPanelLayer.buttonUndoDIV = controlPanelLayer.buttonUndo.children[1].children[0];
+	controlPanelLayer.buttonLogoutDIV = controlPanelLayer.buttonLogout.children[1].children[0];
 	controlPanelLayer.buttonExecuteDIV = controlPanelLayer.buttonExecute.children[1].children[0];
 	controlPanelLayer.buttonCancelDIV = controlPanelLayer.buttonCancel.children[1].children[0];
 	
 	controlPanelLayer.manHelpCommand = svg.getElementById("man_help_command"); //ForiegnObject with div with div of text of Attack command
 	controlPanelLayer.manHelpCommandDIV = controlPanelLayer.manHelpCommand.children[0];
-	controlPanelLayer.buttonUndo = svg.getElementById("buttonUndo"); //a G
+	controlPanelLayer.buttonLogout = svg.getElementById("buttonLogout"); //a G
 	controlPanelLayer.buttonExecute = svg.getElementById("buttonExecute"); //a G
 	controlPanelLayer.buttonCancel = svg.getElementById("buttonCancel"); //a G
 	
@@ -256,18 +256,18 @@ function ControlPanelExtension(controlPanelLayer) {
 				console.log("Unknown button mode: " + Button.Name);
 				break;
 			case this.Types_Button.Cancel:
-				this.buttonUndo.setAttribute("display", "none");
+				this.buttonLogout.setAttribute("display", "none");
 				this.buttonExecute.setAttribute("display", "none");
 				this.buttonCancel.removeAttribute("display");
 				break;
-			case this.Types_Button.Undo:
+			case this.Types_Button.Logout:
 				this.buttonCancel.setAttribute("display", "none");
 				this.buttonExecute.setAttribute("display", "none");
-				this.buttonUndo.removeAttribute("display");
+				this.buttonLogout.removeAttribute("display");
 				break;
 			case this.Types_Button.Execute:
 				this.buttonCancel.setAttribute("display", "none");
-				this.buttonUndo.setAttribute("display", "none");
+				this.buttonLogout.setAttribute("display", "none");
 				this.buttonExecute.removeAttribute("display");
 				break;
 		}
@@ -405,14 +405,14 @@ function ControlPanelExtension(controlPanelLayer) {
 		if(wasInvisible) {
 			this.manHelpCommand.setAttribute("display", "none");
 		}
-		this.buttonUndoRect.width.baseVal.value = this.WindowWidth;
-		this.buttonUndoRect.y.baseVal.value = (lastBottom - (padding / 2));
+		this.buttonLogoutRect.width.baseVal.value = this.WindowWidth;
+		this.buttonLogoutRect.y.baseVal.value = (lastBottom - (padding / 2));
 		this.buttonExecuteRect.width.baseVal.value = this.WindowWidth;
 		this.buttonExecuteRect.y.baseVal.value = (lastBottom - (padding / 2));
 		this.buttonCancelRect.width.baseVal.value = this.WindowWidth;
 		this.buttonCancelRect.y.baseVal.value = (lastBottom - (padding / 2));
-		this.buttonUndoFO.width.baseVal.value = this.WindowWidth;
-		this.buttonUndoFO.y.baseVal.value = lastBottom;
+		this.buttonLogoutFO.width.baseVal.value = this.WindowWidth;
+		this.buttonLogoutFO.y.baseVal.value = lastBottom;
 		this.buttonExecuteFO.width.baseVal.value = this.WindowWidth;
 		this.buttonExecuteFO.y.baseVal.value = lastBottom;
 		this.buttonCancelFO.width.baseVal.value = this.WindowWidth;
@@ -438,7 +438,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		window.iconFactory.RemoveAllIconsByType(icon_load);
 		window.iconFactory.RemoveAllIconsByType(icon_moved);
 		var levelMap = Levels[window.gameBoardExtension.CurrentLevel];
-		controlPanelLayer.ShowButton(controlPanelLayer.Types_Button.Undo);
+		controlPanelLayer.ShowButton(controlPanelLayer.Types_Button.Logout);
 		if( levelMap.FirstMove == "Enemy" ) {
 			//massive chaining of events....
 			for(var i=0; i<window.enemies.length; i++) {

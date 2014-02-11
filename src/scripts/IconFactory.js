@@ -319,7 +319,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							}
 							this.ShowSelected();
 							window.controlPanelExtension.ManProgram(this, this.IconData);
-							if(!this.Complete) {
+							if(this.CompletedMove == null) {
 								this.ShowMoveablePlaces();
 							}
 							break;
@@ -655,6 +655,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					iconIsErased = true;
 					nodeToDestroy = this;
 				}
+				//this.Position.pop(); need to remove positions, however this causes end attack choice to be removed
 				if (!(((i+1)<AttackStrength) && (this.Position.length > 0) && (!iconIsErased))) {
 					isLastIteration = true;
 				}
@@ -681,6 +682,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					animatableObjects[0].addEventListener("end", function() {
 						if(completeRemoveable) {
 							b.ClearCompletedMove();
+							window.enemies.remove(b);
 						}
 						g.parentNode.removeChild(g);
 						b.parentNode.removeChild(b);
@@ -701,6 +703,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 		icon.resetForAnotherMove = function(c) {
 			var callShowMoveablePlaces = false;
 			c.RemainingMoves--;
+			console.log("RemainingMoves set to: %d", c.RemainingMoves);
 			if(c.RemainingMoves > 0) {
 				callShowMoveablePlaces = true;
 			}
@@ -737,61 +740,65 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			}
 		};
 		icon.ShowMoveablePlaces = function() {
-			this.ClearCompletedMove();
-			if(this.MovementIndicators == null) {
-				this.MovementIndicators = new Array();
-			}
-			var depthMarker = new Array();
-			var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.RemainingMoves, ({FilterType: "NonMoveable", FilterSubType: this }));
-			var moveablePlaces = this.getCardinalPoints(this.Position[0]);
-			moveablePlaces.remove(badPoints);
-			for(var i=1; i<this.RemainingMoves; i++) {
-				var newPoints = null;
-				var moveablePlacesLength = moveablePlaces.length;
-				depthMarker.push(moveablePlacesLength);
-				for(var k=0; k<moveablePlacesLength; k++) {
-					newPoints = this.getCardinalPoints(moveablePlaces[k]);
-					newPoints.remove(badPoints);
-					moveablePlaces.merge(newPoints);
+			if((this.CompletedMove != null) || (this.RemainingMoves <= 0)) {
+				return;
+			} else {
+				this.ClearCompletedMove();
+				if(this.MovementIndicators == null) {
+					this.MovementIndicators = new Array();
 				}
-			}
-			moveablePlaces.remove(this.Position[0]);
-			//var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
-			var iconSet = 0;
-			for(var j=0; j<moveablePlaces.length; j++) {
-				if( moveablePlaces[j] != null ) {
-					var iconIndex = icon_moveable_4;
-					var hookEvent = false;
-					switch(iconSet) {
-						case 0:
-							iconIndex = icon_moveable_0;
-							hookEvent = true;
-							break;
-						case 1:
-							iconIndex = icon_moveable_1;
-							break;
-						case 2:
-							iconIndex = icon_moveable_2;
-							break;
-						case 3:
-							iconIndex = icon_moveable_3;
-							break;
-						default:
-							iconIndex = icon_moveable_4;
-							break;
-					}
-					var mover = window.iconFactory.createIcon(iconIndex, [moveablePlaces[j]], false);
-					this.MovementIndicators.push(mover);
-					if(hookEvent) {
-						var iconToMove = this;
-						mover.addEventListener("click", iconToMove.userIndicatedMove(mover.Position[0], this), false);
-					}
-					if( (j+1) >= depthMarker[iconSet] ) {
-						iconSet++;
+				var depthMarker = new Array();
+				var badPoints = gameBoardLayer.BranchOut(this.Position[0], this.RemainingMoves, ({FilterType: "NonMoveable", FilterSubType: this }));
+				var moveablePlaces = this.getCardinalPoints(this.Position[0]);
+				moveablePlaces.remove(badPoints);
+				for(var i=1; i<this.RemainingMoves; i++) {
+					var newPoints = null;
+					var moveablePlacesLength = moveablePlaces.length;
+					depthMarker.push(moveablePlacesLength);
+					for(var k=0; k<moveablePlacesLength; k++) {
+						newPoints = this.getCardinalPoints(moveablePlaces[k]);
+						newPoints.remove(badPoints);
+						moveablePlaces.merge(newPoints);
 					}
 				}
+				moveablePlaces.remove(this.Position[0]);
+				//var iconFactoryInstance = new IconsFactory(gamePiecesLayer, gameBoardLayer);
+				var iconSet = 0;
+				for(var j=0; j<moveablePlaces.length; j++) {
+					if( moveablePlaces[j] != null ) {
+						var iconIndex = icon_moveable_4;
+						var hookEvent = false;
+						switch(iconSet) {
+							case 0:
+								iconIndex = icon_moveable_0;
+								hookEvent = true;
+								break;
+							case 1:
+								iconIndex = icon_moveable_1;
+								break;
+							case 2:
+								iconIndex = icon_moveable_2;
+								break;
+							case 3:
+								iconIndex = icon_moveable_3;
+								break;
+							default:
+								iconIndex = icon_moveable_4;
+								break;
+						}
+						var mover = window.iconFactory.createIcon(iconIndex, [moveablePlaces[j]], false);
+						this.MovementIndicators.push(mover);
+						if(hookEvent) {
+							var iconToMove = this;
+							mover.addEventListener("click", iconToMove.userIndicatedMove(mover.Position[0], this), false);
+						}
+						if( (j+1) >= depthMarker[iconSet] ) {
+							iconSet++;
+						}
+					}
+				}
+				//delete iconFactoryInstance;
 			}
-			//delete iconFactoryInstance;
 		};
 		icon.getCardinalPoints = function(Point) {
 			return [
@@ -835,7 +842,8 @@ console.log("createIcon C");
 										if(window.players[i].CompletedMove == null) {
 											foundUnusedPlayer = true;
 											window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
-											window.players[i].RemainingMoves = window.players[i].IconData.Move;
+											//Error: next line causes a bug where swtiching between players grants extra moves
+											//window.players[i].RemainingMoves = window.players[i].IconData.Move;
 											window.players[i].ShowSelected();
 											window.players[i].ShowMoveablePlaces();
 										}
@@ -869,7 +877,8 @@ console.log("createIcon C");
 						if(window.players[i].CompletedMove == null) {
 							foundUnusedPlayer = true;
 							window.controlPanelExtension.ManProgram(window.players[i], window.players[i].IconData);
-							window.players[i].RemainingMoves = window.players[i].IconData.Move;
+							//Error: next line causes a bug where swtiching between players grants extra moves
+							//window.players[i].RemainingMoves = window.players[i].IconData.Move;
 							window.players[i].ShowSelected();
 							window.players[i].ShowMoveablePlaces();
 						}
