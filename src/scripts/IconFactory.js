@@ -462,7 +462,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 								a.MoveOne(b, null);
 								break;
 							case "Complete":
-								a.ShowCompletedMove();
+								if(a.Position.length > 0) {
+									a.ShowCompletedMove();
+								}
 								if( a.NextInChain != null ) {
 									console.log("calling NextInChain callback...");
 									a.NextInChain(); //TODO: <--- this should be moved after
