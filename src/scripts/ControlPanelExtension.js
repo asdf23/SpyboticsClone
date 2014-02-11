@@ -133,6 +133,22 @@ function ControlPanelExtension(controlPanelLayer) {
 					console.log(controlPanelLayer.ProgramInstance);
 					console.log("to use attack");
 					console.log(controlPanelLayer.ProgramInstance.IconData.Attack[whichButton - 1]);
+					if(controlPanelLayer.ProgramInstance.CompletedMode == null) {
+						controlPanelLayer.ProgramInstance.RemainingMoves = 0; //this button could be made a toggle but for now, clicking this ends the players turn
+						//Remove any visible movement icons
+						for(var i=0; i<window.players.length; i++) {
+							if( window.players[i].MovementIndicators != null ) {
+								while(window.players[i].MovementIndicators.length > 0) {
+									var use = window.players[i].MovementIndicators[0];
+									use.parentNode.removeChild(use);
+									window.players[i].MovementIndicators.remove(use);
+								}
+							}
+						}
+						controlPanelLayer.ProgramInstance.ShowAttackablePlaces();
+					} else {
+						console.log("player has already completed it's move for this turn");
+					}
 				}
 				break;
 		}
