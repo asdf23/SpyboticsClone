@@ -322,6 +322,15 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							if(this.CompletedMove == null) {
 								this.ShowMoveablePlaces();
 							}
+							if(window.controlPanelExtension.ToggleLogoutCancel()) {
+								if( this.CompletedMove != null ) {
+									if(this.RemainingMoves > 0) {
+										this.ShowMoveablePlaces();
+									} 
+								} else {
+									this.ShowAttackablePlaces();
+								}
+							}
 							break;
 					}
 				}, false);

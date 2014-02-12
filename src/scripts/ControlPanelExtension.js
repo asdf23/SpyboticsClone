@@ -57,6 +57,7 @@ function ControlPanelExtension(controlPanelLayer) {
 	controlPanelLayer.ProgramStore = null;
 	controlPanelLayer.ProgramInstance = null;
 	controlPanelLayer.CurrentMode = null;
+	controlPanelLayer.CurrentButton = null;
 	
 	controlPanelLayer.lsWindow = svg.getElementById("ls_window");
 	controlPanelLayer.lsWindowTitle = svg.getElementById("ls_window_title"); //Gray titlebar
@@ -267,6 +268,7 @@ function ControlPanelExtension(controlPanelLayer) {
 		}
 	};
 	controlPanelLayer.ShowButton = function(Button) {
+		this.CurrentButton = Button;
 		switch(Button) {
 			default:
 				console.log("Unknown button mode: " + Button.Name);
@@ -437,16 +439,37 @@ function ControlPanelExtension(controlPanelLayer) {
 	};
 	controlPanelLayer.buttonCancel.addEventListener("click", function() {
 		console.log("Cancel Click");
-		for(var i=0; i<window.players.length; i++) {
-			if(window.players[i].Selected) {
-				window.players[i].ClearSelected();
-				window.players[i].parentNode.removeChild(window.players[i]);
-				window.players.remove( window.players[i] );
-				if(window.controlPanelExtension.ProgramStore != null) {
-					window.controlPanelExtension.ProgramStore.IncreaseInstance();
-					window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
+		switch( window.controlPanelExtension.CurrentMode ) {
+			default:
+				console.log("Cancel button should not have been visible");
+				break;
+			case window.controlPanelExtension.Types_Mode.LoadingGame:
+				for(var i=0; i<window.players.length; i++) {
+					if(window.players[i].Selected) {
+						window.players[i].ClearSelected();
+						window.players[i].parentNode.removeChild(window.players[i]);
+						window.players.remove( window.players[i] );
+						if(window.controlPanelExtension.ProgramStore != null) {
+							window.controlPanelExtension.ProgramStore.IncreaseInstance();
+							window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Execute);
+						}
+					}
 				}
-			}
+				break;
+			case window.controlPanelExtension.Types_Mode.InGamePlayerTurn:
+				var icn = window.controlPanelExtension.ProgramInstance;
+				if(icn != null) {
+					icn.RemainingMoves = 0;
+					window.iconFactory.RemoveAllIconsByType(icon_attackable);
+					if(icn.MovementIndicators != null) {
+						for(var i=0; i<icn.MovementIndicators.length; i++) {
+							icn.MovementIndicators[i].parentNode.removeChild(icn.MovementIndicators[i]);
+						}
+					}
+					icn.MovementIndicators = new Array();
+					icn.ShowCompletedMove();
+				}
+				break;
 		}
 	}, false);
 	controlPanelLayer.buttonExecute.addEventListener("click", function() {
@@ -485,6 +508,20 @@ function ControlPanelExtension(controlPanelLayer) {
 			console.log("First move " + levelMap.FirstMove + " not implemented");
 		}
 	}, false);
+	controlPanelLayer.ToggleLogoutCancel = function() {
+		if(this.CurrentMode == this.Types_Mode.InGamePlayerTurn) {
+			switch(this.CurrentButton) {
+				default:
+				case this.Types_Button.Execute:
+				case this.Types_Button.Cancel:
+					this.ShowButton(this.Types_Button.Logout);
+					return true;
+				case this.Types_Button.Logout:
+					this.ShowButton(this.Types_Button.Cancel);
+					return false;
+			}
+		}
+	}
 	return controlPanelLayer;
 }
 /*
