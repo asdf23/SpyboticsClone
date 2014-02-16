@@ -303,7 +303,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							//toggle end remaining moves, show undo move
 							break;
 						case window.controlPanelExtension.Types_Mode.InGamePlayerTurn:
-							//toggle end remaining moves, show undo move
+							//toggle end remaining moves
 							console.log("switch mode...");
 							if(this.IconData.isPlayer) {
 								console.log("clicked a player, will remove all moveable spaces on the board");
@@ -316,19 +316,18 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 										}
 									}
 								}
+								window.iconFactory.RemoveAllIconsByType(icon_attackable);
+								console.log("all MovementIndicators and attackables should have been removed.");
 							}
 							this.ShowSelected();
 							window.controlPanelExtension.ManProgram(this, this.IconData);
-							if(this.CompletedMove == null) {
-								this.ShowMoveablePlaces();
-							}
 							if(window.controlPanelExtension.ToggleLogoutCancel()) {
-								if( this.CompletedMove != null ) {
+								if( this.CompletedMove == null ) {
 									if(this.RemainingMoves > 0) {
 										this.ShowMoveablePlaces();
-									} 
-								} else {
-									this.ShowAttackablePlaces();
+									} else {
+										this.ShowAttackablePlaces();
+									}
 								}
 							}
 							break;
@@ -833,7 +832,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 					var as = attack.AttackStrength;
 					//var useAttack = iconFactoryInstance.createIcon(icon_attackable, [ap], true);
 					//var useAttack = createIcon(icon_attackable, [ap], true);
-console.log("createIcon C");
+					console.log("createIcon C");
 					var useAttack = window.iconFactory.createIcon(icon_attackable, [ap], true);
 					this.AttackableIndicators.push(useAttack);
 					//INFO: good example here of passing parameters to a dynamic function
