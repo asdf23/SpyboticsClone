@@ -210,7 +210,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 			var i = 0;
 			while((window.utilities.length > 0) && (i<window.utilities.length)) {
 				if( window.utilities[i].IconData.SVGName == window.iconFactory.Icons[IconIndex].SVGName ) {
-					window.utilities[i].parentNode.removeChild(window.utilities[i]);
+					if(window.utilities[i].parentNode != null) {
+						window.utilities[i].parentNode.removeChild(window.utilities[i]);
+					}
 					window.utilities.remove(window.utilities[i]);
 				} else {
 					i++;
@@ -867,11 +869,17 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 										}
 									}
 								}
-							}); //TODO: move non-immediate logic below to callback
-							for(var k=0; k<attacker.AttackableIndicators.length; k++) {
-								attacker.AttackableIndicators[k].parentNode.removeChild(attacker.AttackableIndicators[k]);
+							});
+							while(attacker.AttackableIndicators.length > 0) {
+								var ackIcn = attacker.AttackableIndicators[0];
+								if(ackIcn.parentNode != null) {
+									ackIcn.parentNode.removeChild(ackIcn);
+									console.log("no parent -- why does this occur?");
+								} else {
+									console.log("had parent");
+								}
+								attacker.AttackableIndicators.remove(ackIcn);
 							}
-							attacker.AttackableIndicators = new Array();
 						};
 					}(ap, as, this), false);
 				}
