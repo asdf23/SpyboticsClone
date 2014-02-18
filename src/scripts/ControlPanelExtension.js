@@ -468,6 +468,7 @@ function ControlPanelExtension(controlPanelLayer) {
 					}
 					icn.MovementIndicators = new Array();
 					icn.ShowCompletedMove();
+					//TODO: find next player piece and give focus or if none focus on first enemy
 				}
 				break;
 		}
