@@ -13,6 +13,7 @@
 	has array playerMove2
 	has array.merge
 	has array intersect
+	error enemies do not always attack
 */
 
 var icon_load = 100;
@@ -642,7 +643,7 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							//iconToAttack.BeAttacked(attack.Attack);
 							moveList.push({
 								 Icon: iconToAttack
-								,Attack: attack.AttackStrength
+								,AttackStrength: attack.AttackStrength
 							});
 						}
 						break;
