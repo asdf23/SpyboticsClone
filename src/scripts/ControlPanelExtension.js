@@ -134,7 +134,7 @@ function ControlPanelExtension(controlPanelLayer) {
 					console.log(controlPanelLayer.ProgramInstance);
 					console.log("to use attack");
 					console.log(controlPanelLayer.ProgramInstance.IconData.Attack[whichButton - 1]);
-					if(controlPanelLayer.ProgramInstance.CompletedMode == null) {
+					if(controlPanelLayer.ProgramInstance.CompletedMove == null) {
 						controlPanelLayer.ProgramInstance.RemainingMoves = 0; //this button could be made a toggle but for now, clicking this ends the players turn
 						//Remove any visible movement icons
 						for(var i=0; i<window.players.length; i++) {
@@ -469,6 +469,24 @@ function ControlPanelExtension(controlPanelLayer) {
 					icn.MovementIndicators = new Array();
 					icn.ShowCompletedMove();
 					//TODO: find next player piece and give focus or if none focus on first enemy
+					var foundUnMovedPlayer = false;
+					var icnPlayer = null;
+					for(var i=0; (i<window.players.length) && (!foundUnMovedPlayer); i++) {
+						if(window.players[i].CompletedMove == null) {
+							foundUnMovedPlayer = true;
+							icnPlayer = window.players[i];
+						}
+					}
+					if(foundUnMovedPlayer) {
+						window.controlPanelExtension.ShowButton(window.controlPanelExtension.Types_Button.Logout);
+						window.controlPanelExtension.ManProgram(icnPlayer, icnPlayer.IconData);
+						icnPlayer.ShowMoveablePlaces();
+					} else {
+						for(var i=0; i<window.enemies.length; i++) {
+							window.enemies[i].RemainingMoves = window.enemies[i].IconData.Move;
+						}
+						window.enemies[0].AutomateMove();
+					}
 				}
 				break;
 		}
