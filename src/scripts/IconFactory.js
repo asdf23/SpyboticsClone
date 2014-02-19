@@ -693,12 +693,18 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 						}
 					}
 					animatableObjects[0].addEventListener("end", function() {
-						if(completeRemoveable) {
-							b.ClearCompletedMove();
-							window.enemies.remove(b);
-						}
 						g.parentNode.removeChild(g);
 						b.parentNode.removeChild(b);
+						if(completeRemoveable) {
+							b.ClearCompletedMove();
+							b.ClearSelected();
+							//TODO: clear man
+							if(b.IconData.isEnemy) {
+								window.enemies.remove(b);
+							} else if(b.IconData.isPlayer) {
+								window.players.remove(b);
+							}
+						}
 						if(callBackInner != null) {
 							callBackInner();
 						}
