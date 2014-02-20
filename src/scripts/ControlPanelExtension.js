@@ -508,16 +508,21 @@ function ControlPanelExtension(controlPanelLayer) {
 					//last icon
 					window.enemies[i].NextInChain = function() {
 						console.log("last enemy executing NextInChain (should reset back to player 1)");
-						for(var i=0; i<window.players.length; i++) {
-							window.players[i].RemainingMoves = window.players[i].IconData.Move;
-							window.players[i].ClearCompletedMove();
+						if( window.players.length > 0 ) {
+							for(var i=0; i<window.players.length; i++) {
+								window.players[i].RemainingMoves = window.players[i].IconData.Move;
+								window.players[i].ClearCompletedMove();
+							}
+							controlPanelLayer.SetMode(controlPanelLayer.Types_Mode.InGamePlayerTurn);
+							controlPanelLayer.ManProgram(window.players[0], window.players[0].IconData);
+							window.players[0].RemainingMoves = window.players[0].IconData.Move;
+							window.players[0].ShowSelected();
+							//controlPanelLayer.ProgramInstance = window.players[0];
+							window.players[0].ShowMoveablePlaces();
+						} else {
+							//TODO: deal with lost level
+							console.log("You have lost the game.");
 						}
-						controlPanelLayer.SetMode(controlPanelLayer.Types_Mode.InGamePlayerTurn);
-						controlPanelLayer.ManProgram(window.players[0], window.players[0].IconData);
-						window.players[0].RemainingMoves = window.players[0].IconData.Move;
-						window.players[0].ShowSelected();
-						//controlPanelLayer.ProgramInstance = window.players[0];
-						window.players[0].ShowMoveablePlaces();
 					}; 
 				}
 			}
