@@ -4,7 +4,7 @@ SpyboticsClone
 A clone of Spybotics - a game originally created by lego. This game hopes to improve on that success
 
 ##Getting involved
-I am looking for help and your time. Here are some things you could do to help:
+I am looking for help and would appreicate your time. Here are some things you could do to help:
 
 1. Take a look at the original game. Get a feeling for how it works and how you might improve on it. New characters, levels, changed game play. Lego took down the original however there is a working copy at  http://jayisgames.com/games/spybot-the-nightfall-incident/
 2. Install the FirefoxOS emulator. Although in theroy this should work in any browser it is targeted specifically for the Firefox OS. 
