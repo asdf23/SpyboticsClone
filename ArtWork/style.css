@@ -1,0 +1,10 @@
+svg {
+	background-color: black;
+}
+.line {
+	stroke-width: 0.01;
+	stroke: #00FF00;
+	opacity: 1;
+	fill: none;
+	stroke-opacity: 1;
+}
