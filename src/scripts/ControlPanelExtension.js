@@ -548,6 +548,7 @@ function ControlPanelExtension(controlPanelLayer) {
 	}
 	return controlPanelLayer;
 }
+
 /*
 var controlPanel = new ControlPanelExtension($elem("ls_window"));
 controlPanel.ResetUserPrograms(1); //1= save slot
@@ -563,5 +564,4 @@ controlPanel.ResetUI(190, 4)
 	"translate_tabs_to_spaces": false,
 	"trim_automatic_white_space": false
 }
-
 */
