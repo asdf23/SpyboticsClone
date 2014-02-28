@@ -37,29 +37,54 @@ svg {
 	fill: none;
 	stroke-opacity: 1;
 }
+"""
 
-var a = document.getElementsByTagName("path");
-for(var i=0; i<a.length; i++) {
-    a[i].children[0].beginElement();
+"""
+//Restart animation
+function restartAnimation() {
+	var a = document.getElementsByTagName("path");
+	for(var i=0; i<a.length; i++) {
+		a[i].children[0].beginElement();
+	}
 }
 
-var a = document.getElementsByTagName("path");
-for(var i=0; i<a.length; i++) {
-    a[i].setAttribute("d", a[i].children[0].getAttribute("from") )
-}
-
-
+//Convert frame to string
 function renderFrame(frame) {
-    var a = document.getElementsByTagName("path");
-    for(var i=0; i<a.length; i++) {
-        a[i].setAttribute("d", a[i].children[frame].getAttribute("to"));
-    }
-    while(document.getElementsByTagName("animate").length > 0) {
-        document.getElementsByTagName("animate")[0].parentNode.removeChild(document.getElementsByTagName("animate")[0]);
-    }
-    console.log(document.getElementsByTagName("svg")[0].outerHTML)
+	var a = document.getElementsByTagName("path");
+	for(var i=0; i<a.length; i++) {
+		a[i].setAttribute("d", a[i].children[frame].getAttribute("to"));
+	}
+	while(document.getElementsByTagName("animate").length > 0) {
+		document.getElementsByTagName("animate")[0].parentNode.removeChild(document.getElementsByTagName("animate")[0]);
+	}
+	console.log(document.getElementsByTagName("svg")[0].outerHTML)
 }
 renderFrame(2);
+
+function stopAnimationAtFrame(frame) {
+	var a = document.getElementsByTagName("path");
+	if(frame == 0) {
+		for(var i=0; i<a.length; i++) {
+			a[i].children[frame].setAttribute("begin", "indefinate");
+		}
+	} else {
+		for(var i=0; i<a.length; i++) {
+			var lastID = "";
+			for(var f=0; (f<a[i].children.length) && (f<frame); f++) {
+				if(f == 0) {
+					a[i].children[f].setAttribute("begin", "0s");
+				} else {
+					a[i].children[f].setAttribute("begin", lastID + ".end");
+				}
+				lastID = a[i].children[f].getAttribute("id");
+			}
+			a[i].children[f].removeAttribute("begin");
+		}
+	}
+}
+stopAnimationAtFrame(2);
+restartAnimation();
+stopAnimationAtFrame(2);
 """
 
 for obj in bpy.context.scene.objects:
@@ -120,21 +145,8 @@ for obj in bpy.context.scene.objects:
 	indexMesh = indexMesh + 1
 
 #print(animationData)
-"""
-http://fc09.deviantart.net/fs71/i/2010/205/3/f/Cyber_Seven_by_lieggio.jpg
-svg {
-	background-color: black;
-}
-.line {
-	stroke-width: 0.01;
-	stroke: #00FF00;
-	opacity: 1;
-	fill: none;
-	stroke-opacity: 1;
-}
-"""
 
-with open("animation2.svg", "w") as filePointer:
+with open(bpy.data.filepath.replace(".blend", ".svg"), "w") as filePointer:
 	svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<?xml-stylesheet href=\"style.css\" type=\"text/css\"?>\n<svg\n\t xmlns:svg=\"http://www.w3.org/2000/svg\"\n\t xmlns=\"http://www.w3.org/2000/svg\"\n\t width=\"1920\"\n\t height=\"1080\"\n\t version=\"1.1\" >\n\t<defs>\n\t</defs>\n\t<g\n\t transform=\"translate(0, 500)\" >\n\t\t<g\n\t\t transform=\"scale(1000, -500)\" >\n"
 	svgFooter = "\t\t</g>\n\t</g>\n</svg>"
 	filePointer.write(svgHeader)
