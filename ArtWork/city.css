@@ -1,0 +1,37 @@
+svg {
+	background-color: #000000;
+}
+.line {
+	fill: none;
+	opacity: 1;
+	stroke: #00FF00;
+	stroke-opacity: 1;
+	stroke-width: 0.006;
+}
+#pathMeshCube_dot_001Face1 {
+	fill: #000000;
+}
+#pathMeshCube_dot_001Face0 {
+	fill: #000000;
+}
+#pathMeshCubeFace0 {
+	fill: green;
+}
+#pathMeshCubeFace1 {
+	fill: black;
+}
+#pathMeshCubeFace2 {
+	fill: black;
+}
+#pathMeshCubeFace3 {
+	fill: black;
+}
+#pathMeshCubeFace4 {
+	fill: black;
+}
+#pathMeshCube_dot_004Face0 {
+	fill: black;
+}
+#pathMeshCube_dot_004Face1 {
+	fill: black;
+}

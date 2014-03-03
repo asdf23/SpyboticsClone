@@ -2,9 +2,14 @@ import bpy
 import bpy_extras
 import os
 import json
+import re
 
 """
-filename = "/home/userf19/FirefoxOS/SpyboticsClone/SpyboticsClone/ArtWork/blender2svg.py"
+Call with the following:
+import bpy
+import re
+
+filename = re.sub("([a-zA-Z0-9_-]*)\\.blend", "blender2svg.py", bpy.data.filepath)
 exec(compile(open(filename).read(), filename, 'exec'))
 """
 
@@ -25,9 +30,16 @@ animationData.KeyFrames = []
 animationData.Meshes = []
 
 #print(animationData)
+fileData = re.search("([a-zA-Z0-9_\-\\/]*)([\\\/]{1})([a-zA-Z0-9]*)(\.blend)$",  bpy.data.filepath)
+fileDirectoryAndName = fileData.group(1) + fileData.group(2) + fileData.group(3)
+cssFileName = fileDirectoryAndName + ".css"
+cssFileNameShort = fileData.group(3) + ".css"
+jsFileName = fileData.group(1) + fileData.group(2) + "general.js" #fileDirectoryAndName + ".js"
+jsFileNameShort = "general.js" #fileData.group(3) + ".js"
+svgFileName = fileDirectoryAndName + ".svg"
 
-"""
-svg {
+if(not os.path.isfile(cssFileName)):
+	cssData = """svg {
 	background-color: black;
 }
 .line {
@@ -36,18 +48,19 @@ svg {
 	opacity: 1;
 	fill: none;
 	stroke-opacity: 1;
-}
-"""
+}"""
+	with open(cssFileName, "w") as filePointer:
+		filePointer.write(cssData)
+		filePointer.close()
 
-"""
-//Restart animation
+if(not os.path.isfile(jsFileName)):
+	jsData = """//Restart animation
 function restartAnimation() {
 	var a = document.getElementsByTagName("path");
 	for(var i=0; i<a.length; i++) {
 		a[i].children[0].beginElement();
 	}
 }
-
 //Convert frame to string
 function renderFrame(frame) {
 	var a = document.getElementsByTagName("path");
@@ -59,8 +72,6 @@ function renderFrame(frame) {
 	}
 	console.log(document.getElementsByTagName("svg")[0].outerHTML)
 }
-renderFrame(2);
-
 function stopAnimationAtFrame(frame) {
 	var a = document.getElementsByTagName("path");
 	if(frame == 0) {
@@ -81,11 +92,10 @@ function stopAnimationAtFrame(frame) {
 			a[i].children[f].removeAttribute("begin");
 		}
 	}
-}
-stopAnimationAtFrame(2);
-restartAnimation();
-stopAnimationAtFrame(2);
-"""
+}"""
+	with open(jsFileName, "w") as filePointer:
+		filePointer.write(jsData)
+		filePointer.close()
 
 for obj in bpy.context.scene.objects:
 	obj.select = False
@@ -130,8 +140,8 @@ for obj in bpy.context.scene.objects:
 					bpy.context.scene.frame_set(indexFrame)
 					blenderVertexIndex = bpy.data.objects[obj.name].data.polygons[indexFace].vertices[indexVector]
 					coordinate3D = bpy.context.active_object.matrix_world * bpy.data.objects[obj.name].data.vertices[blenderVertexIndex].co
-					if(blenderVertexIndex == 0):
-						print(coordinate3D)
+					#if(blenderVertexIndex == 0):
+					#	print(coordinate3D)
 					coordinate2D = bpy_extras.object_utils.world_to_camera_view(bpy.context.scene, bpy.data.objects["Camera"], coordinate3D)
 					animationData.Meshes[-1]["Faces"][indexFace][indexVector][zeroIndexFrame] = ({
 						 "VectorIndex": blenderVertexIndex
@@ -146,31 +156,18 @@ for obj in bpy.context.scene.objects:
 
 #print(animationData)
 
-with open(bpy.data.filepath.replace(".blend", ".svg"), "w") as filePointer:
-	svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<?xml-stylesheet href=\"style.css\" type=\"text/css\"?>\n<svg\n\t xmlns:svg=\"http://www.w3.org/2000/svg\"\n\t xmlns=\"http://www.w3.org/2000/svg\"\n\t width=\"1920\"\n\t height=\"1080\"\n\t version=\"1.1\" >\n\t<defs>\n\t</defs>\n\t<g\n\t transform=\"translate(0, 500)\" >\n\t\t<g\n\t\t transform=\"scale(1000, -500)\" >\n"
+with open(svgFileName, "w") as filePointer:
+	svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<?xml-stylesheet href=\"" + cssFileNameShort + "\" type=\"text/css\"?>\n<svg\n\t xmlns:svg=\"http://www.w3.org/2000/svg\"\n\t xmlns=\"http://www.w3.org/2000/svg\"\n\t xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n\t width=\"1920\"\n\t height=\"1080\"\n\t version=\"1.1\" >\n\t<svg:script xlink:href=\"" + jsFileNameShort + "\" />\n\t<defs>\n\t</defs>\n\t<g\n\t transform=\"translate(0, 500)\" >\n\t\t<g\n\t\t transform=\"scale(1000, -500)\" >\n"
 	svgFooter = "\t\t</g>\n\t</g>\n</svg>"
 	filePointer.write(svgHeader)
 	for indexMesh in range(0, len(animationData.Meshes)):
 		for indexFace in range(0, len(animationData.Meshes[indexMesh]["Faces"])):
 			filePointer.write("\t\t<path\n")
 			filePointer.write("\t\t\t id=\"pathMesh{0}Face{1}\"\n".format(animationData.Meshes[indexMesh]["Name"].replace(".","_dot_"), indexFace))
-			#filePointer.write("\t\t\t style=\"fill:none;stroke:#000000;stroke-width:0.0001;\"\n")
 			filePointer.write("\t\t\t class=\"line\"\n")
 			pointStrings = []
-			#print("Reset pointStrings")
-			#print("indexFace: {0}".format(indexFace))
 			for indexFrame in range(0, len(animationData.KeyFrames)):
 				pointStrings.append( verticesToPath( animationData.Meshes[indexMesh]["Faces"][indexFace], indexFrame ) )
-				print(" ps++")
-				#pointString = ""
-				#print(" indexPoint: {0}".format(indexPoint))
-				#for indexFrame in range(0, len(animationData.Meshes[indexMesh]["Faces"][indexFace][indexPoint])):
-				#   #animationData.Meshes[indexMesh]["Faces"][indexFace][indexPoint][indexFrame]["x"]
-				#   pointString = "{0} {1},{2}".format(pointString, animationData.Meshes[indexMesh]["Faces"][indexFace][indexPoint][indexFrame]["x"], animationData.Meshes[indexMesh]["Faces"][indexFace][indexPoint][indexFrame]["y"])
-				#   print("  indexFrame: {0}".format(indexFrame))
-				#pointStrings.append(pointString)
-			#print("pointStrings.length = {0}".format(len(pointStrings)) )
-			#<animaiton
 			filePointer.write("\t\t\t d=\"M{0} z\" >\n".format(pointStrings[0]))
 			zeroIndexPointString = 0
 			for zeroIndexPointString in range(1, len(pointStrings)):

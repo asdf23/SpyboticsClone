@@ -1,0 +1,77 @@
+<html>
+	<head>
+		<script src="scripts/jquery-1.11.0.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<table style="width:100%">
+			<tbody>
+				<tr>
+					<td><input id="frameName" /></td>
+					<td><select id="frameCount" /></td>
+					<td><button id="buttonCreateFrames">Create</button></td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="frameContainer">
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	for(var i=0; i<30; i++) {
+		var option = document.createElement("option");
+		option.value = i.toString();
+		option.innerHTML = i.toString();
+		$("#frameCount").append(option);
+	}
+	var docs = null;
+	$("#buttonCreateFrames").on("click", function() {
+		for(var i=0; i < $("#frameCount").val(); i++) {
+			var href = "{File}{Frame}.svg".replace(/\{File\}/, $("#frameName").val()).replace(/\{Frame\}/, i);
+			$("#frameContainer").append( $(document.createElement("iframe")).attr({
+				 "src": href
+				,"id": "frame{ID}".replace(/\{ID\}/, i)
+			}) );
+		}
+		docs = $("#frameContainer >iframe").map(function() {
+			return this.contentDocument;
+		}).toArray();
+		console.log(docs);
+		$("#frameContainer").append( $(document.createElement("iframe")).attr({
+			 "src": "{File}_combined.svg".replace(/\{File\}/, $("#frameName").val())
+			,"id": "frame_combined"
+		}) );
+	});
+	/*
+	//Recombine attempt
+	//var f = $("#frame_combined").get(0).contentDocument.defaultView.removeAllPaths.bind($("#frame_combined").get(0).contentDocument.defaultView);
+	//f();
+
+	var combinedDoc = $("#frame_combined").get(0).contentDocument;
+	var pathContiner = combinedDoc.getElementById("pathContianer");
+	for(var i=0; i<docs.length; i++) {
+	    var paths = docs[i].getElementsByTagName("path");
+	    for(var p=0; p < paths.length; p++) {
+	        var pathOriginal = paths[p];
+	        if( i == 0 ) {
+	            var path = $(document.createElement("path")).attr({
+	                 id: pathOriginal.getAttribute("id")
+	                ,"class": pathOriginal.getAttribute("class")
+	                ,"d": pathOriginal.getAttribute("d")
+	            }).get(0);
+	            pathContiner.appendChild(path);
+	        } else {
+	            var animate = $(document.createElement("animate")).attr({
+	                 id: pathOriginal.getAttribute("id") + "Animation" + p.toString()
+	                ,attributeName: "d"
+	                ,from: docs[i].getElementsByTagName("path")[p].getAttribute("d")
+	                ,to: pathOriginal.getAttribute("d")
+	                ,begin: (p==1) ? "0s" : pathOriginal.getAttribute("id") + "Animation" + ((p-1).toString()) + ".end"
+	                ,dur: "4.0s"
+	                ,fill: "freeze"
+	            }).get(0);
+	            combinedDoc.getElementById(  pathOriginal.getAttribute("id") ).appendChild(animate);
+	        }
+	    }
+	}
+	*/
+</script>
