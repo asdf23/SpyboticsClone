@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
+<?xml-stylesheet type="text/css" href="chrome://xuldomsaveback/skin/overlay.css" ?>
+
+<!DOCTYPE overlay SYSTEM "chrome://xuldomsaveback/locale/overlay.dtd">
+
+<overlay id="xuldomsaveback-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	
+	<script type="application/x-javascript" src="chrome://xuldomsaveback/content/overlay.js" />
+	
+	<stringbundleset id="stringbundleset">
+		 <stringbundle id="xuldomsaveback-string-bundle" src="chrome://xuldomsaveback/locale/overlay.properties" />
+	</stringbundleset>
+	
+	<menupopup id="contentAreaContextMenu">
+		<menuitem
+			 id="xuldomsaveback-context-savepage"
+			 label="&xuldomsaveback.hello.label;"
+			 oncommand="SaveBackToFileFromDOM.BrowserOverlay.sayHello(event)" />
+	</menupopup>
+	
+	<menu id="frame">
+		<menupopup id="copyframeaddress-menupopup">
+			<menuitem
+				 id="copyframeaddress-menuitem"
+				 label="&xuldomsaveback.hello.label;"
+				 oncommand="SaveBackToFileFromDOM.BrowserOverlay.sayHello(event)" />
+		</menupopup>
+	</menu>
+	
+</overlay>
