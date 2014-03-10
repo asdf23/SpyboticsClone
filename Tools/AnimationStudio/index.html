@@ -161,43 +161,6 @@
 		pathAnimationFrame.style["stroke"] = "yellow";
 		pathSingleFrame.style["stroke"] = "yellow";
 	}
-	/*
-	function highlightPath() {
-		//console.log(this);
-		//console.log( $(this).data("path") );
-		var li = this;
-		if(!(window.lastPath == null)) {
-			window.lastPath.path.style["fill"].color = window.lastPath.fillColor;
-			window.lastPath.path.style["stroke"].color = window.lastPath.strokeColor;
-			$(window.lastPath.li).removeClass("ui-state-active").addClass("ui-state-default");
-			if( window.frameIsLoaded ) {
-				var pathID = window.lastPath.pathID;
-				var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
-				var path2 = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
-				path2.style["fill"] = window.lastPath.fillColor;
-				path2.style["stroke"] = window.lastPath.strokeColor;
-			}
-		}
-		$(li).addClass("ui-state-active").removeClass("ui-state-default");
-		var path = $(li).data("path");
-		var pathID = path.getAttribute("id");
-		window.lastPath = ({
-			 fillColor: path.ownerDocument.defaultView.getComputedStyle(path, null)["fill"]
-			,strokeColor: path.ownerDocument.defaultView.getComputedStyle(path, null)["stroke"]
-			,path: path
-			,pathID: pathID
-			,li: li
-		});
-		path.style["fill"] = "red";
-		path.style["stroke"] = "red";
-		if( window.frameIsLoaded ) {
-			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
-			var path2 = $("#${PathID}".replace(/\${PathID}/,pathID), singleFrameDocument).get(0);
-			path2.style["fill"] = window.lastPath.fillColor;
-			path2.style["stroke"] = window.lastPath.strokeColor;
-		}
-	}
-	*/
 	function loadFrame() {
 		window.frameIsLoaded = true;
 		var animationFrameDocument = $("#iframeAnimation").prop("contentDocument");
