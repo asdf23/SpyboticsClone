@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<title>Animation Studio</title>
+		<link href="css/general.css" rel="stylesheet">
+		<link href="css/dark-hive/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+		<script src="js/jquery-1.8.3.js"></script>
+		<script src="js/jquery-ui-1.9.2.custom.js"></script>
+	</head>
+	<body>
+		<table id="mainStructure" border=1>
+			<tbody>
+				<tr>
+					<td style="width:85%;">
+						<input id="textAnimation" type="text" value="../../ArtWork/city.svg" />
+						<button id="buttonLoadAnimation" type="button">Load Animation</button>
+					</td>
+					<td rowspan="4" valign="top">
+						<div id="divSortableHolder">
+							<ul id="ulSortablePaths">
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 1</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 2</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 3</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 4</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 5</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 6</li>
+								<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Path 7</li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<iframe id="iframeAnimation" src="" ></iframe>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<select id="selectFrame">
+							<option>1</option>
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+							<option>5</option>
+							<option>6</option>
+						</select>
+						<button id="buttonLoadFrame" type="button">Load Frame</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<iframe id="iframeFrame" src="" ></iframe>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(init);
+	function init() {
+		console.log("init()");
+		//$(".sortablePaths").sortable(/*{cursorAt: { top: 5, left: 5 }}*/);
+		$("#buttonLoadAnimation").button().on("click", loadAnimation);
+		$("#buttonLoadFrame").button().on("click", loadFrame);
+		if(!(/^file:/.test(document.location.protocol))) {
+			$("#iframeAnimation").load(animationOnLoaded);
+		}
+		$("#divSortableHolder").height( window.innerHeight );
+		resizeFrames();
+	}
+	function resizeFrames() {
+		$("#iframeFrame,#iframeAnimation").each(function() {
+			var iframe = this;
+			$(iframe).height(
+				$(iframe).closest("td").height()
+			);
+			$(iframe).width(
+				$(iframe).closest("td").width()
+			);
+		});
+	}
+	function loadAnimation() {
+		var filePath = $("#textAnimation:first").val();
+		var filePathFrame = $("#textAnimation:first").val().replace(/\.svg/,"_frame.svg");
+		$("#iframeAnimation").attr("src", filePath);
+		$("#iframeFrame").attr("src", filePathFrame);
+		if(/^file:/.test(document.location.protocol)) {
+			animationOnLoaded();
+		}
+	}
+	function animationOnLoaded() {
+		$("#ulSortablePaths >li").remove();
+		/*
+			Be sure to set security.fileuri.strict_origin_policy to false
+			<li class="ui-state-default">
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				Path 1
+			</li>
+		*/
+		var animationFrameDocument = $("#iframeAnimation").prop("contentDocument");
+		var pathIDs = $("path", animationFrameDocument).map(function(i,elem) {
+			return elem.getAttribute("id");
+		});
+		for(var i=0; i<pathIDs.length; i++) {
+			var li = $(document.createElement("li")).addClass("ui-state-default").data("path", animationFrameDocument.getElementById(pathIDs[i]) ).get(0);
+			var span = $(document.createElement("span")).addClass("ui-icon ui-icon-arrowthick-2-n-s").get(0);
+			var textNodePathID = document.createTextNode(pathIDs[i]);
+			li.appendChild(span);
+			li.appendChild(textNodePathID);
+			$("#ulSortablePaths").append(li);
+		}
+		$("#ulSortablePaths").sortable();
+		$("#ulSortablePaths >li").on("click", highlightPath);
+		var array = new Array($("path:first >animate", animationFrameDocument).length );
+		var options = $(array).map(function(i,e) {
+			return $(document.createElement("option")).text(i).get(0);
+		}).toArray();
+		$("#selectFrame >option").remove();
+		$("#selectFrame").append(options);
+		/*
+			if(i == 0) {
+				var array = new Array($("animate",e).length());
+				$("#selectFrame >option").remove();
+				$("#selectFrame").append(
+					$(array).map(function() {
+						return $(document.createElement("option")).text(i).get(0);
+					});
+				);
+			}
+		*/
+		resizeFrames();
+	}
+	function highlightPath() {
+		var li = this;
+		var pathAnimationFrame = $(li).data("path");
+		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+		var pathID = pathAnimationFrame.getAttribute("id");
+		var pathSingleFrame = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
+		//Remove hightlights from last time
+		if(!(window.lastPath == null)) {
+			window.lastPath.pathAnimation.style["fill"] = window.lastPath.fillColor;
+			window.lastPath.pathAnimation.style["stroke"] = window.lastPath.strokeColor;
+			window.lastPath.pathFrame.style["fill"] = window.lastPath.fillColor;
+			window.lastPath.pathFrame.style["stroke"] = window.lastPath.strokeColor;
+			$(window.lastPath.li).removeClass("ui-state-active").addClass("ui-state-default");
+		}
+		//Backup data of this path for undoing later
+		window.lastPath = ({
+			 pathAnimation: pathAnimationFrame
+			,pathFrame: pathSingleFrame
+			,li: li
+			,fillColor: pathAnimationFrame.ownerDocument.defaultView.getComputedStyle(pathAnimationFrame, null)["fill"]
+			,strokeColor: pathAnimationFrame.ownerDocument.defaultView.getComputedStyle(pathAnimationFrame, null)["stroke"]
+		});
+		$(li).addClass("ui-state-active").removeClass("ui-state-default");
+		pathAnimationFrame.style["fill"] = "red";
+		pathSingleFrame.style["fill"] = "red";
+		pathAnimationFrame.style["stroke"] = "yellow";
+		pathSingleFrame.style["stroke"] = "yellow";
+	}
+	/*
+	function highlightPath() {
+		//console.log(this);
+		//console.log( $(this).data("path") );
+		var li = this;
+		if(!(window.lastPath == null)) {
+			window.lastPath.path.style["fill"].color = window.lastPath.fillColor;
+			window.lastPath.path.style["stroke"].color = window.lastPath.strokeColor;
+			$(window.lastPath.li).removeClass("ui-state-active").addClass("ui-state-default");
+			if( window.frameIsLoaded ) {
+				var pathID = window.lastPath.pathID;
+				var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+				var path2 = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
+				path2.style["fill"] = window.lastPath.fillColor;
+				path2.style["stroke"] = window.lastPath.strokeColor;
+			}
+		}
+		$(li).addClass("ui-state-active").removeClass("ui-state-default");
+		var path = $(li).data("path");
+		var pathID = path.getAttribute("id");
+		window.lastPath = ({
+			 fillColor: path.ownerDocument.defaultView.getComputedStyle(path, null)["fill"]
+			,strokeColor: path.ownerDocument.defaultView.getComputedStyle(path, null)["stroke"]
+			,path: path
+			,pathID: pathID
+			,li: li
+		});
+		path.style["fill"] = "red";
+		path.style["stroke"] = "red";
+		if( window.frameIsLoaded ) {
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var path2 = $("#${PathID}".replace(/\${PathID}/,pathID), singleFrameDocument).get(0);
+			path2.style["fill"] = window.lastPath.fillColor;
+			path2.style["stroke"] = window.lastPath.strokeColor;
+		}
+	}
+	*/
+	function loadFrame() {
+		window.frameIsLoaded = true;
+		var animationFrameDocument = $("#iframeAnimation").prop("contentDocument");
+		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+		$(singleFrameDocument).find("animate").remove();
+		var frame = $("#selectFrame").val();
+		$("path", animationFrameDocument).each(function() {
+			var to = $("animate", this).get(frame).getAttribute("to");
+			var id = this.getAttribute("id");
+			$("#${PathID}".replace(/\${PathID}/,id), singleFrameDocument).attr("d", to);
+		});
+	}
+</script>

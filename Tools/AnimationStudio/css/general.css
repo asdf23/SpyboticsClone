@@ -1,0 +1,32 @@
+body {
+	background-color: black;
+	color:white;
+}
+iframe {
+	width: 80%;
+}
+select, input[type=text] {
+	width: 300px;
+}
+#mainStructure {
+	height: 100%;
+}
+#ulSortablePaths { 
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	/*width: 60%;*/
+	display:block;
+}
+#ulSortablePaths li {
+	padding: 0.4em;
+	padding-left: 1.5em;
+}
+#ulSortablePaths li span {
+	position: absolute;
+	margin-left: -1.3em;
+}
+#divSortableHolder {
+	color:white;
+	overflow-y: scroll;
+}
