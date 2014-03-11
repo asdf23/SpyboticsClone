@@ -38,15 +38,24 @@
 				</tr>
 				<tr>
 					<td>
-						<select id="selectFrame">
-							<option>1</option>
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
-							<option>6</option>
-						</select>
-						<button id="buttonLoadFrame" type="button">Load Frame</button>
+						<table class="tableCollaspe" style="width:100%;">
+							<tr>
+								<td style="width:50%;">
+									<select id="selectFrame">
+										<option>0</option>
+										<option>1</option>
+										<option>2</option>
+										<option>3</option>
+										<option>4</option>
+										<option>5</option>
+									</select>
+									<button id="buttonLoadFrame" type="button">Load Frame</button>
+								</td>
+								<td style="width:50%; padding-right:10px;">
+									<div id="divFrameSlider"></div>
+								</td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 				<tr>
@@ -65,11 +74,25 @@
 		//$(".sortablePaths").sortable(/*{cursorAt: { top: 5, left: 5 }}*/);
 		$("#buttonLoadAnimation").button().on("click", loadAnimation);
 		$("#buttonLoadFrame").button().on("click", loadFrame);
+		$("#divFrameSlider").slider({
+			 min: 0
+			,max: 5
+			,value: 0
+			,change: onSlide
+		});
 		if(!(/^file:/.test(document.location.protocol))) {
 			$("#iframeAnimation").load(animationOnLoaded);
 		}
 		$("#divSortableHolder").height( window.innerHeight );
 		resizeFrames();
+	}
+	function onSlide(event, ui) {
+		if(event.originalEvent) {
+			var selector = "li[zPosition='${Value}']".replace(/\${Value}/, ui.value);
+			var li = $(selector).get(0);
+			var callHighlightPathFromLI = highlightPath.bind(li);
+			callHighlightPathFromLI();
+		}
 	}
 	function resizeFrames() {
 		$("#iframeFrame,#iframeAnimation").each(function() {
@@ -91,7 +114,25 @@
 			animationOnLoaded();
 		}
 	}
+	function resortPaths(event, ui) {
+		$("#ulSortablePaths >li").each(function(i) {
+			var li = this;
+			$(li).attr("zPosition", i);
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var pathAnimation = $(li).data("path");
+			var pathID = $(pathAnimation).attr("id");
+			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
+			var pathFrame = $(selector, singleFrameDocument).get(0);
+			pathAnimation.parentNode.appendChild(pathAnimation);
+			pathFrame.parentNode.appendChild(pathFrame);
+		});
+	}
 	function animationOnLoaded() {
+		try {
+			$("#ulSortablePaths").sortable("destroy");
+		}catch(e){
+			//this is expected
+		}
 		$("#ulSortablePaths >li").remove();
 		/*
 			Be sure to set security.fileuri.strict_origin_policy to false
@@ -104,15 +145,20 @@
 		var pathIDs = $("path", animationFrameDocument).map(function(i,elem) {
 			return elem.getAttribute("id");
 		});
+		$("#divFrameSlider").slider({
+			max: pathIDs.length
+		});
 		for(var i=0; i<pathIDs.length; i++) {
-			var li = $(document.createElement("li")).addClass("ui-state-default").data("path", animationFrameDocument.getElementById(pathIDs[i]) ).get(0);
-			var span = $(document.createElement("span")).addClass("ui-icon ui-icon-arrowthick-2-n-s").get(0);
+			var li = $(document.createElement("li")).addClass("ui-state-default").attr("zPosition", i).data("path", animationFrameDocument.getElementById(pathIDs[i]) ).get(0);
+			//var span = $(document.createElement("span")).addClass("ui-icon ui-icon-arrowthick-2-n-s").get(0);
 			var textNodePathID = document.createTextNode(pathIDs[i]);
-			li.appendChild(span);
+			//li.appendChild(span);
 			li.appendChild(textNodePathID);
 			$("#ulSortablePaths").append(li);
 		}
-		$("#ulSortablePaths").sortable();
+		$("#ulSortablePaths").sortable({
+			stop: resortPaths
+		});
 		$("#ulSortablePaths >li").on("click", highlightPath);
 		var array = new Array($("path:first >animate", animationFrameDocument).length );
 		var options = $(array).map(function(i,e) {
@@ -120,17 +166,6 @@
 		}).toArray();
 		$("#selectFrame >option").remove();
 		$("#selectFrame").append(options);
-		/*
-			if(i == 0) {
-				var array = new Array($("animate",e).length());
-				$("#selectFrame >option").remove();
-				$("#selectFrame").append(
-					$(array).map(function() {
-						return $(document.createElement("option")).text(i).get(0);
-					});
-				);
-			}
-		*/
 		resizeFrames();
 	}
 	function highlightPath() {
@@ -139,6 +174,9 @@
 		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
 		var pathID = pathAnimationFrame.getAttribute("id");
 		var pathSingleFrame = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
+		$("#divFrameSlider").slider({
+			value: parseInt($(li).attr("zPosition"), 10)
+		});
 		//Remove hightlights from last time
 		if(!(window.lastPath == null)) {
 			window.lastPath.pathAnimation.style["fill"] = window.lastPath.fillColor;

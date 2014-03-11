@@ -6,7 +6,7 @@ iframe {
 	width: 80%;
 }
 select, input[type=text] {
-	width: 300px;
+	width: 100px;
 }
 #mainStructure {
 	height: 100%;
@@ -29,4 +29,9 @@ select, input[type=text] {
 #divSortableHolder {
 	color:white;
 	overflow-y: scroll;
+}
+.tableCollaspe {
+	border-collapse: collapse;
+	margin: 0px;
+	padding: 0px;
 }
