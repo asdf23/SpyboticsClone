@@ -14,8 +14,19 @@
 			<tbody>
 				<tr>
 					<td style="width:85%;">
-						<input id="textAnimation" type="text" value="../../ArtWork/city.svg" />
-						<button id="buttonLoadAnimation" type="button">Load Animation</button>
+						<table class="tableCollaspe" style="width:100%;">
+							<tr>
+								<td>
+									<input id="textAnimation" type="text" value="../../ArtWork/city.svg" />
+									<button id="buttonLoadAnimation" type="button">Load Animation</button>
+								</td>
+								<td>
+									<td style="width: 40px;">
+									<button id="buttonReplayAnimation" type="button">Replay</button>
+								</td>
+								</td>
+							</tr>
+						</table>
 					</td>
 					<td rowspan="4" valign="top">
 						<div id="divSortableHolder">
@@ -79,6 +90,7 @@
 	</body>
 </html>
 <script type="text/javascript">
+	var svgNS = "http://www.w3.org/2000/svg";
 	$(document).ready(init);
 	function init() {
 		console.log("init()");
@@ -98,15 +110,23 @@
 			,icons: {
 				primary: "ui-icon-help"
 			}
-		}).next().find(">span:last").text("").css({
+		}).on("click", onQuestionToggle).next().find(">span:last").text("").css({
 			padding: "0.7em 0.7em 0.7em 1.2em"
 		});
 		$("#buttonDelete").button({
-			 text: "visible"
+			 text: "Delete"
 			,icons: {
 				primary: "ui-icon-circle-close"
 			}
-		}).find(">span:last").text("").css({
+		}).on("dblclick", onDeletePath).find(">span:last").text("").css({
+			padding: "0.8em 0.7em 0.8em 1.2em"
+		});
+		$("#buttonReplayAnimation").button({
+			 text: "Replay"
+			,icons: {
+				primary: "ui-icon-refresh"
+			}
+		}).on("click", replayAnimation).find(">span:last").text("").css({
 			padding: "0.8em 0.7em 0.8em 1.2em"
 		});
 		$("#divFrameSlider").slider({
@@ -120,6 +140,25 @@
 		}
 		$("#divSortableHolder").height( window.innerHeight );
 		resizeFrames();
+	}
+	function replayAnimation() {
+		var animationFrameDocument = $("#iframeAnimation").prop("contentDocument");
+		var animate = document.createElementNS(svgNS, "animate");
+		var animationFrameDocument = $("#iframeAnimation").prop("contentDocument");
+		$($("path >animate:first-child", animationFrameDocument).toArray()).each(animate.beginElement);
+		delete animate;
+	}
+	function onDeletePath() {
+		if( confirm("You know what you're doing there buddy?") ) {
+			var li = $("#ulSortablePaths >li.ui-state-active").get(0);
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var pathAnimation = $(li).data("path");
+			var pathID = $(pathAnimation).attr("id");
+			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
+			var pathFrame = $(selector, singleFrameDocument).get(0);
+			$([li,pathAnimation,pathFrame]).remove();
+			resortPaths(null,null);
+		}
 	}
 	function onHidePath() {
 		if( $("#ulSortablePaths >li.ui-state-active").length > 0 ) {
@@ -136,6 +175,15 @@
 				$(li).data("pathHidden", true);
 				$([pathAnimation,pathFrame]).attr("display", "none");
 			}
+			$(this).blur();
+		}
+	}
+	function onQuestionToggle() {
+		if( $("#ulSortablePaths >li.ui-state-active").length > 0 ) {
+			var li = $("#ulSortablePaths >li.ui-state-active").get(0);
+			$(li).data("pathQuestion", ! $(li).data("pathQuestion"));
+			$(li).toggleClass("ui-state-error");
+			$(this).blur();
 		}
 	}
 	function onSlide(event, ui) {
@@ -171,8 +219,10 @@
 			var li = this;
 			$(li).attr("zPosition", i);
 			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
-			var pathAnimation = $(li).data("path");
+			var pathAnimation = $($(li).data("path")).get(0);
 			var pathID = $(pathAnimation).attr("id");
+			console.log(pathAnimation);
+			console.log(pathID);
 			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
 			var pathFrame = $(selector, singleFrameDocument).get(0);
 			pathAnimation.parentNode.appendChild(pathAnimation);
@@ -227,6 +277,7 @@
 		resizeFrames();
 	}
 	function highlightPath() {
+		//Rewrite me so that old path is identified from highlight not window.lastPath
 		var li = this;
 		var pathAnimationFrame = $(li).data("path");
 		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
