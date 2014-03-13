@@ -40,9 +40,9 @@
 					<td>
 						<table class="tableCollaspe" style="width:100%;">
 							<tr>
-								<td style="width:50%;">
+								<td>
 									<select id="selectFrame">
-										<option>0</option>
+										<option>0</option>l
 										<option>1</option>
 										<option>2</option>
 										<option>3</option>
@@ -51,8 +51,19 @@
 									</select>
 									<button id="buttonLoadFrame" type="button">Load Frame</button>
 								</td>
-								<td style="width:50%; padding-right:10px;">
+								<td style="padding-right:10px; min-width: 300px;">
 									<div id="divFrameSlider"></div>
+								</td>
+								<td style="width: 40px;">
+									<input id="checkboxHidden" type="checkbox" />
+									<label for="checkboxHidden">Hidden</label>
+								</td>
+								<td style="width: 40px;">
+									<input id="checkboxQuestion" type="checkbox" />
+									<label for="checkboxQuestion">Hidden</label>
+								</td>
+								<td style="width: 40px;">
+									<button id="buttonDelete" type="button">Delete</button>
 								</td>
 							</tr>
 						</table>
@@ -74,6 +85,30 @@
 		//$(".sortablePaths").sortable(/*{cursorAt: { top: 5, left: 5 }}*/);
 		$("#buttonLoadAnimation").button().on("click", loadAnimation);
 		$("#buttonLoadFrame").button().on("click", loadFrame);
+		$("#checkboxHidden").button({
+			 text: "visible"
+			,icons: {
+				primary: "ui-icon-gear"
+			}
+		}).on("click", onHidePath).next().find(">span:last").text("").css({
+			padding: "0.7em 0.7em 0.7em 1.2em"
+		});
+		$("#checkboxQuestion").button({
+			 text: "visible"
+			,icons: {
+				primary: "ui-icon-help"
+			}
+		}).next().find(">span:last").text("").css({
+			padding: "0.7em 0.7em 0.7em 1.2em"
+		});
+		$("#buttonDelete").button({
+			 text: "visible"
+			,icons: {
+				primary: "ui-icon-circle-close"
+			}
+		}).find(">span:last").text("").css({
+			padding: "0.8em 0.7em 0.8em 1.2em"
+		});
 		$("#divFrameSlider").slider({
 			 min: 0
 			,max: 5
@@ -85,6 +120,23 @@
 		}
 		$("#divSortableHolder").height( window.innerHeight );
 		resizeFrames();
+	}
+	function onHidePath() {
+		if( $("#ulSortablePaths >li.ui-state-active").length > 0 ) {
+			var li = $("#ulSortablePaths >li.ui-state-active").get(0);
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var pathAnimation = $(li).data("path");
+			var pathID = $(pathAnimation).attr("id");
+			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
+			var pathFrame = $(selector, singleFrameDocument).get(0);
+			if( $(li).data("pathHidden") ) {
+				$(li).data("pathHidden", false);
+				$([pathAnimation,pathFrame]).attr("display", "");
+			} else {
+				$(li).data("pathHidden", true);
+				$([pathAnimation,pathFrame]).attr("display", "none");
+			}
+		}
 	}
 	function onSlide(event, ui) {
 		if(event.originalEvent) {
@@ -149,7 +201,13 @@
 			max: pathIDs.length
 		});
 		for(var i=0; i<pathIDs.length; i++) {
-			var li = $(document.createElement("li")).addClass("ui-state-default").attr("zPosition", i).data("path", animationFrameDocument.getElementById(pathIDs[i]) ).get(0);
+			var li = $(document.createElement("li"))
+						.addClass("ui-state-default")
+						.attr("zPosition", i)
+						.data("path", animationFrameDocument.getElementById(pathIDs[i]))
+						.data("pathHidden", false)
+						.data("pathQuestion", false)
+						.get(0);
 			//var span = $(document.createElement("span")).addClass("ui-icon ui-icon-arrowthick-2-n-s").get(0);
 			var textNodePathID = document.createTextNode(pathIDs[i]);
 			//li.appendChild(span);
@@ -174,6 +232,11 @@
 		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
 		var pathID = pathAnimationFrame.getAttribute("id");
 		var pathSingleFrame = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
+		$("#checkboxHidden").get(0).checked = $(li).data("pathHidden");
+		$("#checkboxHidden").button("refresh");
+		console.log("set to " + $("#checkboxHidden").get(0).checked.toString());
+		$("#checkboxQuestion").get(0).checked = $(li).data("pathQuestion");
+		$("#checkboxQuestion").button("refresh");
 		$("#divFrameSlider").slider({
 			value: parseInt($(li).attr("zPosition"), 10)
 		});
