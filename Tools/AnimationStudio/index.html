@@ -53,7 +53,7 @@
 							<tr>
 								<td>
 									<select id="selectFrame">
-										<option>0</option>l
+										<option>0</option>
 										<option>1</option>
 										<option>2</option>
 										<option>3</option>
@@ -277,40 +277,32 @@
 		resizeFrames();
 	}
 	function highlightPath() {
-		//TODO: Rewrite me so that old path is identified from highlight not window.lastPath
 		var li = this;
 		var pathAnimationFrame = $(li).data("path");
 		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
 		var pathID = pathAnimationFrame.getAttribute("id");
 		var pathSingleFrame = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
-		$("#checkboxHidden").get(0).checked = $(li).data("pathHidden");
-		$("#checkboxHidden").button("refresh");
-		console.log("set to " + $("#checkboxHidden").get(0).checked.toString());
 		$("#checkboxQuestion").get(0).checked = $(li).data("pathQuestion");
 		$("#checkboxQuestion").button("refresh");
 		$("#divFrameSlider").slider({
 			value: parseInt($(li).attr("zPosition"), 10)
 		});
-		//Remove hightlights from last time
-		if(!(window.lastPath == null)) {
-			window.lastPath.pathAnimation.style["fill"] = window.lastPath.fillColor;
-			window.lastPath.pathAnimation.style["stroke"] = window.lastPath.strokeColor;
-			window.lastPath.pathFrame.style["fill"] = window.lastPath.fillColor;
-			window.lastPath.pathFrame.style["stroke"] = window.lastPath.strokeColor;
-			$(window.lastPath.li).removeClass("ui-state-active").addClass("ui-state-default");
+		if( $("#ulSortablePaths >li.ui-state-active").length > 0 ) {
+			var liLast = $("#ulSortablePaths >li.ui-state-active").get(0);
+			var pathLastAnimation = $(liLast).data("path");
+			var pastLastID = $(pathLastAnimation).attr("id");
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var pathLastSingleFrame = $("#${PathID}".replace(/\${PathID}/, pastLastID), singleFrameDocument).get(0);
+			pathLastAnimation.style["fill"] = "";
+			pathLastAnimation.style["stroke"] = "";
+			pathLastSingleFrame.style["fill"] = "";
+			pathLastSingleFrame.style["stroke"] = "";
+			$(liLast).removeClass("ui-state-active").addClass("ui-state-default");
 		}
-		//Backup data of this path for undoing later
-		window.lastPath = ({
-			 pathAnimation: pathAnimationFrame
-			,pathFrame: pathSingleFrame
-			,li: li
-			,fillColor: pathAnimationFrame.ownerDocument.defaultView.getComputedStyle(pathAnimationFrame, null)["fill"]
-			,strokeColor: pathAnimationFrame.ownerDocument.defaultView.getComputedStyle(pathAnimationFrame, null)["stroke"]
-		});
-		$(li).addClass("ui-state-active").removeClass("ui-state-default");
+		$(li).removeClass("ui-state-default").addClass("ui-state-active");
 		pathAnimationFrame.style["fill"] = "red";
-		pathSingleFrame.style["fill"] = "red";
 		pathAnimationFrame.style["stroke"] = "yellow";
+		pathSingleFrame.style["fill"] = "red";
 		pathSingleFrame.style["stroke"] = "yellow";
 	}
 	function loadFrame() {
