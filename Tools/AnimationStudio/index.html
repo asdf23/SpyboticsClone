@@ -70,8 +70,11 @@
 									<label for="checkboxHidden">Hidden</label>
 								</td>
 								<td style="width: 40px;">
+									<button id="buttonCurve" type="button">Curve</button>
+								</td>
+								<td style="width: 40px;">
 									<input id="checkboxQuestion" type="checkbox" />
-									<label for="checkboxQuestion">Hidden</label>
+									<label for="checkboxQuestion">Question</label>
 								</td>
 								<td style="width: 40px;">
 									<button id="buttonDelete" type="button">Delete</button>
@@ -104,6 +107,14 @@
 			}
 		}).on("click", onHidePath).next().find(">span:last").text("").css({
 			padding: "0.7em 0.7em 0.7em 1.2em"
+		});
+		$("#buttonCurve").button({
+			 text: "Curve"
+			,icons: {
+				primary: "ui-icon-signal-diag"
+			}
+		}).on("click", onCurvedCycle).find(">span:last").text("").css({
+			padding: "0.8em 0.7em 0.8em 1.2em"
 		});
 		$("#checkboxQuestion").button({
 			 text: "visible"
@@ -168,14 +179,14 @@
 			var pathID = $(pathAnimation).attr("id");
 			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
 			var pathFrame = $(selector, singleFrameDocument).get(0);
-			if( $(li).data("pathHidden") ) {
-				$(li).data("pathHidden", false);
-				$([pathAnimation,pathFrame]).attr("display", "");
-			} else {
-				$(li).data("pathHidden", true);
+			$(li).data("pathHidden", this.checked);
+			if(this.checked) {
 				$([pathAnimation,pathFrame]).attr("display", "none");
+			} else {
+				$([pathAnimation,pathFrame]).attr("display", "");
 			}
 			$(this).blur();
+			$(this).button("refresh");
 		}
 	}
 	function onQuestionToggle() {
@@ -185,6 +196,47 @@
 			$(li).toggleClass("ui-state-error");
 			$(this).blur();
 		}
+	}
+	function onCurvedCycle() {
+		if( $("#ulSortablePaths >li.ui-state-active").length > 0 ) {
+			var li = $("#ulSortablePaths >li.ui-state-active").get(0);
+			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
+			var pathAnimation = $(li).data("path");
+			var pathID = $(pathAnimation).attr("id");
+			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
+			var pathFrame = $(selector, singleFrameDocument).get(0);
+			var curveData = $(li).data("pathCurvedData");
+			if(curveData == null) {
+				var d = $(pathFrame).attr("d");
+				curveData = pathToPointArray(d);
+			}
+			if( curveData.Points.length >= 3 ) {
+				if( (curveData.currentCurve + 1) >= curveData.Points.length ) {
+					//Remove Curve
+					curveData.currentCurve = null;
+					var newD = seralizeCurveData(curveData);
+					$([pathFrame, pathAnimation]).attr("d", newD);
+					this.checked = false;
+					$(li).data("pathCurvedData", null);
+					$(this).addClass("ui-state-default").removeClass("ui-state-active");
+				} else {
+					//Set Next Curve
+					if( curveData.currentCurve == null ) {
+						curveData.currentCurve = 0;
+					} else {
+						curveData.currentCurve++;
+					}
+					var newD = seralizeCurveData(curveData);
+					$([pathFrame, pathAnimation]).attr("d", newD);
+					$(li).data("pathCurvedData", curveData);
+					$(this).addClass("ui-state-active").removeClass("ui-state-default");
+				}
+			} else {
+				$(this).addClass("ui-state-default").removeClass("ui-state-active");
+				$(li).data("pathCurvedData", null);
+			}
+		}
+		$(this).blur();
 	}
 	function onSlide(event, ui) {
 		if(event.originalEvent) {
@@ -282,8 +334,15 @@
 		var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
 		var pathID = pathAnimationFrame.getAttribute("id");
 		var pathSingleFrame = $("#${PathID}".replace(/\${PathID}/, pathID), singleFrameDocument).get(0);
+		$("#checkboxHidden").get(0).checked = $(li).data("pathHidden");
+		$("#checkboxHidden").button("refresh");
 		$("#checkboxQuestion").get(0).checked = $(li).data("pathQuestion");
 		$("#checkboxQuestion").button("refresh");
+		if( $(li).data("pathCurvedData") == null ) {
+			$(this).addClass("ui-state-default").removeClass("ui-state-active");
+		} else {
+			$(this).addClass("ui-state-active").removeClass("ui-state-default");
+		}
 		$("#divFrameSlider").slider({
 			value: parseInt($(li).attr("zPosition"), 10)
 		});
@@ -316,5 +375,72 @@
 			var id = this.getAttribute("id");
 			$("#${PathID}".replace(/\${PathID}/,id), singleFrameDocument).attr("d", to);
 		});
+	}
+	function pathToPointArray(s) {
+		var rValid = /^M ([-]{0,1}[0-9]+[\.]{0,1}[0-9]*,[-]{0,1}[0-9]+[\.]{0,1}[0-9]* )+?[zZ]{1}$/g;
+		var rCoordinates = /[-]{0,1}[0-9]+[\.]{0,1}[0-9]*,[-]{0,1}[0-9]+[\.]{0,1}[0-9]* /g;
+		var rPoints = /([-]{0,1}[0-9]+[\.]{0,1}[0-9]*),([-]{0,1}[0-9]+[\.]{0,1}[0-9]*) /g;
+		var pointArray = new Array();
+		if( rValid.test(s) ) {
+			var coordinateGroup = rCoordinates.exec(s);
+			while( coordinateGroup != null ) {
+				//console.log( "rPoints:" );
+				rPoints.lastIndex = 0;
+				var points = rPoints.exec( coordinateGroup[0] );
+				//console.log(points);
+				var x = parseFloat(points[1]);
+				var y = parseFloat(points[2]);
+				pointArray.push({
+					 x: x
+					,y: y
+				});
+				coordinateGroup = rCoordinates.exec(s);
+			}
+			//console.log(pointArray);
+			return ({
+				 currentCurve: null
+				,Points: pointArray
+			});
+		} else {
+			return null;
+		}
+	}
+	function seralizeCurveData(curveData) {
+		if( curveData.currentCurve == null ) {
+			var result = "M ";
+			for(var i=0; i<curveData.Points.length; i++) {
+				result += "${X},${Y} ".replace(/\${X}/, curveData.Points[i].x).replace(/\${Y}/, curveData.Points[i].y);
+			}
+			result += "Z";
+			return result;
+		} else if(curveData.currentCurve < curveData.Points.length) {
+			//M <Point before Curve> C <Rest of Points> Z
+			/*
+				0			1
+				M			M
+				1.1,1.2		2.1,2.2
+				C			C
+				2.1,2.2		3.1,3.2
+				3.1,3.2		4.1,4.2
+				4.1,4.2		1.1,1.2
+				Z			Z
+			*/
+			var result = "M ";
+			var p = curveData.currentCurve;
+			for(var i=0; i<curveData.Points.length; i++) {
+				result += "${X},${Y} ".replace(/\${X}/, curveData.Points[p].x).replace(/\${Y}/, curveData.Points[p].y);
+				p++;
+				if( p >= curveData.Points.length ) {
+					p = 0;
+				}
+				if( i == 0 ) {
+					result += "C ";
+				}
+			}
+			result += "Z";
+			return result;
+		} else {
+			throw "Impossible CurveData Object";
+		}
 	}
 </script>
