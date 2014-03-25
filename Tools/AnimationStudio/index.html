@@ -202,6 +202,15 @@
 			var li = $("#ulSortablePaths >li.ui-state-active").get(0);
 			var singleFrameDocument = $("#iframeFrame").prop("contentDocument");
 			var pathAnimation = $(li).data("path");
+			var pathAnimationFrame = null;
+			switch( $("#selectFrame").val() ) {
+				case "0":
+					pathAnimationFrame = pathAnimation;
+					break;
+				default:
+					pathAnimationFrame = $("animate", pathAnimation).get( parseInt($("#selectFrame").val(), 10) );
+					break;
+			}
 			var pathID = $(pathAnimation).attr("id");
 			var selector = "#${PathID}".replace(/\${PathID}/,pathID);
 			var pathFrame = $(selector, singleFrameDocument).get(0);
@@ -215,7 +224,10 @@
 					//Remove Curve
 					curveData.currentCurve = null;
 					var newD = seralizeCurveData(curveData);
-					$([pathFrame, pathAnimation]).attr("d", newD);
+					$(pathFrame).attr("d", newD);
+console.log(pathAnimationFrame);
+console.log(newD);
+					$(pathAnimationFrame).attr("to", newD); //Error: not getting updated
 					this.checked = false;
 					$(li).data("pathCurvedData", null);
 					$(this).addClass("ui-state-default").removeClass("ui-state-active");
@@ -227,7 +239,10 @@
 						curveData.currentCurve++;
 					}
 					var newD = seralizeCurveData(curveData);
-					$([pathFrame, pathAnimation]).attr("d", newD);
+					$(pathFrame).attr("d", newD);
+console.log(pathAnimationFrame);
+console.log(newD);
+					$(pathAnimationFrame).attr("to", newD); //Error: not getting updated
 					$(li).data("pathCurvedData", curveData);
 					$(this).addClass("ui-state-active").removeClass("ui-state-default");
 				}
