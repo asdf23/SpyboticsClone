@@ -13,9 +13,12 @@ var controlPanelExtension = null;
 var gameBoardExtension = null;
 var iconFactory = null;
 
-
+function init(s) {
+	//TODO: Bug, SVG loads more quickly than the JavaScript is there some loaded event?
+	setTimeout(init2, 1000, s);
+}
 //Functions
-function init(svgElem) {
+function init2(svgElem) {
 	console.log("init()");
 	svg = svgElem;
 	manuallySetCSSWhichIsCurrentlyNotRecognized();
@@ -33,7 +36,24 @@ function init(svgElem) {
 	window.controlPanelExtension.ResetUI(2);
 	window.controlPanelExtension.SetMode(window.controlPanelExtension.Types_Mode.LoadingGame);
 	window.gameBoardExtension.LoadLevel(2);
-	
+	//For Beta
+	var screenDimensions = getScreenDimensions();
+	var betaWarnRect = $elem("betaWarning", null);
+	betaWarnRect.children[0].setAttribute("width", screenDimensions.width);
+	betaWarnRect.children[1].setAttribute("width", screenDimensions.width);
+	betaWarnRect.children[0].setAttribute("height", screenDimensions.height);
+	betaWarnRect.children[1].setAttribute("height", screenDimensions.height);
+	var betaWinRect = $elem("betaWinMessage", null);
+	betaWinRect.children[0].setAttribute("width", screenDimensions.width);
+	betaWinRect.children[1].setAttribute("width", screenDimensions.width);
+	betaWinRect.children[0].setAttribute("height", screenDimensions.height);
+	betaWinRect.children[1].setAttribute("height", screenDimensions.height);
+	var betaLoseRect = $elem("betaLoseMessage", null);
+	betaLoseRect.children[0].setAttribute("width", screenDimensions.width);
+	betaLoseRect.children[1].setAttribute("width", screenDimensions.width);
+	betaLoseRect.children[0].setAttribute("height", screenDimensions.height);
+	betaLoseRect.children[1].setAttribute("height", screenDimensions.height);
+	// /For Beta`
 	console.log("/init()");
 }
 

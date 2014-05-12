@@ -14,10 +14,7 @@
 	 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
 	 width="100%"
 	 height="100%"
-	 id="svg2"
 	 version="1.1"
-	 inkscape:version="0.48.4 r9939"
-	 sodipodi:docname="index.svg"
 	 onload="init(this)">
 	<svg:script xlink:href="scripts/ProgramInstanceExtension.js" />
 	<svg:script xlink:href="scripts/FontInfo.js" />
@@ -1149,7 +1146,158 @@
 		-->
 	</g>
 	<g
-		 id="layer_modalWindow">
-		<!-- use id="use1" x="0" y="0" transform="scale(0.5,0.5)" xlink:href="#icon-hack"/ -->
+		 id="layer_modalWindow" >
+		<g
+			 id="betaWarning" >
+			<rect
+				 width="100%"
+				 height="100%"
+				 x="0"
+				 y="0"
+				 fill="white" />
+			<foreignObject
+					 x="5"
+					 y="5"
+					 width="95%"
+					 height="95%" >
+					<xhtml:div
+						 style="font-size: 18px; color: black;" >
+						Spybotics Clone - Beta
+						<xhtml:br />
+						<xhtml:br />
+						This is a beta version of of the Spybotics Clone game engine. Currently you can play a full level.
+						<xhtml:br />
+						To start select an icons (top-left). Place it on the board. Click [./battle.sh] to start the game. 
+						<xhtml:br />
+						<xhtml:br />
+						Feedback, testers and developers are appreicated!
+						<xhtml:br />
+						<xhtml:a href="https://github.com/asdf23/SpyboticsClone" target="_blank">
+							Spybotics Clone on Github
+						</xhtml:a>
+					</xhtml:div>
+				</foreignObject>
+			<rect
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%"
+				 rx="10"
+				 ry="10"
+				 fill="#00FF00" />
+			<foreignObject
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%" >
+					<xhtml:div
+						 style="font-size: 24px; color: black; text-align:center; width:100%; line-height:1.4em;" >
+						Got it
+					</xhtml:div>
+				</foreignObject>
+			<set attributeName="display" from="" to="none" begin="betaWarning.click" />
+		</g>
+		<g
+			 id="betaWinMessage"
+			 display="none" >
+			<rect
+				 width="100%"
+				 height="100%"
+				 x="0"
+				 y="0"
+				 fill="white" />
+			<foreignObject
+					 x="5"
+					 y="5"
+					 width="95%"
+					 height="95%" >
+					<xhtml:div
+						 style="font-size: 18px; color: black;" >
+						You won!
+						<xhtml:br />
+						<xhtml:br />
+						This is a beta version of of the Spybotics Clone game engine. Currently you can play a full level.
+						<xhtml:br />
+						To start select an icons (top-left). Place it on the board. Click [./battle.sh] to start the game. 
+						<xhtml:br />
+						<xhtml:br />
+						Feedback, testers and developers are appreicated!
+						<xhtml:br />
+						<xhtml:a href="https://github.com/asdf23/SpyboticsClone" target="_blank">
+							Spybotics Clone on Github
+						</xhtml:a>
+					</xhtml:div>
+				</foreignObject>
+			<rect
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%"
+				 rx="10"
+				 ry="10"
+				 fill="#00FF00" />
+			<foreignObject
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%" >
+					<xhtml:div
+						 style="font-size: 24px; color: black; text-align:center; width:100%; line-height:1.4em;" >
+						Yea!
+					</xhtml:div>
+				</foreignObject>
+			<set attributeName="display" from="" to="none" begin="betaWinMessage.click" />
+		</g>
+		<g
+			 id="betaLoseMessage"
+			 display="none" >
+			<rect
+				 width="100%"
+				 height="100%"
+				 x="0"
+				 y="0"
+				 fill="white" />
+			<foreignObject
+					 x="5"
+					 y="5"
+					 width="95%"
+					 height="95%" >
+					<xhtml:div
+						 style="font-size: 18px; color: black;" >
+						You lost!
+						<xhtml:br />
+						<xhtml:br />
+						This is a beta version of of the Spybotics Clone game engine. Currently you can play a full level.
+						<xhtml:br />
+						To start select an icons (top-left). Place it on the board. Click [./battle.sh] to start the game. 
+						<xhtml:br />
+						<xhtml:br />
+						Feedback, testers and developers are appreicated!
+						<xhtml:br />
+						<xhtml:a href="https://github.com/asdf23/SpyboticsClone" target="_blank">
+							Spybotics Clone on Github
+						</xhtml:a>
+					</xhtml:div>
+				</foreignObject>
+			<rect
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%"
+				 rx="10"
+				 ry="10"
+				 fill="#00FF00" />
+			<foreignObject
+				 width="37.5%"
+				 height="10%"
+				 x="56.25%"
+				 y="85%" >
+					<xhtml:div
+						 style="font-size: 24px; color: black; text-align:center; width:100%; line-height:1.4em;" >
+						Boo..
+					</xhtml:div>
+				</foreignObject>
+			<set attributeName="display" from="" to="none" begin="betaLoseMessage.click" />
+		</g>
 	</g>
 </svg>

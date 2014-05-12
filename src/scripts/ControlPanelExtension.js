@@ -354,6 +354,7 @@ function ControlPanelExtension(controlPanelLayer) {
 			this.button1.setAttribute("display", "none");
 		}
 		console.log("buttonHeight: " + buttonHeight.toString());
+		console.log("innerHeight controlPanelExtension.js: " + document.defaultView.innerHeight.toString());
 		this.manWindowContentBackground.height.baseVal.value = (document.defaultView.innerHeight - (lastBottom + buttonHeight)); //TODO: use of screen width, use of global
 		this.manWindowContentBackground.y.baseVal.value = nextY;
 		var rectPosition = window.gameBoardExtension.RectData[0];
@@ -522,6 +523,9 @@ function ControlPanelExtension(controlPanelLayer) {
 						} else {
 							//TODO: deal with lost level
 							console.log("You have lost the game.");
+							//Beta:
+							$elem("betaLoseMessage", null).setAttribute("display", null);
+							// /Beta
 						}
 					}; 
 				}

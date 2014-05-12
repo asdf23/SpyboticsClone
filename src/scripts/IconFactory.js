@@ -873,6 +873,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 											window.enemies[0].AutomateMove();
 										} else {
 											console.log("Did user win game?");
+											//Beta:
+											$elem("betaWinMessage", null).setAttribute("display", null);
+											// /Beta
 										}
 									}
 								}
@@ -914,6 +917,9 @@ function IconsFactory(gamePiecesLayer, gameBoardLayer) {
 							window.enemies[0].AutomateMove();
 						} else {
 							console.log("Did user win game?");
+							//Beta:
+							$elem("betaWinMessage", null).setAttribute("display", null);
+							// /Beta
 						}
 					}
 				}

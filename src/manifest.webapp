@@ -2,7 +2,7 @@
 	 "name": "Spybotics Clone"
 	,"description": "A clone of the spybotics game created and removed by Lego"
 	,"launch_path": "/index.svg"
-	,"orientation": "landscape"
+	,"orientation": "landscape-primary"
 	,"developer": { 
 		 "name": "Andrew Mainland"
 	}
