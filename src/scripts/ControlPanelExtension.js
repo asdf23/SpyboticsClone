@@ -112,17 +112,35 @@ function ControlPanelExtension(controlPanelLayer) {
 	
 	controlPanelLayer.button1.addEventListener("click", function(whichButton) {
 		return function() {
-			controlPanelLayer.AttackButtonClick(whichButton);
+			switch( controlPanelLayer.CurrentMode ) {
+				default:
+					console.log("Button click was invalid in current mode: " + controlPanelLayer.CurrentMode.Name );
+					break;
+				case controlPanelLayer.Types_Mode.InGamePlayerTurn:
+					controlPanelLayer.AttackButtonClick(whichButton);
+			}
 		}
 	}(1), false);
 	controlPanelLayer.button2.addEventListener("click", function(whichButton) {
 		return function() {
-			controlPanelLayer.AttackButtonClick(whichButton);
+			switch( controlPanelLayer.CurrentMode ) {
+				default:
+					console.log("Button click was invalid in current mode: " + controlPanelLayer.CurrentMode.Name );
+					break;
+				case controlPanelLayer.Types_Mode.InGamePlayerTurn:
+					controlPanelLayer.AttackButtonClick(whichButton);
+			}
 		}
 	}(2), false);
 	controlPanelLayer.button3.addEventListener("click", function(whichButton) {
 		return function() {
-			controlPanelLayer.AttackButtonClick(whichButton);
+			switch( controlPanelLayer.CurrentMode ) {
+				default:
+					console.log("Button click was invalid in current mode: " + controlPanelLayer.CurrentMode.Name );
+					break;
+				case controlPanelLayer.Types_Mode.InGamePlayerTurn:
+					controlPanelLayer.AttackButtonClick(whichButton);
+			}
 		}
 	}(3), false);
 	controlPanelLayer.AttackButtonClick = function(whichButton) {
