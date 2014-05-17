@@ -26,12 +26,12 @@ Although I'll use the Issues list to track specific problems in general here are
 Where possible I will pay tribute to bash. For instance instead of a "GO" button I'll use "./battle.sh"
 
 ##Goals
-* Use SVG instead of images, only the icons required by Firefox OS are images, shadows, effects, animations all done in SVG, only text uses HTML.
-* Create a game that is playable is most screen sizes.
+* Use SVG instead of images. The only images are icons required by FirefoxOS. Shadows, effects, animations will all be done in SVG. Some text (for wrapping sizeing, scrolling uses HTML).
+* Create a game that is playable on any screen size.
 * Create a game about hacking to the point that the player tries to guess at how the code was implemented and uses it to his/her advantage (for instance enemy players move in order of top left reading to the to left then down by row the user could anticipate this order to his/her advantage, in later levels this order will be changeable.
 
 ##Legal
-My goal is to make this game available to the FirefoxOS communtity. I will keep the source code open. However there are some legal issues regarding a clone of a game. I do not intend to copy the original game, nor any of it's art work (meaning: music, images, story line text). My hope is that the this game plays a complement to the success of the previous game, not to take credit nor take precedencee over it. However from a legal standpoint this game is a chess variant, it differs from chess in the following manners: 
+My goal is to make this game available to the FirefoxOS communtity. I will keep the source code open. However there are some legal issues regarding a clone of a game. I do not intend to copy the original game, nor any of it's art work (meaning: music, images, story line text). My hope is that the this game pays a complement to the success of the previous game, not to take credit nor take precedencee over it. However from a legal standpoint this game is a chess variant, it differs from chess in the following manners: 
 * pieces can be accumulated over time by vaious means
 * the goal is the defeat of all pieces (there are some exceptions to this)
 * during a turn each player can move all his/her pieces
@@ -41,4 +41,4 @@ My goal is to make this game available to the FirefoxOS communtity. I will keep 
 * for the most part there are multiple AI's that the player is working against not a single "mind"
 * there are rewards and punishment over the course of the story line that could extend to the next level.
 
-There are many similar games in existance to this, most notably tower defense games. These games have many of the same characterists such as: accumulated pieces, the goal of defeating all enemies, a story line, etc.. The theme of hacking is also common among many games perhaps Tron being the most well known, 
+There are many similar games in existance to this, most notably are tower defense games. These games have many of the same characterists such as: accumulated pieces, the goal of defeating all enemies, having a story line, having a world map, use of money or rewards, etc.. The theme of hacking is also common among many games perhaps the game Tron being the most well known.
